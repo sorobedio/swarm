@@ -1,4 +1,6 @@
-# model_swarm
+# Model Swarms
+
+Repository for [Model Swarms: Collaborative Search to Adapt LLM Experts via Swarm Intelligence](https://bunsenfeng.github.io/).
 
 ## Quick Start
 
