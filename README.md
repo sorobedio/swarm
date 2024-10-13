@@ -39,7 +39,7 @@ You will be prompted to log into WandB and it is highly recommended. There will 
 
 End of search: the best-found model will be in `search/nlgraph_.../global_best` and performance metrics will be in `search/nlgraph_.../utility_scratchpad.json`. The json file presents the change in utility values in the search process: for global best, global worst, and individual models. The `log.txt` will contain in the end several overall metrics. Watch for `starting_best_validation_utility`, the best initial expert's utility value on the dev set; `starting_best_single_test_accuracy`, this initial expert's utility on the test set; `ending_best_validation_utility`, the ending global best's utility on the dev set; `ending_best_single_test_accuracy`, the ending global best's utility on the test set.
 
-#### Other Objectives
+## Other Objectives
 
 For Objective 1: single task, follow `search_nlgraph.sh` and change `-e` and `-d` to combinations of `(multiple_choice, mmlu)`, `(multiple_choice, mmlu_pro)`, `(multiple_choice, knowledge_crosswords)`, `(multiple_choice, hellaswag)`, `(exact_match, gsm8k)`, `(exact_match, nlgraph)`, `(multiple_choice, truthfulqa)`, `(external_api, realtoxicityprompts)`, `(AbstainQA, mmlu)`. Make sure to change `-n` to include the dataset name in the search directory name. For RealToxicityPrompts you will be prompted to setup Perspective API though google cloud.
 
@@ -49,15 +49,15 @@ For Objective 3: reward models, follow `search_concise.sh` and change `-e` to `r
 
 For Objective 4: human interests, follow `search_phd_application.sh` and change line 8 `domain_list` into the `human_<name>.json` in `data/eval/`. Make sure to change `-n` as well. You will be prompted to setup Vertex AI API to access Gemini APIs through google cloud.
 
-#### Changing Hyperparameters and Settings
+## Changing Hyperparameters and Settings
 
 Do `python search.py -h` to see a list of all possible hyperparameters and settings. Additionally look at the comments for hyperparameters in `search.py`. We already included the default settings in the four `search_<name>.sh` starter scripts, but feel free to play around different settings.
 
-#### Adpated Models and Reproducibility
+## Adpated Models and Reproducibility
 
 We provide best-found model checkpoints for the objectives in `link pending: we are going through internal model release process, stay tuned!`
 
-#### Citation
+## Citation
 
 If Model Swarms was helpful to you:
 
