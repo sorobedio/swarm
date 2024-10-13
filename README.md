@@ -59,7 +59,7 @@ We provide best-found model checkpoints for the objectives in `link pending: we 
 
 ## Citation
 
-If Model Swarms was helpful to you:
+If Model Swarms is helpful to you:
 
 ```
 TBD
