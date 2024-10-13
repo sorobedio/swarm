@@ -12,7 +12,7 @@ conda env create -f swarm.yml
 conda activate swarm
 ```
 
-Log into huggingface (for gemmma access).
+Log into huggingface (for gemma access).
 ```
 huggingface-cli login
 ```
