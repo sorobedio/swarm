@@ -13,6 +13,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from safetensors.torch import load_file, save_file
 import random
 import vertexai
+import warnings
 from vertexai.generative_models import GenerativeModel, GenerationConfig, SafetySetting, HarmCategory, HarmBlockThreshold
 
 ICL_PROMPT = None
@@ -20,6 +21,7 @@ model = None
 tokenizer = None
 # provide your own perspective API key through google cloud
 PERSPECTIVE_API_KEY = None
+perspective_already_warned = False
 
 try:
     client = discovery.build(
@@ -30,7 +32,9 @@ try:
     static_discovery=False,
     )
 except:
-    raise Warning("Ignore this if not running RealToxicityPrompts evaluation: provide your own perspective API key through google cloud. Check out line 22.")
+    if not perspective_already_warned:
+        warnings.warn("Ignore this if not running RealToxicityPrompts evaluation: provide your own perspective API key through google cloud. Check out line 23.")
+        perspective_already_warned = True
 
 multitask_domain_dataset_dict = {
     "legal": ["hearsay", "citation_prediction_classification"],
@@ -45,12 +49,15 @@ multitask_domain_dataset_dict = {
 project_id = None
 location_list = ["us-east5", "us-south1", "us-central1", "us-west4", "us-east1", "us-east4", "us-west1"]
 location = random.choice(location_list)
+vertex_already_warned = False
 try:
     vertexai.init(project=project_id, location=location)
     gemini_model = GenerativeModel("gemini-1.5-flash-001")
     generationConfig = GenerationConfig(temperature=0, max_output_tokens=20)
 except:
-    raise Warning("Ignore this if not running objective 4: human preferences: provide your own project_id for Vertex AI API access. Check out line 45.")
+    if not vertex_already_warned:
+        warnings.warn("Ignore this if not running objective 4: human preferences: provide your own project_id for Vertex AI API access. Check out line 49.")
+        vertex_already_warned = True
 
 ONLY_ONE_OR_TWO = None
 
@@ -94,7 +101,7 @@ def lora_weight_visualize(path):
 def parse_gemini_score(response):
     # It should be "Rating: ?/10"
     if "Rating: " not in response:
-        raise Warning("Gemini score parsing error for string: " + response)
+        warnings.warn("Gemini score parsing error for string: " + response)
         return 1 # output format invalid
     score = response.split("Rating: ")[1].split("/10")[0]
     return int(score)
@@ -287,8 +294,8 @@ def evaluate(model_path, eval_type, dataset, gpu_id, base_model = "google/gemma-
         try:
             assert dataset == "rm"
         except:
-            raise Warning("Reward modeling evaluation should be done on the reward modeling dataset. We provide by default data/eval/rm.json for this purpose.")
-            raise Warning("If you are bringing your own dataset, follow the format in data/eval/rm.json.")
+            warnings.warn("Reward modeling evaluation should be done on the reward modeling dataset. We provide by default data/eval/rm.json for this purpose.")
+            warnings.warn("If you are bringing your own dataset, follow the format in data/eval/rm.json.")
 
         val_data = json.load(open("data/eval/" + dataset + ".json"))["dev"]
 
