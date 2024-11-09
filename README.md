@@ -1,6 +1,6 @@
 # Model Swarms
 
-Repository for [Model Swarms: Collaborative Search to Adapt LLM Experts via Swarm Intelligence](https://arxiv.org/abs/2410.11163).
+Repository for [Model Swarms: Collaborative Search to Adapt LLM Experts via Swarm Intelligence](https://arxiv.org/abs/2410.11163). A fork of [link](https://github.com/google-research/google-research/tree/master/model_swarm) but more frequently updated here.
 
 ## Quick Start
 
