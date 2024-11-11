@@ -61,7 +61,7 @@ Adding your evaluation: well that will be a bit more workload. Go to `evaluate.p
 
 Do `python search.py -h` to see a list of all possible hyperparameters and settings. Additionally look at the comments for hyperparameters in `search.py`. We already included the default settings in the four `search_<name>.sh` starter scripts, but feel free to play around different settings.
 
-## Adpated Models and Reproducibility
+## Adpated Models
 
 We provide best-found model checkpoints for the objectives in `link pending: we are going through internal model release process, stay tuned!`
 
