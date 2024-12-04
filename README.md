@@ -63,7 +63,7 @@ Do `python search.py -h` to see a list of all possible hyperparameters and setti
 
 ## Adpated Models
 
-We provide best-found model checkpoints for the objectives in `link pending: we are going through internal model release process, stay tuned!`
+We provide best-found model checkpoints for the objectives in `link pending`.
 
 ## Citation
 
