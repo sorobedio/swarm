@@ -30,7 +30,7 @@ import argparse, os, sys, datetime, glob
 torch.set_grad_enabled(False)
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 
 
@@ -1433,7 +1433,7 @@ def get_parser():
                         help="Type of evaluation to perform")
     parser.add_argument("--dataset", type=str, default="mmlu",
                         help="Dataset to use for evaluation")
-    parser.add_argument("--gpu_id", type=int, default=0,
+    parser.add_argument("--gpu_id", type=int, default=2,
                         help="ID of GPU to use")
     parser.add_argument("--base_model", type=str, default="google/gemma-7b-it",
                         help="Base model to use")
