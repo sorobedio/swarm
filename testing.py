@@ -693,11 +693,11 @@ def evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gem
         # print(golds)
         # print(preds)
 
-        # save golds and preds for later ensemble
-        with open(model_path + "/golds.json", "w") as f:
-            json.dump(golds, f)
-        with open(model_path + "/preds.json", "w") as f:
-            json.dump(preds, f)
+        # # save golds and preds for later ensemble
+        # with open(model_path + "/golds.json", "w") as f:
+        #     json.dump(golds, f)
+        # with open(model_path + "/preds.json", "w") as f:
+        #     json.dump(preds, f)
 
         return accuracy_score(golds, preds)
 
