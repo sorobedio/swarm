@@ -397,7 +397,7 @@ if __name__ == "__main__":
         seed_message.append(f"Setting torch manual seed to {torch_random_seed}")
         torch.manual_seed(int(torch_random_seed))
 
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
     print('=============loading model================')
 
     # configs = [OmegaConf.load(opt.base)]
@@ -420,41 +420,14 @@ if __name__ == "__main__":
     # model_id = "meta-llama/Llama-3.2-1B-Instruct"
     # model_id = "EleutherAI/pythia-70m"
 
-    model_id = "EleutherAI/pythia-70m"
-
-
-    # weights = torch.load('../../Datasets/llama_weights/Llama-3.2-3B-Inst_lm_head_.pt')
-    # weights = torch.load('../../Datasets/llama_weights/base_3-2-1B_llama_inst_tf_top_1_.pt')
-    # weights = torch.load('../../Datasets/llama_weights/base_3-2-1B_llama_inst_tf_top_2_.pt')
-    # weights = torch.load('../../Datasets/llama_weights/base_3-2-1B_llama_inst_tf_top_4_.pt')
-
-    # weights = torch.load('../../Datasets/llama_weights/base_3-2-1B_llama_inst_top_1_ffnn_.pt')
-
-    # weights = torch.load('../Datasets/facebook/mobilellm_125_mlp__.pt')
-
-
-    # weights = torch.load(f'../Datasets/modelszoo/pythia_410m_full_13000_by26_143000.pt')
-
-    # datapath = os.path.join(root, f'llmdata/pythia-70m-100000_143000.pt')
-    # 11004164
-
-    weights = torch.load(f'../Datasets/modelszoo/pythia_160m_full_13000_by_143000_b16_.pt')
-
-
-    #'facebook/mobilellm_125_mlp__.pt'
-    #f'modelszoo/pythia_160m_mlp_100000_143000.pt')2362368
-
-    #
-    #base_3-2-1B_llama_inst_tf_top_1_.pt
-    #
-
-
+    model_id = "google/gemma-7b-it"
+    weights = torch.load(f'../Datasets/llmdata/gemmini_midtral_llmama_norm_model_wise_.pt')
     print(list(weights))
     # exit()
     #
     # chunk_size =2362368
     # chunk_size = 1100416
-    chunk_size=2536296
+    chunk_size=266240
     # chunk_size = 2156032
     scale = 0.1
     # chunk_size = 58720256
@@ -470,17 +443,10 @@ if __name__ == "__main__":
 ##############################ffn###################################
     # autoencoder = torch.load('./autocheckpoints/Llama-3.2-1B-Inst_top_2tf_.pth', map_location=device)
     # autoencoder = torch.load('./autocheckpoints/llama-3_2-1B_tf-top4_.pth', map_location=device)
-    autoencoder = torch.load('./autocheckpoints/pythia-4-160m_full_.pth', map_location='cpu')
-    torch.save(autoencoder.state_dict(), f'checkpoints/stage1/pythia-160m_all_.ckpt')
+    autoencoder = torch.load('./autocheckpoints/gemmina_mistral_norm.pth', map_location='cpu')
+    # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/pythia-160m_all_.ckpt')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/pythia_160m_ffn_44step.ckpt')
-    # exit()
-    # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/first_stage_model_top_4_tf_.ckpt')
-    # print(autoencoder.encoder.in_ch_mult)
-    # autoencoder = torch.load('./autocheckpoints/Llama-3.2-1B-Inst_lm_head_.pth', map_location=device)
-    # autoencoder = torch.load('./autocheckpoints/llama_kv_no_chunk_.pth', map_location=device)
-    # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/first_stage_model_top_1_tf_.ckpt')
-    # exit()
-    #
+
 
     autoencoder.to(device)
     autoencoder.eval()
@@ -496,9 +462,9 @@ if __name__ == "__main__":
         weight = weights[layer]
         # u = torch.mean(weight, dim=1)
         # v = torch.std(weight, dim=1)
-        # # # x_min = weight.min()
-        # # # x_max = weight.max()
-        # # # weight = (weight-x_min)/(x_max-x_min)
+        x_min = weight.min()
+        x_max = weight.max()
+        weight = 2*(weight-x_min)/(x_max-x_min)-1
         print(weight.shape)
         # weight = (weight-u[:, None])/v[:, None]
 
@@ -536,7 +502,7 @@ if __name__ == "__main__":
         ws = torch.cat(wl, dim=-1) * scale
         print(ws.shape)
         # # ws = ws * v[:, None] + u[:, None]
-        # # ws = 0.5*(ws +1)* xdiff[:,None] + x_min[:, None]
+        ws = 0.5*(ws +1)* (x_max-x_min) + x_min
         wd[layer]=ws
         # # wd[layer] = slerp(0.5, weights[layer], ws)
         # # lw[layer]=ws
@@ -556,7 +522,7 @@ if __name__ == "__main__":
     model = AutoModelForCausalLM.from_pretrained(model_id,
                                                  # revision='step143000',
                                                  # attn_implementation="flash_attention_2",
-                                                 # torch_dtype=torch.bfloat16,
+                                                 torch_dtype=torch.bfloat16,
                                                  device_map=device,
                                                  )
     # torch.save(wd, 'wdata/sampled_weights_lmhead.pt')
