@@ -1568,9 +1568,9 @@ if __name__ == "__main__":
     varphi_p = 0.5  # Cognitive coefficient
     varphi_g = 0.4  # Social coefficient
     varphi_w = 0.3  # Repel coefficient
-    patience = 5  # Number of iterations to wait for no improvement in global best
-    restart_patience = 3  # Number of iterations for particle restart
-    max_iterations = 20  # Maximum number of iterations
+    patience = 10  # Number of iterations to wait for no improvement in global best
+    restart_patience = 5  # Number of iterations for particle restart
+    max_iterations = 50  # Maximum number of iterations
 
 
     # acc = results['results']['hellaswag']['acc_norm,none']
