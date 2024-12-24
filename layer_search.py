@@ -485,7 +485,7 @@ if __name__ == "__main__":
             for w in tqdm(weight):
                 w = w / scale
                 w = w.to(device)
-                # _, x_rec, prior = autoencoder(w)
+                _, x_rec, prior = autoencoder(w)
                 # print(prior.mean.shape, prior.std.shape)
                 # print(w.shape, x_rec.shape)
                 # exit()
