@@ -838,7 +838,7 @@ def get_parser():
                         help="Path or name of the model to use")
     parser.add_argument("--eval_type", type=str, default="multiple_choice",
                         help="Type of evaluation to perform")
-    parser.add_argument("--dataset", type='mmlu', required=True,
+    parser.add_argument("--dataset", type=str, default="mmlu",
                         help="Dataset to use for evaluation")
     parser.add_argument("--gpu_id", type=int, default=0,
                         help="ID of GPU to use")
