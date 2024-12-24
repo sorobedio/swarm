@@ -1,0 +1,55 @@
+model:
+  base_learning_rate: 4.5e-4
+  target: stage1.models.first_stage_model.VAENoDiscModel
+  params:
+    embed_dim: 4
+    input_key: 'weight'
+    learning_rate: 1.51115e-4
+#    ckpt_path: 'checkpoints/stage1/first_stage_model_top_ffn_1_.ckpt'
+    lossconfig:
+      target: stage1.modules.losses.CustomLosses.NopaddingLoss
+      params:
+        kl_weight: 1e-4
+
+    ddconfig:
+      double_z: True
+      tanh_out: False
+      z_channels: 4
+      resolution: 128
+      in_channels: 117
+      my_channels: 117
+      out_ch: 117
+      ch: 128
+      ch_mult: [ 1,1, 1, 2]  #num_down = len(ch_mult)-1
+      num_res_blocks: 2
+      attn_resolutions: [ 8 ]
+      dropout: 0.0
+      in_dim: 21745
+      fdim: 16384
+
+#    beta_scheduler_config:
+#      target: stage1.models.lr_scheduler.TriangularAnnealingScheduler
+#      params:
+#        cycle_length: 3000
+#        beta_min: 1e-6
+#        beta_max: 1.0
+
+#    temperature_scheduler_config:
+#      target: stage1.lr_scheduler.LambdaWarmUpCosineScheduler
+#      params:
+#        warm_up_steps: 0
+#        max_decay_steps: 10001
+#        lr_start: 1.0
+#        lr_max: 1.0
+#        lr_min: 1.0e-3
+
+
+data:
+  target: zooloaders.autoloader.ZooDataModule
+  params:
+    data_dir: '../Datasets/'
+    batch_size: 16
+    num_workers: 4
+    scale: 0.1
+    topk: null
+    normalize: False

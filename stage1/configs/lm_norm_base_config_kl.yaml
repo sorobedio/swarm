@@ -1,0 +1,29 @@
+model:
+  base_learning_rate: 4.5e-6
+  target: stage1.models.first_stage_model.VAENoDiscModel
+  params:
+#    monitor: "val/rec_loss"
+    embed_dim: 4 #128 #64
+    input_key: 'weight'
+    learning_rate: 1.5e-4
+#    ckpt_path: 'checkpoints/stage1/norm_base_llama3_3_8b_instruct.pt'
+    lossconfig:
+      target: stage1.modules.losses.CustomLosses.Myloss
+      params:
+#        kl_weight: 5
+#        kl_weight: 0.000001
+        kl_weight: 0.001
+    ddconfig:
+      double_z: True
+      z_channels: 4
+      resolution: 128
+      in_channels: 16
+      my_channels: 16
+      out_ch: 16
+      ch: 128
+      ch_mult: [ 1,1, 1, 2]  # num_down = len(ch_mult)-1
+      num_res_blocks: 2
+      attn_resolutions: [8]
+      dropout: 0.0
+      in_dim: 10944
+      fdim: 16384

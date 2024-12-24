@@ -1,0 +1,152 @@
+model:
+  base_learning_rate: 5.0e-5   # set to target_lr by starting main.py with '--scale_lr False'
+  target: mdt.models.mdt.MDT
+  params:
+    learning_rate: 1.33e-4
+    lr: 3e-4
+    schedule_sampler: "uniform"
+    weight_decay: 0.0
+    lr_anneal_steps: 0
+    log_every_t: 100
+    first_stage_key: "weight"
+    cond_stage_key: "dataset"
+    input_size: 32
+    channels: 1
+    ema_rate: 1.0
+    embdim: 4
+    latent_size: 16
+    scale_by_std: True
+    cond_stage_trainable: False #'concat', 'crossattn'
+    monitor: 'val/loss'
+    scheduler_config: # 10000 warmup steps
+      target: stage2.lr_scheduler.LambdaLinearScheduler
+      params:
+        warm_up_steps: [ 10000 ]
+        cycle_lengths: [ 10000000000000 ]
+        f_start: [ 1.e-6 ]
+        f_max: [ 1. ]
+        f_min: [ 1. ]
+
+    diff_config:
+      target: mdt.modules.masked_diffusion.diffusion.create_diffusion
+      params:
+        timestep_respacing: ""
+        noise_schedule: "linear"
+        use_kl: False
+        sigma_small: False
+        predict_xstart: False
+        learn_sigma: True
+        rescale_learned_sigmas: False
+        diffusion_steps: 512
+
+    mvit_config:
+      target: mdt.modules.mvit_models.MDTv2_S_2
+      params:
+        input_size: 32
+        in_channels: 1
+        class_dropout_prob: 0.0
+        num_classes: 2
+        learn_sigma: True
+        mask_ratio: 0.30
+        decode_layer: 6
+
+    first_stage_config:
+      target: stage1.models.first_stage_model.VAENoDiscModel
+      params:
+        embed_dim: 4
+        input_key: 'weight'
+        learning_rate: 1.115e-3
+        cond_key: "dataset"
+        ckpt_path: 'checkpoints/stage1/norm_base_mini_llama_instruct.pt'
+        lossconfig:
+          target: stage1.modules.losses.CustomLosses.Myloss
+          params:
+            kl_weight: 0.001
+        #        kl_weight: 0.000001
+        ddconfig:
+          double_z: True
+          z_channels: 4
+          resolution: 128
+          in_channels: 16
+          my_channels: 16
+          out_ch: 16
+          ch: 128
+          ch_mult: [ 1,1,1, 2 ]  # num_down = len(ch_mult)-1
+          num_res_blocks: 2
+          attn_resolutions: [ 8 ]
+          dropout: 0.0
+          in_dim: 10944
+          fdim: 16384
+
+    cond_stage_config:
+      target: mdt.modules.condmodules.Identity
+      params:
+        input_size: 32
+
+
+
+
+
+
+data:
+  target: zooloaders.ldmloader.ZooDataModule
+  params:
+    data_dir: '../Datasets/'
+    data_root: "../Datasets/data/"
+    batch_size: 2
+    num_workers: 4
+    scale: 0.1
+    dataset: "joint"
+    topk: null
+    normalize: False
+    num_sample: 5
+#
+#model: model
+#diffusion: diffusion,
+#data: data,
+#batch_size: batch_size,
+#microbatch: microbatch,
+#lr: lr,
+#ema_rate: ema_rate,
+#log_interval: log_interval,
+#save_interval: save_interval,
+#resume_checkpoint: resume_checkpoint,
+#use_fp16: use_fp16,
+#fp16_scale_growth: fp16_scale_growth,
+#schedule_sampler: schedule_sampler,
+#weight_decay: weight_decay,
+#lr_anneal_steps: lr_anneal_steps,
+
+
+#schedule_sampler: "uniform",
+#lr: 3e-4,
+#weight_decay: 0.0,
+#lr_anneal_steps: 0,
+#batch_size: 1,
+#microbatch: -1,  # -1 disables microbatches
+#ema_rate: "0.9999",  # comma-separated list of EMA values
+#log_interval: 500,
+#save_interval: 10000,
+#resume_checkpoint: "",
+#use_fp16: False,
+#fp16_scale_growth: 1e-3,
+#model: "MDTv2_S_2",
+#mask_ratio: None,
+#decode_layer: 4,
+#world_size: 1
+
+
+#    defaults.update(model_and_diffusion_defaults())
+#    parser = argparse.ArgumentParser()
+#    parser.add_argument('--world_size', default=1, type=int,
+#                        help='number of distributed processes')
+#    parser.add_argument('--local_rank', default=-1, type=int)
+#    parser.add_argument('--local-rank', default=-1, type=int)
+#    parser.add_argument('--dist_on_itp', action='store_true')
+#    parser.add_argument('--dist_url', default='env://',
+#                        help='url used to set up distributed training')
+#    parser.add_argument(
+#        "--rank", default=0, type=int, help="""rank for distrbuted training."""
+#    )
+#    add_dict_to_argparser(parser, defaults)
+#    return parser

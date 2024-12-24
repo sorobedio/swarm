@@ -1,0 +1,100 @@
+model:
+  base_learning_rate: 5.0e-5   # set to target_lr by starting main.py with '--scale_lr False'
+  target: stage2.models.myldm.LatentDiffusion
+  params:
+    learning_rate: 1.133e-5
+    linear_start: 0.0015
+    linear_end: 0.0155
+    num_timesteps_cond: 1
+    log_every_t: 200
+    timesteps: 1024
+    loss_type: l2
+    first_stage_key: "weight"
+    cond_stage_key: "dataset"
+    conditioning_key: 'y'
+    input_size: 32
+    channels: 1
+    embdim: 4
+    latent_size: 16
+    cond_stage_trainable: False #'concat', 'crossattn'
+    concat_mode: False
+    scale_by_std: True
+    monitor: 'val/loss_simple_ema'
+
+    scheduler_config: # 10000 warmup steps
+      target: stage2.lr_scheduler.LambdaLinearScheduler
+      params:
+        warm_up_steps: [10000]
+        cycle_lengths: [10000000000000]
+        f_start: [1.e-6]
+        f_max: [1.]
+        f_min: [ 1.]
+
+    unet_config:
+      target: stage2.modules.myopenaimodel.UNetModel
+      params:
+        image_size: 32
+        in_channels: 1
+        out_channels: 1
+        num_classes: 10
+        model_channels: 256
+        attention_resolutions: [4, 8]   # 32, 16, 8, 4
+        num_res_blocks: 2
+        channel_mult: [ 1,1,1, 2]  # 32, 16, 8, 4, 2
+        num_heads: 2
+        use_scale_shift_norm: True
+        resblock_updown: True
+
+    first_stage_config:
+      target: stage1.models.autoencoder.VAENoDiscModel
+      params:
+        embed_dim: 4 #128 #64
+        input_key: 'weight'
+        learning_rate: 1.115e-3
+        cond_key: "dataset"
+        ckpt_path: 'checkpoints/stage1/attn_first_stage_llama3_3_8b_instruct.pt'
+        lossconfig:
+          target: stage1.modules.losses.CustomLosses.Myloss
+          params:
+            #        kl_weight: 0.01
+            kl_weight: 0.000001
+        ddconfig:
+          double_z: True
+          tanh_out: False
+          z_channels: 4
+          resolution: 128
+          in_channels: 256
+          my_channels: 256
+          out_ch: 256
+          ch: 128
+          ch_mult: [ 1,1, 1, 2 ]  #num_down = len(ch_mult)-1
+          num_res_blocks: 2
+          attn_resolutions: [ 8 ]
+          dropout: 0.0
+          in_dim: 16384
+          fdim: 16384
+
+
+    cond_stage_config:
+      target: stage2.set_transformer.DatasetEmb.IdentityCondStage
+      params:
+        input_size: 32
+
+
+
+
+
+
+data:
+  target: zooloaders.ldmloader.ZooDataModule
+  params:
+    data_dir: '../../Datasets/'
+    #    data_dir: './zoodata'
+    data_root: "../Datasets/data/"
+    batch_size: 8
+    num_workers: 4
+    scale: 0.125
+    dataset: "joint"
+    topk: null
+    normalize: False
+    num_sample: 5
