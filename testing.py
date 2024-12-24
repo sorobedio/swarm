@@ -867,6 +867,9 @@ if __name__=='__main__':
              only_one_or_two=None, skip_flag=False)
     print(results)
     print('-----evaluated======================================')
+    acc =evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
+                  obj4_save_generation=False)
+    print(acc)
 
 # result_test = evaluate_test("initial_experts/lima", "AbstainQA", "mmlu", 0)
 # print(result_test)
