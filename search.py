@@ -11,7 +11,7 @@ import datetime
 import wandb
 from overall_metrics import overall_metrics
 from merge import lora_merge
-from evaluate import evaluate, evaluate_test, update_only_one_or_two, lora_weight_visualize
+from evaluates import evaluate, evaluate_test, update_only_one_or_two, lora_weight_visualize
 from multiprocessing import Pool
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from datasets import load_dataset
