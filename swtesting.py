@@ -1521,7 +1521,7 @@ def utility_function(wd, layer=None):
         with open(file_path, 'a') as file:
             file.write(header)
             file.write(f'-------iteration--{i}---{acc}----\n')
-        print('****************************************')
+        print(f'***********acc:=={acc}*****************************')
 
         utility_value.append(acc)
 
