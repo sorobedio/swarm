@@ -1553,11 +1553,11 @@ if __name__ == "__main__":
     save_dev_flag = args.save_dev_flag
     only_one_or_two = args.only_one_or_two
 
-    wd = torch.load('wdata/sampled_weights_vae_norm.pt')
+    # wd = torch.load('wdata/sampled_weights_vae_norm.pt')
     # torch.save(wd, 'wdata/sampled_weights_vae_norm.pt')
 
     wacc = []
-    weights = wd['gemma-7b-it']
+    # weights = wd['gemma-7b-it']
 
     # Parameters
     # num_particles = 25
@@ -1579,7 +1579,7 @@ if __name__ == "__main__":
 
 
     # data = torch.load('wdata/dit_sampled_weights_top1.pt')
-    data = torch.load('wdata/mdt_sampled_weights_50_norm.pt')
+    data = torch.load('wdata/sampled_weights_vae_norm.pt')
     # expanded_experts
     layers = list(data)[0]
     weights = data[layers]
@@ -1590,7 +1590,7 @@ if __name__ == "__main__":
 
     # Initialize global best, global worst, and personal bests
     personal_best = weights.clone()
-    utility_values = torch.load('utility_values_arc_c.pt')
+    utility_values = torch.load('wdata/utilities_vae_norm_mmlu.pt')
     # utility_values = torch.load('utilities.pt')[layers]
     utility_values = torch.tensor(utility_values).reshape((-1))
     print(f'-----------{utility_values.shape}------------')
