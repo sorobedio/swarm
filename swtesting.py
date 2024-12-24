@@ -1487,16 +1487,10 @@ def utility_function(wd, layer=None):
     # Example utility function (sum of weights for demonstration)
     num_samples = wd.shape[0]
     utility_value = []
-    # # tokenizer = AutoTokenizer.from_pretrained(model_id)
-    # model = AutoModelForCausalLM.from_pretrained(model_id,
-    #                                              torch_dtype=torch.bfloat16,
-    #                                              device_map=device,
-    #                                              )
-    # layers = list(wd)
-    # num_samples = num_samples
-    # layer = "Llama-3.2-1B-Instruct"
+
     for j in range(num_samples):
         wr = {}
+        print(f'----loading particle---{j}--out of --{num_samples}--')
         # for l in layer:
         wr = wd[j].reshape(-1)
 
