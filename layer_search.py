@@ -421,7 +421,7 @@ if __name__ == "__main__":
     # model_id = "EleutherAI/pythia-70m"
 
     model_id = "google/gemma-7b-it"
-    weights = torch.load(f'../Datasets/llmdata/gemmini_midtral_llmama_norm_model_wise_.pt')
+    weights = torch.load(f'../Datasets/llmdata/gemminillmama_norm_model_wise_.pt')
     print(list(weights))
     # exit()
     #
@@ -443,7 +443,7 @@ if __name__ == "__main__":
 ##############################ffn###################################
     # autoencoder = torch.load('./autocheckpoints/Llama-3.2-1B-Inst_top_2tf_.pth', map_location=device)
     # autoencoder = torch.load('./autocheckpoints/llama-3_2-1B_tf-top4_.pth', map_location=device)
-    autoencoder = torch.load('./autocheckpoints/gemmina_mistral_norm.pth', map_location='cpu')
+    autoencoder = torch.load('./autocheckpoints/gemmina_llama_norm.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/pythia-160m_all_.ckpt')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/pythia_160m_ffn_44step.ckpt')
 
@@ -533,6 +533,7 @@ if __name__ == "__main__":
     for i in range(n):
         wr = {}
         for l in layers:
+            print(f'layer;--{l}---')
         #     # wr[l] = slerp(0.90, weights[l], wd[l][i])
             wr = wd[l][i].reshape(-1)
         # w = ws[i].reshape(-1)
