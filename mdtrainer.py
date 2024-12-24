@@ -58,7 +58,7 @@ def get_parser(**parser_kwargs):
 
         # default="mdt/configs/llama3_1_3_b_norm_config.yaml",#vit_lora_config_kl.yaml
         # default="mdt/configs/pythia_160m_mlp_config.yaml",  #
-        default="mdt/configs/pythia_160m_all_config.yaml",  #
+        default="mdt/configs/gemmina_llama_.yaml",  #
         # default="stage1/configs/vae_vani_config_kl.yaml",
 
     )
