@@ -15,53 +15,55 @@ from safetensors.torch import load_file, save_file
 import random
 # import vertexai
 import warnings
+
+import argparse, os, sys, datetime, glob
+import numpy as np
+import time
+import torch
+import torchvision
+import pytorch_lightning as pl
+from torch.linalg import multi_dot
+from packaging import version
+# from omegaconf import OmegaConf
+import logging
+from torch.utils.data import random_split, DataLoader, Dataset
+from functools import partial
+from PIL import Image
+from helpers.helpers import *
+from pytorch_lightning import seed_everything
+from pytorch_lightning.trainer import Trainer
+from pytorch_lightning.callbacks import Callback
+from pytorch_lightning.callbacks import ModelCheckpoint
+# from pytorch_lightning.utilities.distributed import rank_zero_only
+from pytorch_lightning.utilities.rank_zero import rank_zero_only
+from pytorch_lightning.utilities import rank_zero_info
+from zoodatasets.basedatasets import ZooDataset
+from zoodatasets.chunkdatasets import ZooDataset
+# from zoodatasets.autodatasets import ZooDataset
+# from zoodatasets.chunkdatasets import ZooDataset
+# from zoodatasets.tinydatasets import ZooDataset
+from helpers.misc import progress_bar
+# from data.base import Txt2ImgIterableBaseDataset
+from utils.util import instantiate_from_config
+
+from torch.optim import lr_scheduler
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+
+
+def load_model_config(file):
+    with open(file, 'r') as file:
+        config = yaml.safe_load(file)
+    return config
+
+
 # from vertexai.generative_models import GenerativeModel, GenerationConfig, SafetySetting, HarmCategory, \
 #     HarmBlockThreshold
 
 ICL_PROMPT = None
 model = None
 tokenizer = None
-# provide your own perspective API key through google cloud
-# PERSPECTIVE_API_KEY = None
-# perspective_already_warned = False
-#
-# try:
-#     client = discovery.build(
-#         "commentanalyzer",
-#         "v1alpha1",
-#         developerKey=PERSPECTIVE_API_KEY,
-#         discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
-#         static_discovery=False,
-#     )
-# except:
-#     if not perspective_already_warned:
-#         warnings.warn(
-#             "Ignore this if not running RealToxicityPrompts evaluation: provide your own perspective API key through google cloud. Check out line 23.")
-#         perspective_already_warned = True
-#
-# multitask_domain_dataset_dict = {
-#     "legal": ["hearsay", "citation_prediction_classification"],
-#     "medical": ["medqa", "medmcqa"],
-#     "science": ["scifact", "stem"],
-#     "culture": ["normad_country", "normad_value"],
-# }
 
-# # setting up Vertex AI API for Gemini model access, for objective 4
-#
-# # please provide your own project_id
-# project_id = None
-# location_list = ["us-east5", "us-south1", "us-central1", "us-west4", "us-east1", "us-east4", "us-west1"]
-# location = random.choice(location_list)
-# vertex_already_warned = False
-# try:
-#     vertexai.init(project=project_id, location=location)
-#     gemini_model = GenerativeModel("gemini-1.5-flash-001")
-#     generationConfig = GenerationConfig(temperature=0, max_output_tokens=20)
-# except:
-#     if not vertex_already_warned:
-#         warnings.warn(
-#             "Ignore this if not running objective 4: human preferences: provide your own project_id for Vertex AI API access. Check out line 49.")
-#         vertex_already_warned = True
 
 ONLY_ONE_OR_TWO = None
 
@@ -265,117 +267,12 @@ def evaluate(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b
     # except:
     #     del model
     #     del tokenizer
-    model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16)
-    model.to(f"cuda:{gpu_id}")
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
-    tokenizer.pad_token = tokenizer.eos_token
+    # model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16)
+    # model.to(f"cuda:{gpu_id}")
+    # tokenizer = AutoTokenizer.from_pretrained(model_path)
+    # tokenizer.pad_token = tokenizer.eos_token
 
-    # prompt = "What is the capital of France? Answer:"
-    # input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to("cuda")
-    # output = model.generate(input_ids, max_new_tokens=10)
-    # print(tokenizer.decode(output[0], skip_special_tokens=True))
 
-    # # objective 4: human interests
-    # if eval_type == "human":
-    #     eval_data = json.load(open("data/eval/" + dataset + ".json"))["dev"]
-    #     scores = []
-    #
-    #     # hard-defined batch_size for human interests objective
-    #     BATCH_SIZE = 1
-    #
-    #     prompts = []
-    #     for obj in eval_data:
-    #         prompts.append(obj["prompt"])
-    #
-    #     outputs = batch_generate_chat_template(model, tokenizer, prompts, gpu_id, batch_size=BATCH_SIZE,
-    #                                            max_new_tokens=512)
-    #
-    #     for i in tqdm(range(len(prompts))):
-    #         scores.append(gemini_eval(prompts[i], outputs[i]))
-    #         if scores[-1] == None:
-    #             # format error, lowest score assigned
-    #             scores[-1] = 1
-    #
-    #     if save_dev_flag:
-    #         with open(model_path + "/scores_dev.json", "w") as f:
-    #             json.dump(scores, f)
-    #     # utility function value is the average of Gemini-as-a-judge ratings across all prompts
-    #     return sum(scores) / len(scores)
-    #
-    # # objective 3: reward models
-    # if eval_type in ["rm_default", "rm_concise", "rm_verbose", "rm_reverse"]:
-    #     # rm_default: optimizing for default reward model, it's like alignment
-    #     # rm_concise: optimizing for an average of reward model score and conciseness score
-    #     # rm_verbose: optimizing for an average of reward model score and verbosity score
-    #     # rm_reverse: optimizing for the reverse reward model scores, as a dual-use risk investigation
-    #
-    #     try:
-    #         assert dataset == "rm"
-    #     except:
-    #         warnings.warn(
-    #             "Reward modeling evaluation should be done on the reward modeling dataset. We provide by default data/eval/rm.json for this purpose.")
-    #         warnings.warn("If you are bringing your own dataset, follow the format in data/eval/rm.json.")
-    #
-    #     val_data = json.load(open("data/eval/" + dataset + ".json"))["dev"]
-    #
-    #     # hard-defined batch_size for reward modeling objective, reduce if OOM
-    #     BATCH_SIZE = 10
-    #
-    #     prompts = []
-    #     for obj in val_data:
-    #         prompts.append(obj["prompt"])
-    #
-    #     # max_new_tokens is set to 200 to ensure the fair calculation of concise/verbose percentile scores
-    #     outputs = batch_generate(model, tokenizer, prompts, gpu_id, batch_size=BATCH_SIZE, max_new_tokens=200)
-    #
-    #     del model
-    #     del tokenizer
-    #     torch.cuda.empty_cache()
-    #
-    #     rm_mode = None
-    #     for mode in ["default", "concise", "verbose", "reverse"]:
-    #         if mode in eval_type:
-    #             rm_mode = mode
-    #             break
-    #
-    #     pairs = []
-    #     assert len(prompts) == len(outputs)
-    #     for i in range(len(prompts)):
-    #         pairs.append(
-    #             [
-    #                 {"role": "user", "content": prompts[i]},
-    #                 {"role": "assistant", "content": outputs[i]}
-    #             ]
-    #         )
-    #
-    #     scores_list = reward_modeling.get_reward_scores(pairs, gpu_id, rm_mode)
-    #     if save_dev_flag:
-    #         with open(model_path + "/scores_dev.json", "w") as f:
-    #             json.dump(scores_list, f)
-    #     # utility function value is the average of reward model scores across all prompts
-    #     return sum(scores_list) / len(scores_list)
-    #
-    # # task 2: multi-task domains
-    # elif eval_type == "multitask":  # medical, legal, science, culture
-    #     per_dataset_scores = []
-    #     eval_datasets = multitask_domain_dataset_dict[dataset][:2]
-    #     for eval_dataset in eval_datasets:
-    #         if eval_dataset in ["nlgraph", "gsm8k", "xstreet_ar", "xstreet_es"]:
-    #             per_dataset_scores.append(evaluate(model_path, "exact_match", eval_dataset, gpu_id, save_dev_flag=True))
-    #         else:
-    #             per_dataset_scores.append(
-    #                 evaluate(model_path, "multiple_choice", eval_dataset, gpu_id, save_dev_flag=True))
-    #     assert len(per_dataset_scores) == 2
-    #     if sum(per_dataset_scores) == 0:
-    #         per_dataset_scores = [0.01, 0.01]  # dummy scores
-    #     harmonic_mean = 2 * per_dataset_scores[0] * per_dataset_scores[1] / (
-    #                 per_dataset_scores[0] + per_dataset_scores[1])
-    #     if only_one_or_two == "one":
-    #         return per_dataset_scores[0]
-    #     elif only_one_or_two == "two":
-    #         return per_dataset_scores[1]
-    #     # utility function value is the harmonic mean of the two scores on two datasets
-    #     return harmonic_mean
 
     # task 1: single task, multiple choice questions
     if eval_type == "multiple_choice":
@@ -556,18 +453,18 @@ def evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gem
 
     only_one_or_two = ONLY_ONE_OR_TWO
 
-    try:
-        model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.bfloat16)
-        model.load_adapter(model_path)
-        model.to(f"cuda:{gpu_id}")
-        tokenizer = AutoTokenizer.from_pretrained(base_model)
-    except:
-        del model
-        del tokenizer
-        model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16)
-        model.to(f"cuda:{gpu_id}")
-        tokenizer = AutoTokenizer.from_pretrained(model_path)
-    tokenizer.pad_token = tokenizer.eos_token
+    # try:
+    #     model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.bfloat16)
+    #     model.load_adapter(model_path)
+    #     model.to(f"cuda:{gpu_id}")
+    #     tokenizer = AutoTokenizer.from_pretrained(base_model)
+    # except:
+    #     del model
+    #     del tokenizer
+    #     model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16)
+    #     model.to(f"cuda:{gpu_id}")
+    #     tokenizer = AutoTokenizer.from_pretrained(model_path)
+    # tokenizer.pad_token = tokenizer.eos_token
 
     # prompt = "What is the capital of France? Answer:"
     # input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to("cuda")
@@ -853,21 +750,134 @@ def get_parser():
 
     return parser
 
+
+
+
+def add_to_config(mydict, cfl="./Experiments/stage1/configs/base_config_imnet_kl.yaml"):
+    with open(cfl, 'w') as configfile:
+        data = yaml.dump(mydict, configfile, indent=4, sort_keys=False)
+        print("Write successful")
+
+
+def load_config(file_path):
+    with open(file_path, "r") as f:
+        return yaml.safe_load(f)
+
+
+def m_collate(batch):
+    sample = {}
+
+    data = [item['weight'] for item in batch]
+
+    data = torch.cat(data, 0).type(torch.float32)
+
+    return data
+
+
+def pad_to_chunk_multiple(x, chunk_size):
+    shape = x.shape
+    if len(shape) < 2:
+        x = x.unsqueeze(0)
+        shape = x.shape
+    max_in = chunk_size * math.ceil(shape[1] / chunk_size)
+    if max_in > shape[1]:
+        delta1 = max_in - shape[1]
+        x = F.pad(x, (0, delta1, 0, 0), "constant", 0)
+    return x
+from helpers.helpers import *
+import lm_eval
+# from transformers import AutoTokenizer, AutoModelForCausalLM
+from lm_eval import evaluator, utils
+from lm_eval.evaluator import request_caching_arg_to_dict
+from lm_eval.loggers import EvaluationTracker, WandbLogger
+from lm_eval.tasks import TaskManager
+from lm_eval.utils import handle_non_serializable, make_table, simple_parse_args_string
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from lm_eval.models.huggingface import HFLM
+import random
+import numpy as np
+import pandas as pd
+from tqdm import tqdm
+
 if __name__=='__main__':
-    parser = get_parser()
-    args = parser.parse_args()
-    model_path = args.model_path
-    eval_type = args.eval_type
-    dataset = args.dataset
-    gpu_id = args.gpu_id
-    base_model = args.base_model
-    save_dev_flag = args.save_dev_flag
-    only_one_or_two = args.only_one_or_two
-    results = evaluate(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", save_dev_flag=False,
-             only_one_or_two=None, skip_flag=False)
-    print(results)
-    print('-----evaluated======================================')
-    acc =evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
-                  obj4_save_generation=False)
-    print(acc)
+
+    default_seed_string = "0,1234,1234,1234"
+
+    # random_seed= default_seed_string[0]
+    # numpy_random_seed= default_seed_string[1]
+    # torch_random_seed= default_seed_string[2]
+    # fewshot_random_seed= default_seed_string[3]
+    random_seed = 0
+    numpy_random_seed = 1234
+    torch_random_seed = 1234
+    fewshot_random_seed = 1234
+
+    seed_message = []
+    if random_seed is not None:
+        # See https://github.com/EleutherAI/lm-evaluation-harness/pull/1412
+        seed_message.append(f"Setting random seed to {random_seed}")
+        random.seed(int(random_seed))
+
+    if numpy_random_seed is not None:
+        seed_message.append(f"Setting numpy seed to {numpy_random_seed}")
+        np.random.seed(int(numpy_random_seed))
+
+    if torch_random_seed is not None:
+        seed_message.append(f"Setting torch manual seed to {torch_random_seed}")
+        torch.manual_seed(int(torch_random_seed))
+
+    device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+    print('=============loading model================')
+
+
+    model_id = "google/gemma-7b-it"
+
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    model = AutoModelForCausalLM.from_pretrained(model_id,
+                                                 # revision='step143000',
+                                                 # attn_implementation="flash_attention_2",
+                                                 torch_dtype=torch.bfloat16,
+                                                 device_map=device,
+                                                 )
+    tokenizer.pad_token = tokenizer.eos_token
+    # torch.save(wd, 'wdata/sampled_weights_lmhead.pt')
+    wd = torch.load('./wdata/sampled_1_.pt')
+
+    wacc = []
+    n = ws.shape[0]
+    for i in range(n):
+        l = 'gemma-7b-it'
+        wr = {}
+        # ['gemma-7b-it', 'Llama-3.2-3B-Instruct']
+        # for l in layers:
+        #     print(f'layer;--{l}---')
+        #     # wr[l] = slerp(0.90, weights[l], wd[l][i])
+        wr = wd[l][i].reshape(-1)
+        # w = ws[i].reshape(-1)
+
+        std = model.state_dict()
+        # model=set_model_weights(model, w)
+        # for w in ws:ws[i
+        std = set_layer_state_dict(std, wr, layer='norm')
+        # model.load_state_dict(std)
+
+        model.load_state_dict(set_layers_state_dict(std, lw))
+        # del wd
+
+        parser = get_parser()
+        args = parser.parse_args()
+        model_path = args.model_path
+        eval_type = args.eval_type
+        dataset = args.dataset
+        gpu_id = args.gpu_id
+        base_model = args.base_model
+        save_dev_flag = args.save_dev_flag
+        only_one_or_two = args.only_one_or_two
+        results = evaluate(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", save_dev_flag=False,
+                 only_one_or_two=None, skip_flag=False)
+        print(results)
+        print('-----evaluated======================================')
+        acc =evaluate_test(model, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
+                      obj4_save_generation=False)
+        print(acc)
 

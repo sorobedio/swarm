@@ -452,7 +452,7 @@ if __name__ == "__main__":
     autoencoder.eval()
     wd ={}
 
-    num_samples = 15
+    num_samples = 20
     latent_shape = (num_samples, 4, 16, 16)
     # latent_shape = (num_samples, 4, 32, 32)
     zweights = {}
@@ -525,7 +525,7 @@ if __name__ == "__main__":
                                                  torch_dtype=torch.bfloat16,
                                                  device_map=device,
                                                  )
-    # torch.save(wd, 'wdata/sampled_weights_lmhead.pt')
+    torch.save(wd, 'wdata/sampled_weights_vae_norm.pt')
     # wd = torch.load('./wdata/sampled_1_.pt')
 
     wacc =[]
