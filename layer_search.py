@@ -619,3 +619,9 @@ if __name__ == "__main__":
 # |winogrande|      1|none  |     5|acc   |↑  |0.5193|±  | 0.014|
 #
 
+# |  Tasks   |Version|Filter|n-shot|Metric|   |Value |   |Stderr|
+# |----------|------:|------|-----:|------|---|-----:|---|-----:|
+# |winogrande|      1|none  |     5|acc   |↑  |0.5067|±  |0.0141|
+
+
+
