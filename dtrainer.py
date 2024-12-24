@@ -238,7 +238,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         if bloss > tloss:
             bloss = tloss
             print(f'saving best training loss is:{bloss}')
-            torch.save(model, os.path.join(args.save_path,f'gemmina_llama_norm.pth'))
+            torch.save(model, os.path.join(args.save_path,f'gemmina_llama_raw_norm.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
 
@@ -301,7 +301,7 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=0.1, normalize='min_max')
+                          scale=0.5, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
     traindataloader = DataLoader(trainset, shuffle=True, batch_size=1, num_workers=4,
