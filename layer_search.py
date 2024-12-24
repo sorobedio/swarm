@@ -562,8 +562,8 @@ if __name__ == "__main__":
             model=lm_eval_model,
             tasks=["winogrande"],
             num_fewshot=5,
-            # apply_chat_template=True,
-            # fewshot_as_multiturn=True,
+            apply_chat_template=True,
+            fewshot_as_multiturn=True,
             # output_base_path="results_Out",
             task_manager=task_manager,
         )
@@ -613,6 +613,9 @@ if __name__ == "__main__":
         # del model
         # del lm_eval_model
         # del results
-
-
+#
+# |  Tasks   |Version|Filter|n-shot|Metric|   |Value |   |Stderr|
+# |----------|------:|------|-----:|------|---|-----:|---|-----:|
+# |winogrande|      1|none  |     5|acc   |↑  |0.5193|±  | 0.014|
+#
 
