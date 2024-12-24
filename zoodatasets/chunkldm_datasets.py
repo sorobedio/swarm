@@ -34,7 +34,7 @@ def pad_to_chunk_multiple(x, chunk_size):
 class ZooDataset(Dataset):
     """weights dataset."""
     def __init__(self, root='zoodata', dataset="joint", split='train', topk=None, scale=1.0, num_sample=5,  transform=None, normalize=False,
-                 max_len=2536296):
+                 max_len=175104):
         super(ZooDataset, self).__init__()
         #1048576,   4194304
         self.num_sample = num_sample
@@ -45,11 +45,13 @@ class ZooDataset(Dataset):
         self.normalize = normalize
         self.chunk_size = max_len
         self.scale=scale
+
+        datapath = os.path.join(root, f'llmdata/gemminillmama_norm_model_wise_.pt')
         #4194304
         #1048576
         # datapath = os.path.join(root, f'llmdata/llama_3_2_1b_3b_inst_norm__.pt')
         # datapath = os.path.join(root, f'modelszoo/pythia_160m_mlp_100000_143000.pt') #2362368
-        datapath = os.path.join(root, f'modelszoo/pythia_160m_full_13000_by_143000_b16_.pt')  #
+        # datapath = os.path.join(root, f'modelszoo/pythia_160m_full_13000_by_143000_b16_.pt')  #
         # f'modelszoo/pythia_160m_mlp_100000_143000.pt')2362368
 
         #
@@ -143,7 +145,7 @@ class ZooDataset(Dataset):
 
             data = w
         # torch.save(asc, '../../Datasets/llama_weights/pythia_413_160M_labels.pt')
-        torch.save(asc, '../Datasets/llmdata/pythia_160m_mlps_44steps_labels.pt')
+        torch.save(asc, '../Datasets/llmdata/gemmma_llama_labels.pt')
 
         target= torch.tensor(target, dtype=torch.long)
         return data, target
