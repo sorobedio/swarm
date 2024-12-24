@@ -834,15 +834,6 @@ if __name__=='__main__':
                                                  device_map=device,
                                                  )
     tokenizer.pad_token = tokenizer.eos_token
-    parser = get_parser()
-    args = parser.parse_args()
-    model_path = args.model_path
-    eval_type = args.eval_type
-    dataset = args.dataset
-    gpu_id = args.gpu_id
-    base_model = args.base_model
-    save_dev_flag = args.save_dev_flag
-    only_one_or_two = args.only_one_or_two
     # torch.save(wd, 'wdata/sampled_weights_lmhead.pt')
     wd = torch.load('wdata/sampled_weights_vae_norm.pt')
     # torch.save(wd, 'wdata/sampled_weights_vae_norm.pt')
@@ -850,7 +841,6 @@ if __name__=='__main__':
     wacc = []
     weights =wd['gemma-7b-it']
     n= weights.shape[0]
-    utilities =[]
     for i in range(n):
         wr = weights[i]
         std = model.state_dict()
@@ -862,16 +852,20 @@ if __name__=='__main__':
         # model.load_state_dict(set_layers_state_dict(std, lw))
         # del wd
 
-
+        parser = get_parser()
+        args = parser.parse_args()
+        model_path = args.model_path
+        eval_type = args.eval_type
+        dataset = args.dataset
+        gpu_id = args.gpu_id
+        base_model = args.base_model
+        save_dev_flag = args.save_dev_flag
+        only_one_or_two = args.only_one_or_two
         results = evaluate(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", save_dev_flag=False,
                  only_one_or_two=None, skip_flag=False)
-
-        results =results*100.0
-        utilities.append(results)
         print(results)
-        # print('-----evaluated======================================')
-        # acc =evaluate_test(model, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
-        #               obj4_save_generation=False)
-        # print(acc)
-    torch.save(utilities, 'wdata/utilities_vae_norm_mmlu.pt')
+        print('-----evaluated======================================')
+        acc =evaluate_test(model, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
+                      obj4_save_generation=False)
+        print(acc)
 
