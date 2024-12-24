@@ -485,15 +485,15 @@ if __name__ == "__main__":
             for w in tqdm(weight):
                 w = w / scale
                 w = w.to(device)
-                _, x_rec, prior = autoencoder(w)
+                # _, x_rec, prior = autoencoder(w)
                 # print(prior.mean.shape, prior.std.shape)
                 # print(w.shape, x_rec.shape)
                 # exit()
 
-                # ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
-                # zs = ze.detach().cpu().float()
+                ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
+                zs = ze.detach().cpu().float()
                 # zp.append(zs)
-                # x_rec =  autoencoder.decode(ze)
+                x_rec =  autoencoder.decode(ze)
                 #
                 wl.append(x_rec.detach().cpu())
         # zweights[layer] = torch.cat(zp, dim=1).reshape(num_samples, -1)
@@ -578,21 +578,21 @@ if __name__ == "__main__":
         current_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # Create the header with asterisks and the date
-        header = f"\n{'*' * 40}\n{current_date}\n{'*' * 40}\n"
-        file_path = 'logfiles/winollama3_3b_results_top1.txt'
-
-        # df = pd.DataFrame.from_dict(results['results'], orient='index')
-        # df = df.dropna(subset=['acc_norm,none'])
-        # tdf, acc = apply_operation(df, 0.25, 1.0)
-        # # print(tdf)
-        # print(f'average results is:{acc}')
-        # res = f'average results is:{acc}'
-
-        # Append the header and the Markdown table to the file
-        with open(file_path, 'a') as file:
-            file.write(header)
-            file.write(mtable)
-            file.write('\n')  # Add a new line at the end
+        # header = f"\n{'*' * 40}\n{current_date}\n{'*' * 40}\n"
+        # file_path = 'logfiles/winollama3_3b_results_top1.txt'
+        #
+        # # df = pd.DataFrame.from_dict(results['results'], orient='index')
+        # # df = df.dropna(subset=['acc_norm,none'])
+        # # tdf, acc = apply_operation(df, 0.25, 1.0)
+        # # # print(tdf)
+        # # print(f'average results is:{acc}')
+        # # res = f'average results is:{acc}'
+        #
+        # # Append the header and the Markdown table to the file
+        # with open(file_path, 'a') as file:
+        #     file.write(header)
+        #     file.write(mtable)
+        #     file.write('\n')  # Add a new line at the end
 
         print('****************************************')
         if "groups" in results:
