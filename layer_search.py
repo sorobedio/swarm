@@ -427,7 +427,7 @@ if __name__ == "__main__":
     #
     # chunk_size =2362368
     # chunk_size = 1100416
-    chunk_size=266240
+    chunk_size=175104
     # chunk_size = 2156032
     scale = 0.1
     # chunk_size = 58720256
