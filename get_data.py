@@ -380,7 +380,7 @@ if __name__=='__main__':
     #     "EleutherAI/pythia-70m-deduped",
     #     revision="step143000",
     # )
-    modellist=["google/gemma-7b-it", "meta-llama/Llama-3.2-3B-Instruct", "mistralai/Mistral-7B-Instruct-v0.3"]
+    modellist=["google/gemma-7b-it", "meta-llama/Llama-3.2-3B-Instruct"]
 
 
     #
@@ -422,7 +422,7 @@ if __name__=='__main__':
         # exit()
         # weights.update(w) #67584
         weights[k] = we
-    torch.save(weights, '../Datasets/llmdata/gemmini_midtral_llmama_norm_model_wise_.pt')  # 1498482688
+    torch.save(weights, '../Datasets/llmdata/gemminillmama_norm_model_wise_.pt')  # 1498482688
     print(len(weights))
     exit()
     #HuggingFaceTB/SmolLM2-135M-Instruct
