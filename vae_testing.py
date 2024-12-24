@@ -48,6 +48,7 @@ from utils.util import instantiate_from_config
 
 from torch.optim import lr_scheduler
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 
 
@@ -785,15 +786,15 @@ def pad_to_chunk_multiple(x, chunk_size):
         x = F.pad(x, (0, delta1, 0, 0), "constant", 0)
     return x
 from helpers.helpers import *
-import lm_eval
-# from transformers import AutoTokenizer, AutoModelForCausalLM
-from lm_eval import evaluator, utils
-from lm_eval.evaluator import request_caching_arg_to_dict
-from lm_eval.loggers import EvaluationTracker, WandbLogger
-from lm_eval.tasks import TaskManager
-from lm_eval.utils import handle_non_serializable, make_table, simple_parse_args_string
-from transformers import AutoModelForCausalLM, AutoTokenizer
-from lm_eval.models.huggingface import HFLM
+# import lm_eval
+from transformers import AutoTokenizer, AutoModelForCausalLM
+# from lm_eval import evaluator, utils
+# from lm_eval.evaluator import request_caching_arg_to_dict
+# from lm_eval.loggers import EvaluationTracker, WandbLogger
+# from lm_eval.tasks import TaskManager
+# from lm_eval.utils import handle_non_serializable, make_table, simple_parse_args_string
+# from transformers import AutoModelForCausalLM, AutoTokenizer
+# from lm_eval.models.huggingface import HFLM
 import random
 import numpy as np
 import pandas as pd
@@ -807,26 +808,26 @@ if __name__=='__main__':
     # numpy_random_seed= default_seed_string[1]
     # torch_random_seed= default_seed_string[2]
     # fewshot_random_seed= default_seed_string[3]
-    random_seed = 0
-    numpy_random_seed = 1234
-    torch_random_seed = 1234
-    fewshot_random_seed = 1234
+    # random_seed = 0
+    # numpy_random_seed = 1234
+    # torch_random_seed = 1234
+    # fewshot_random_seed = 1234
+    #
+    # seed_message = []
+    # if random_seed is not None:
+    #     # See https://github.com/EleutherAI/lm-evaluation-harness/pull/1412
+    #     seed_message.append(f"Setting random seed to {random_seed}")
+    #     random.seed(int(random_seed))
+    #
+    # if numpy_random_seed is not None:
+    #     seed_message.append(f"Setting numpy seed to {numpy_random_seed}")
+    #     np.random.seed(int(numpy_random_seed))
+    #
+    # if torch_random_seed is not None:
+    #     seed_message.append(f"Setting torch manual seed to {torch_random_seed}")
+    #     torch.manual_seed(int(torch_random_seed))
 
-    seed_message = []
-    if random_seed is not None:
-        # See https://github.com/EleutherAI/lm-evaluation-harness/pull/1412
-        seed_message.append(f"Setting random seed to {random_seed}")
-        random.seed(int(random_seed))
-
-    if numpy_random_seed is not None:
-        seed_message.append(f"Setting numpy seed to {numpy_random_seed}")
-        np.random.seed(int(numpy_random_seed))
-
-    if torch_random_seed is not None:
-        seed_message.append(f"Setting torch manual seed to {torch_random_seed}")
-        torch.manual_seed(int(torch_random_seed))
-
-    device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print('=============loading model================')
 
 
