@@ -155,7 +155,7 @@ if __name__ == "__main__":
     # print(f'dataset {ds.dataset}')
     checkpoint_callback = ModelCheckpoint(monitor='mse_epoch',
                                           dirpath='dit_checkpoints/',
-                                          filename='checkpoint_mdt_pythia_all_4_{epoch}_',
+                                          filename='checkpoint_mdt_gemma_lama{epoch}_',
                                           every_n_epochs=10
                                           )
     trainer = pl.Trainer(accelerator="gpu", devices=-1, min_epochs=1000,

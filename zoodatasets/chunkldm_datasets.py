@@ -95,6 +95,11 @@ class ZooDataset(Dataset):
                 w = data[k].squeeze()
                 # j=0
                 # print(w.shape)
+                x_max = w.max()
+                x_min = w.min()
+                w = 2 * (w - x_min) / (x_max - x_min) - 1
+
+
                 w=pad_to_chunk_multiple(w, chunk_size=self.chunk_size)
                 n=w.shape[0]
                 w = torch.split(w, split_size_or_sections=self.chunk_size, dim=-1)
