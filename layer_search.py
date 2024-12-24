@@ -531,24 +531,22 @@ if __name__ == "__main__":
     wacc =[]
     n = ws.shape[0]
     for i in range(n):
-        # wr = {}
-        # for l in layers:
+        wr = {}
+        for l in layers:
         #     # wr[l] = slerp(0.90, weights[l], wd[l][i])
-        #     wr[l] = wd[l][i].reshape(-1)
-        w = ws[i].reshape(-1)
+            wr = wd[l][i].reshape(-1)
+        # w = ws[i].reshape(-1)
+
         std = model.state_dict()
-        model=set_model_weights(model, w)
+        # model=set_model_weights(model, w)
         # for w in ws:ws[i
-        # std =   set_layers_state_dict(std, wr)
+        std =   set_layer_state_dict(std, wr, layer='norm')
         # model.load_state_dict(std)
 
 
-        # model.load_state_dict(set_layers_state_dict(std, lw))
+        model.load_state_dict(set_layers_state_dict(std, lw))
         # del wd
-        # --apply_chat_template \
-        # - -fewshot_as_multiturn \
-            #attn_implementation="flash_attention_2"\
-    # --tasks leaderboard_musr\
+
         # del weight
         print('---------evaluating model-----------------------------')
 
