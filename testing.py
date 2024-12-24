@@ -265,7 +265,7 @@ def evaluate(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b
     # except:
     #     del model
     #     del tokenizer
-    model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16)
+    model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16)
     model.to(f"cuda:{gpu_id}")
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     tokenizer.pad_token = tokenizer.eos_token
