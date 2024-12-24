@@ -422,7 +422,7 @@ if __name__ == "__main__":
     #gemmini_mistral_norm_model_wise_.pt
 
     model_id = "google/gemma-7b-it"
-    weights = torch.load(f'../Datasets/llmdata/gemmini_mistral_norm_model_wise_.pt')
+    weights = torch.load(f'../Datasets/llmdata/gemmini_midtral_llmama_norm_model_wise_.pt')
     print(list(weights))
     # exit()
     #
