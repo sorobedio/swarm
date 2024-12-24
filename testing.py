@@ -557,14 +557,14 @@ def evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gem
     only_one_or_two = ONLY_ONE_OR_TWO
 
     try:
-        model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
+        model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.bfloat16)
         model.load_adapter(model_path)
         model.to(f"cuda:{gpu_id}")
         tokenizer = AutoTokenizer.from_pretrained(base_model)
     except:
         del model
         del tokenizer
-        model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16)
+        model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16)
         model.to(f"cuda:{gpu_id}")
         tokenizer = AutoTokenizer.from_pretrained(model_path)
     tokenizer.pad_token = tokenizer.eos_token
@@ -593,13 +593,13 @@ def evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gem
             if scores[-1] == None:
                 scores[-1] = 1
 
-        if obj4_save_generation:
-            save_name = model_path.split("/")[-1] + "_" + eval_type + "_" + dataset
-            with open("data/outputs/" + save_name + ".json", "w") as f:
-                json.dump({"outputs": outputs}, f, indent=4)
-
-        with open(model_path + "/scores.json", "w") as f:
-            json.dump(scores, f)
+        # if obj4_save_generation:
+        #     save_name = model_path.split("/")[-1] + "_" + eval_type + "_" + dataset
+        #     with open("data/outputs/" + save_name + ".json", "w") as f:
+        #         json.dump({"outputs": outputs}, f, indent=4)
+        #
+        # with open(model_path + "/scores.json", "w") as f:
+        #     json.dump(scores, f)
         return sum(scores) / len(scores)
 
     # objective 3: reward models
@@ -820,10 +820,10 @@ def evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gem
             else:
                 abstain_flags.append(0)
 
-        with open(model_path + "/golds.json", "w") as f:
-            json.dump(correct_flags, f)
-        with open(model_path + "/preds.json", "w") as f:
-            json.dump([1 - flag for flag in abstain_flags], f)
+        # with open(model_path + "/golds.json", "w") as f:
+        #     json.dump(correct_flags, f)
+        # with open(model_path + "/preds.json", "w") as f:
+        #     json.dump([1 - flag for flag in abstain_flags], f)
 
         # print(golds)
         # print(preds)
