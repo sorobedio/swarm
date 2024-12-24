@@ -855,7 +855,7 @@ if __name__=='__main__':
         std = set_layer_state_dict(std, wr, layer='norm')
         # model.load_state_dict(std)
 
-        model.load_state_dict(set_layers_state_dict(std, lw))
+        # model.load_state_dict(set_layers_state_dict(std, lw))
         # del wd
 
         parser = get_parser()
