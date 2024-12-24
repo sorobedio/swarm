@@ -1,118 +1,98 @@
-from dataclasses import dataclass
-from typing import Dict, List, Optional, Union
 import json
 import torch
+from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from sklearn.metrics import accuracy_score
-from pathlib import Path
-import logging
-from torch.cuda import Device
 
 
-@dataclass
-class EvaluationConfig:
-    model_path: str
-    dataset: str
-    gpu_id: int
-    batch_size: int = 10
-    max_new_tokens: int = 512
-    base_model: str = "google/gemma-7b-it"
+def batch_generate(model, tokenizer, prompts, gpu_id, batch_size=10, max_new_tokens=10):
+    num_batches = (len(prompts) + batch_size - 1) // batch_size
+    outputs = []
+
+    for i in tqdm(range(num_batches)):
+        batch = prompts[i * batch_size: (i + 1) * batch_size]
+        input_ids = tokenizer(batch, return_tensors="pt", padding=True).input_ids.to(f"cuda:{gpu_id}")
+        output = model.generate(input_ids, max_new_tokens=max_new_tokens, do_sample=False)
+
+        for j in range(len(batch)):
+            outputs.append(tokenizer.decode(output[j][len(input_ids[j]):], skip_special_tokens=True).strip())
+
+        del input_ids, output
+        torch.cuda.empty_cache()
+
+    return outputs
 
 
-class ModelEvaluator:
-    def __init__(self, config: EvaluationConfig):
-        self.config = config
-        self.device = torch.device(f"cuda:{config.gpu_id}")
-        self._setup_model()
+def multiple_choice_prompt(instance_dict, dataset):
+    prompt = f"Question: {instance_dict['question']}\n"
+    if dataset != "knowledge_crosswords":
+        prompt = "Please choose an option that best answers the question.\n" + prompt
+    for key, val in instance_dict['choices'].items():
+        prompt += f"{key}: {val}\n"
+    return prompt + "The answer is"
 
-    def _setup_model(self) -> None:
-        """Initialize model and tokenizer."""
-        try:
-            self.model = AutoModelForCausalLM.from_pretrained(
-                self.config.model_path,
-                torch_dtype=torch.bfloat16
-            ).to(self.device)
-            self.tokenizer = AutoTokenizer.from_pretrained(self.config.model_path)
-            self.tokenizer.pad_token = self.tokenizer.eos_token
-        except Exception as e:
-            logging.error(f"Model initialization failed: {e}")
-            raise
 
-    def evaluate_multiple_choice(self, split: str = "dev") -> float:
-        """Evaluate model on multiple choice questions."""
-        data = self._load_dataset(split)
-        prompts = [self._format_mc_prompt(q) for q in data]
-        outputs = self._generate_batch(prompts)
+def multiple_choice_answer_parsing(instance_dict, output_text):
+    for key in instance_dict['choices']:
+        if key in output_text[:5] or key in output_text[-5:]:
+            return key
+        if instance_dict['choices'][key].lower() in output_text.lower():
+            return key
+    return "Z"
 
-        golds = [q["answer"] for q in data]
-        preds = [self._parse_mc_answer(q, out) for q, out in zip(data, outputs)]
+
+def evaluate(model_path, dataset, gpu_id, eval_type="multiple_choice", split="dev"):
+    model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16)
+    model.to(f"cuda:{gpu_id}")
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    tokenizer.pad_token = tokenizer.eos_token
+
+    with open(f"data/eval/{dataset}.json") as f:
+        eval_data = json.load(f)[split]
+
+    if eval_type == "multiple_choice":
+        prompts = [multiple_choice_prompt(q, dataset) for q in eval_data]
+        outputs = batch_generate(model, tokenizer, prompts, gpu_id)
+
+        golds = []
+        preds = []
+        for q, out in zip(eval_data, outputs):
+            golds.append(q["answer"])
+            preds.append(multiple_choice_answer_parsing(q, out))
 
         return accuracy_score(golds, preds)
 
-    def _generate_batch(self, prompts: List[str]) -> List[str]:
-        """Generate responses for a batch of prompts."""
-        outputs = []
-        for i in range(0, len(prompts), self.config.batch_size):
-            batch = prompts[i:i + self.config.batch_size]
-            input_ids = self.tokenizer(
-                batch,
-                return_tensors="pt",
-                padding=True
-            ).input_ids.to(self.device)
+    elif eval_type == "exact_match":
+        prompts = [q["question"] for q in eval_data]
+        max_tokens = 200 if dataset == "gsm8k" else 10
+        batch_size = 5 if dataset == "nlgraph" else 10
 
-            with torch.no_grad():
-                output_ids = self.model.generate(
-                    input_ids,
-                    max_new_tokens=self.config.max_new_tokens,
-                    do_sample=False
-                )
+        outputs = batch_generate(model, tokenizer, prompts, gpu_id,
+                                 batch_size=batch_size, max_new_tokens=max_tokens)
 
-            for j in range(len(batch)):
-                decoded = self.tokenizer.decode(
-                    output_ids[j][len(input_ids[j]):],
-                    skip_special_tokens=True
-                ).strip()
-                outputs.append(decoded)
+        if dataset == "gsm8k":
+            outputs = [" ".join(out.split()[-5:]) for out in outputs]
 
-        return outputs
-
-    def _load_dataset(self, split: str) -> List[Dict]:
-        """Load evaluation dataset."""
-        path = Path("data/eval") / f"{self.config.dataset}.json"
-        with open(path) as f:
-            return json.load(f)[split]
-
-    @staticmethod
-    def _format_mc_prompt(question: Dict) -> str:
-        """Format multiple choice question prompt."""
-        prompt = f"Question: {question['question']}\n"
-        for key, value in question['choices'].items():
-            prompt += f"{key}: {value}\n"
-        prompt += "The answer is"
-        return prompt
-
-    @staticmethod
-    def _parse_mc_answer(question: Dict, output: str) -> str:
-        """Parse model output for multiple choice answer."""
-        for key in question["choices"]:
-            if key in output[:5] or key in output[-5:]:
-                return key
-            if question["choices"][key].lower() in output.lower():
-                return key
-        return "Z"  # Invalid/no answer
-
-
-def main():
-    config = EvaluationConfig(
-        model_path="google/gemma-7b-it",
-        dataset="mmlu",
-        gpu_id=0
-    )
-
-    evaluator = ModelEvaluator(config)
-    result = evaluator.evaluate_multiple_choice()
-    print(f"Evaluation result: {result:.4f}")
+        scores = [1 if q["answer"] in out else 0 for q, out in zip(eval_data, outputs)]
+        return sum(scores) / len(scores)
 
 
 if __name__ == "__main__":
-    main()
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser()
+    parser.add_argument("--model_path", default="google/gemma-7b-it")
+    parser.add_argument("--dataset", default="mmlu")
+    parser.add_argument("--gpu_id", type=int, default=0)
+    parser.add_argument("--eval_type", default="multiple_choice")
+
+    args = parser.parse_args()
+
+    # determisnistic model behavior for reproducibility
+    seed = 42
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
+    print(f"Result: {evaluate(args.model_path, args.dataset, args.gpu_id, args.eval_type):.4f}")
