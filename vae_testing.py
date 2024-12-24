@@ -841,20 +841,14 @@ if __name__=='__main__':
                                                  )
     tokenizer.pad_token = tokenizer.eos_token
     # torch.save(wd, 'wdata/sampled_weights_lmhead.pt')
-    wd = torch.load('./wdata/sampled_1_.pt')
+    wd = torch.load('wdata/sampled_weights_vae_norm.pt')
+    # torch.save(wd, 'wdata/sampled_weights_vae_norm.pt')
 
     wacc = []
-    n = ws.shape[0]
+    weights =wd['gemma-7b-it']
+    n= weights.shape[0]
     for i in range(n):
-        l = 'gemma-7b-it'
-        wr = {}
-        # ['gemma-7b-it', 'Llama-3.2-3B-Instruct']
-        # for l in layers:
-        #     print(f'layer;--{l}---')
-        #     # wr[l] = slerp(0.90, weights[l], wd[l][i])
-        wr = wd[l][i].reshape(-1)
-        # w = ws[i].reshape(-1)
-
+        wr = weights[i]
         std = model.state_dict()
         # model=set_model_weights(model, w)
         # for w in ws:ws[i
