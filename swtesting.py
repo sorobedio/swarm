@@ -1495,10 +1495,10 @@ def utility_function(wd, layer=None):
     # layers = list(wd)
     # num_samples = num_samples
     # layer = "Llama-3.2-1B-Instruct"
-    for i in range(num_samples):
+    for j in range(num_samples):
         wr = {}
         # for l in layer:
-        wr = wd[i].reshape(-1)
+        wr = wd[j].reshape(-1)
 
         std = model.state_dict()
 
@@ -1520,8 +1520,8 @@ def utility_function(wd, layer=None):
         # Append the header and the Markdown table to the file
         with open(file_path, 'a') as file:
             file.write(header)
-            file.write(f'-------iteration--{i}---{acc}----\n')
-        print(f'******{i}*****acc:=={acc}*****************************')
+            file.write(f'-------iteration--{j}---{acc}----\n')
+        print(f'******{j}*****acc:=={acc}*****************************')
 
         utility_value.append(acc)
 
