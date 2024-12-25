@@ -1539,7 +1539,7 @@ def utility_function(wd, layer=None):
 
             std = model.state_dict()
 
-            std = set_layer_state_dict(std, wr, layer='norm')
+            std = set_layer_state_dict(std, wr.reshape(-1), layer='norm')
             model.load_state_dict(std)
 
             # std = set_layers_state_dict(std, wr)
@@ -1568,7 +1568,7 @@ def utility_function(wd, layer=None):
         wr = 0.5 * (wr + 1) * (x_max - x_min) + x_min
         std = model.state_dict()
 
-        std = set_layer_state_dict(std, wr, layer='norm')
+        std = set_layer_state_dict(std, wr.reshape(-1), layer='norm')
         model.load_state_dict(std)
 
         # std = set_layers_state_dict(std, wr)
