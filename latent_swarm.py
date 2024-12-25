@@ -1528,11 +1528,42 @@ def utility_function(wd, layer=None):
     num_samples = wd.shape[0]
     utility_value = []
 
-    for j in range(num_samples):
-        wr = {}
-        print(f'----loading particle---{j}--out of --{num_samples}--')
+    if len(wd.shape) >1:
+        for j in range(num_samples):
+            wr = {}
+            print(f'----loading particle---{j}--out of --{num_samples}--')
+            # for l in layer:
+            wr = wd[j].reshape(-1)
+            wr = lmmodel.decode_first_stage(wr)
+            wr = 0.5*(wr+1)*(x_max-x_min)+x_min
+
+            std = model.state_dict()
+
+            std = set_layer_state_dict(std, wr, layer='norm')
+            model.load_state_dict(std)
+
+            # std = set_layers_state_dict(std, wr)
+            # model.load_state_dict(std)
+
+            print('---------evaluating model-----------------------------')
+
+            acc = evaluate(model_path, eval_type, dataset, gpu_id)*100
+
+            # Get the current date and format it
+            current_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            # Create the header with asterisks and the date
+            header = f"\n{'*' * 40}\n{current_date}\n{'*' * 40}\n"
+            file_path = 'logfiles/swamarc_llamaparticles_results_v2.txt'
+            # Append the header and the Markdown table to the file
+            with open(file_path, 'a') as file:
+                file.write(header)
+                file.write(f'-------iteration--{j}---{acc}----\n')
+            print(f'******{j}*****acc:=={acc}*****************************')
+
+            utility_value.append(acc)
+    else:
         # for l in layer:
-        wr = wd[j].reshape(-1)
+        wr = wd.reshape(-1)
 
         std = model.state_dict()
 
@@ -1544,7 +1575,7 @@ def utility_function(wd, layer=None):
 
         print('---------evaluating model-----------------------------')
 
-        acc = evaluate(model_path, eval_type, dataset, gpu_id)*100
+        acc = evaluate(model_path, eval_type, dataset, gpu_id) * 100
 
         # Get the current date and format it
         current_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -1598,6 +1629,9 @@ if __name__ == "__main__":
     ldmmodel.to(device)
     ldmmodel.eval()
 
+    x_min = -4.0
+    x_max = 20.1250
+
     # wd = torch.load('wdata/sampled_weights_vae_norm.pt')
     # torch.save(wd, 'wdata/sampled_weights_vae_norm.pt')
 
@@ -1625,7 +1659,7 @@ if __name__ == "__main__":
 
     # data = torch.load('wdata/dit_sampled_weights_top1.pt')
     # data = torch.load('wdata/sampled_weights_vae_norm.pt')
-    data = torch.load('wdata/mdt_sampled_weights_25_norm_gem.pt')
+    data = torch.load('particles/mdt_latent_weights_20_norm_gem.pt')
     # expanded_experts
     layers = list(data)[0]
     weights = data[layers]
@@ -1728,7 +1762,7 @@ if __name__ == "__main__":
         print(f'iteration------{k}--finished--')
 
     # Output the best-found expert (global best)
-    torch.save(weights, f"./particles/mmlu_swarm_weights_final.pt")
+    torch.save(weights, f"./particles/mmlu_pro_swarm_weights_final.pt")
     # print("Best-found weights (global best):", global_best)
-    torch.save(global_best, f"./psrticles/mmlu_swarm_global_best_top_1.pt")
+    torch.save(global_best, f"./psrticles/mmlu_pro_swarm_global_best_top_1.pt")
     print("Utility of best-found weights:", utility_function(global_best.unsqueeze(0), layers))
