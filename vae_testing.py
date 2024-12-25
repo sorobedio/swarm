@@ -848,7 +848,8 @@ if __name__=='__main__':
     # torch.save(wd, 'wdata/sampled_weights_vae_norm.pt')
 
     wacc = []
-    weights =wd['gemma-7b-it']
+    # weights =wd['gemma-7b-it']
+    weights = wd
     n= weights.shape[0]
     utilities =[]
     for i in range(n):
