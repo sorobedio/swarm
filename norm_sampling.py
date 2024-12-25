@@ -861,7 +861,7 @@ if __name__=='__main__':
         xc = torch.tensor(xc, device=device)
         samples = ldmmodel.condsample(y=xc)
         weights = samples.detach().cpu() * scale
-        weights =0.5*(weights+1)(w.max() - w.min()) + w.min()
+        weights =0.5*(weights+1)*(w.max() - w.min()) + w.min()
     wd[layer] = weights
     print(f'finished encoding=========================================')
     torch.save(wd, 'wdata/mdt_sampled_weights_25_norm_gem.pt')
