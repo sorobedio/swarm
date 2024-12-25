@@ -823,8 +823,8 @@ if __name__=='__main__':
     save_dev_flag = args.save_dev_flag
     only_one_or_two = args.only_one_or_two
 
-    # wd = torch.load('wdata/mmlu_swarm_weights_final.pt')
-    wd = torch.load('particles/mmlu_swarm_weights_final.pt')
+    wd = torch.load('wdata/gemm_hella_swarm_weights_24.pt')
+    # wd = torch.load('particles/mmlu_swarm_weights_final.pt')
     # wd = torch.load('wdata/sampled_weights_vae_norm.pt')
     # wd = torch.load('wdata/mdt_sampled_weights_25_norm_gem.pt')
 
