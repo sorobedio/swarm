@@ -844,7 +844,7 @@ if __name__=='__main__':
     save_dev_flag = args.save_dev_flag
     only_one_or_two = args.only_one_or_two
     # torch.save(wd, 'wdata/sampled_weights_lmhead.pt')
-    wd = torch.load('wdata/sampled_weights_vae_norm.pt')
+    wd = torch.load('wdata/llama3_mmlu_swarm_weights_.pt')
     # torch.save(wd, 'wdata/sampled_weights_vae_norm.pt')
 
     wacc = []
@@ -870,8 +870,8 @@ if __name__=='__main__':
         utilities.append(results)
         print(results)
         # print('-----evaluated======================================')
-        # acc =evaluate_test(model, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
-        #               obj4_save_generation=False)
-        # print(acc)
-    torch.save(utilities, 'wdata/utilities_vae_norm_mmlu.pt')
+        acc =evaluate_test(model, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
+                      obj4_save_generation=False)
+        print(acc*100.0)
+    # torch.save(utilities, 'wdata/utilities_vae_norm_mmlu.pt')
 
