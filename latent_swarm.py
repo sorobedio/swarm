@@ -1708,10 +1708,15 @@ if __name__ == "__main__":
         # Iterate through each particle and update positions and velocities
         for i in range(num_particles):
             # Sample random factors for inertia, cognitive, social, and repel terms
-            r_v = torch.rand(1).item()
-            r_p = torch.rand(1).item()
-            r_g = torch.rand(1).item()
-            r_w = torch.rand(1).item()
+            # r_v = torch.rand(1).item()
+            # r_p = torch.rand(1).item()
+            # r_g = torch.rand(1).item()
+            # r_w = torch.rand(1).item()
+            r_v=1.0
+            r_w = 1
+            r_p = 1
+            r_s = 1
+            r_b = 1
 
             # Update velocity according to the formula
             inertia_term = r_v * varphi_v * velocities[i]
