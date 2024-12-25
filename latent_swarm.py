@@ -1534,7 +1534,7 @@ def utility_function(wd, layer=None):
             print(f'----loading particle---{j}--out of --{num_samples}--')
             # for l in layer:
             wr = wd[j].reshape(-1)
-            wr = ldmmodel.decode_first_stage(wr)
+            wr = ldmmodel.decode_first_stage(wr.to(device))
             wr = 0.5*(wr+1)*(x_max-x_min)+x_min
 
             std = model.state_dict()
@@ -1564,7 +1564,8 @@ def utility_function(wd, layer=None):
     else:
         # for l in layer:
         wr = wd.reshape(-1)
-
+        wr = ldmmodel.decode_first_stage(wr.to(device))
+        wr = 0.5 * (wr + 1) * (x_max - x_min) + x_min
         std = model.state_dict()
 
         std = set_layer_state_dict(std, wr, layer='norm')
