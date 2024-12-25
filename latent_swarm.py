@@ -1642,7 +1642,7 @@ if __name__ == "__main__":
     # Parameters
     # num_particles = 20
     # weight_dim = 1000  # Dimensionality for each weight vector
-    lambda_step = 1.0  # Step length
+    lambda_step = 0.01  # Step length
     varphi_lambda = 0.95  # Step length schedule
     varphi_v = 0.4  # Inertia
     varphi_p = 0.3  # Cognitive coefficient
