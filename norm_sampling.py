@@ -748,6 +748,18 @@ def get_parser():
                         help="Restrict to processing only one or two items")
     parser.add_argument("--skip_flag", action="store_true", default=False,
                         help="Whether to skip certain processing steps")
+    parser.add_argument(
+        "-b",
+        "--base",
+        nargs="*",
+        metavar="base_config.yaml",
+        help="paths to base configs. Loaded from left-to-right. "
+             "Parameters can be overwritten or added with command-line options of the form `--key value`.",
+        # default="stage2/configs/small_norm_base_config.yaml",
+        default="mdt/configs/gemmina_llama_.yaml",  #
+        # default="stage2/configs/norm_base_config.yaml",
+        # default="stage2/configs/small_norm_base_config.yaml",
+    )
 
     return parser
 
@@ -794,21 +806,58 @@ import pandas as pd
 from tqdm import tqdm
 
 if __name__=='__main__':
-
-    default_seed_string = "0,1234,1234,1234"
-
-
-
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print('=============loading model================')
-
-
     model_id = "google/gemma-7b-it"
+    config = load_config(arg.base)
+
+    conds = torch.load('../Datasets/llmdata/gemmma_llama_labels.pt')
+    # conds = torch.load('../../Datasets/llama3_weights/chunk_attn_llma3_labels.pt')
+    # chunk_size =1048576
+    chunk_size = 3072
+    # chunk_size=524288
+    scale = 0.1
+
+    print("============================================================")
+    layers = list(conds)
+
+    lw = {}
+
+    # ###################norm mini layers######################
+    ldmmodel = instantiate_from_config(config['model'])
+    # ldmmodel = instantiate_from_config(config.model)
+    # std = torch.load('./ldm_checkpoints/checkpoint_model_layer_norm_llama3-1-8b_epoch=5904_.ckpt')['state_dict']
+
+    std = torch.load('./dit_checkpoints/checkpoint_mdt_gemma_lamaepoch=19739_.ckpt')['state_dict']
+    ldmmodel.load_state_dict(std)
+    ldmmodel = ldmmodel.to(device)
+    ldmmodel.to(device)
+    ldmmodel.eval()
+
+    wg = torch.load(f'../Datasets/llmdata/gemminillmama_norm_model_wise_.pt')
+    wd = {}
+    num_samples = 15
+    batches = 15
+    n =  num_samples // batches
+    weight_dicts={}
+
+        # latent_shape = (num_samples, 4, 8, 8)
+    weights=None
+    for layer in layers:
+        w = wg[layer]
+        xc = [conds[layer]] * num_samples
+        xc = torch.tensor(xc, device=device)
+        samples = ldmmodel.condsample(y=xc)
+        weights = samples.detach().cpu() * scale
+        weights =0.5*(weights+1)(w.max() - w.min()) + w.min()
+    wd[layer] = weights
+    print(f'finished encoding=========================================')
+    torch.save(wd, 'wdata/mdt_sampled_weights_25_norm_gem.pt')
+    del ldmmodel
+    del xc
 
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForCausalLM.from_pretrained(model_id,
-                                                 # revision='step143000',
-                                                 # attn_implementation="flash_attention_2",
                                                  torch_dtype=torch.bfloat16,
                                                  device_map=device,
                                                  )
@@ -823,12 +872,12 @@ if __name__=='__main__':
     save_dev_flag = args.save_dev_flag
     only_one_or_two = args.only_one_or_two
     # torch.save(wd, 'wdata/sampled_weights_lmhead.pt')
-    wd = torch.load('wdata/llama3_mmlu_swarm_weights_.pt')
+    wd = torch.load('wdata/mdt_sampled_weights_25_norm.pt')
     # torch.save(wd, 'wdata/sampled_weights_vae_norm.pt')
 
     wacc = []
-    # weights =wd['gemma-7b-it']
-    weights = wd
+    weights =wd['gemma-7b-it']
+    # weights = wd
     n= weights.shape[0]
     utilities =[]
     for i in range(n):

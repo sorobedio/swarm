@@ -1673,6 +1673,7 @@ if __name__ == "__main__":
         # Step length scheduling: λ = λ * φλ
         lambda_step = lambda_step * varphi_lambda
         torch.save(weights, f"./wdata/llama3_mmlu_swarm_weights_.pt")
+        print(f'iteration------{k}--finished--')
 
     # Output the best-found expert (global best)
     # torch.save(weights, f"./wdata/llama3_arc_swarm_weights_.pt")
