@@ -855,15 +855,17 @@ if __name__=='__main__':
     n =  num_samples // batches
     weight_dicts={}
     zweights ={}
-
+#tensor(-4., dtype=torch.bfloat16) tensor(20.1250, dtype=torch.bfloat16) gemma-7b-it
+    #x_min=-4.0,
+    #x_max = 20.1250
         # latent_shape = (num_samples, 4, 8, 8)
     weights=None
     for layer in layers:
-        w = wg[layer]
+        w = wg[layer].float()
         xc = [conds[layer]] * num_samples
         xc = torch.tensor(xc, device=device)
         zq,samples = ldmmodel.condsample(y=xc, return_z=True)
-        zq = zq.detach().cpu().reshape(num_samples, -1)
+        zq = zq.detach().cpu().reshape(num_samples, -1).float()
         weights = samples.detach().cpu() * scale
         weights =0.5*(weights+1)*(w.max() - w.min()) + w.min()
         print(w.min(),w.max(), layer)
