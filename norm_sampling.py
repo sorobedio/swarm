@@ -850,7 +850,7 @@ if __name__=='__main__':
 
     wg = torch.load(f'../Datasets/llmdata/gemminillmama_norm_model_wise_.pt')
     wd = {}
-    num_samples = 15
+    num_samples = 20
     batches = 15
     n =  num_samples // batches
     weight_dicts={}
