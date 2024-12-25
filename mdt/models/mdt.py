@@ -464,7 +464,7 @@ class MDT(pl.LightningModule):
         for param_group in self.opt.param_groups:
             param_group["lr"] = lr
 
-    def condsample(self, y, N=1, x_start=None, retrun_z=False):
+    def condsample(self, y, N=1, x_start=None, return_z=False):
         print(f'Conditionally sampling {len(y)} samples')
         if isinstance(y, list):
             if N > 1 and len(y) == 1:
@@ -484,7 +484,7 @@ class MDT(pl.LightningModule):
             progress=True, device=self.device
         )
         samples = self.decode_first_stage(zq)
-        if retrun_z:
+        if return_z:
             return zq, samples
         else:
             return samples
