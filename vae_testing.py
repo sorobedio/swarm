@@ -855,5 +855,5 @@ if __name__=='__main__':
         acc =evaluate_test(model, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
                       obj4_save_generation=False)
         print(acc*100.0)
-    torch.save(utilities, 'wdata/utilities_mdt_norm_hellaswag.pt')
+    torch.save(utilities, 'wdata/utilities_mdt_norm_mmlu_pro.pt')
 

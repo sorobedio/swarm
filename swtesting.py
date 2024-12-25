@@ -30,7 +30,7 @@ import argparse, os, sys, datetime, glob
 torch.set_grad_enabled(False)
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 
 
 
@@ -1586,7 +1586,7 @@ if __name__ == "__main__":
 
     # Initialize global best, global worst, and personal bests
     personal_best = weights.clone()
-    utility_values = torch.load('wdata/utilities_mdt_norm_hellaswag.pt')
+    utility_values = torch.load('wdata/utilities_mdt_norm_mmlu_pro.pt')
     # utility_values = torch.load('utilities.pt')[layers]
     utility_values = torch.tensor(utility_values).reshape((-1))
     print(f'-----------{utility_values.shape}------------')
@@ -1673,11 +1673,11 @@ if __name__ == "__main__":
 
         # Step length scheduling: λ = λ * φλ
         lambda_step = lambda_step * varphi_lambda
-        torch.save(weights, f"./wdata/gemm_hella_swarm_weights_{k}.pt")
+        torch.save(weights, f"./wdata/gemm_mmlu_pro_swarm_weights_{k}.pt")
         print(f'iteration------{k}--finished--')
 
     # Output the best-found expert (global best)
     # torch.save(weights, f"./wdata/llama3_arc_swarm_weights_.pt")
     # print("Best-found weights (global best):", global_best)
-    torch.save(global_best, f"./wdata/hella_swarm_global_best_top_1.pt")
+    torch.save(global_best, f"./wdata/mmlu_pro_swarm_global_best_top_1.pt")
     print("Utility of best-found weights:", utility_function(global_best.unsqueeze(0), layers))
