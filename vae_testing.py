@@ -830,7 +830,7 @@ if __name__=='__main__':
 
     wacc = []
     weights =wd['gemma-7b-it']
-    weights = wd
+    # weights = wd
     n= weights.shape[0]
     utilities =[]
     for i in range(n):
