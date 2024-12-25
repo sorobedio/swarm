@@ -833,6 +833,7 @@ if __name__=='__main__':
     print("============================================================")
     layers = list(conds)
     print(layers)
+    exit()
 
     lw = {}
 
