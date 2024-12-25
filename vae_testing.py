@@ -823,7 +823,8 @@ if __name__=='__main__':
     save_dev_flag = args.save_dev_flag
     only_one_or_two = args.only_one_or_two
 
-    wd = torch.load('wdata/gemm_mmlu_pro_swarm_weights_24.pt')
+    # wd = torch.load('wdata/mmlu_swarm_weights_final.pt')
+    wd = torch.load('particles/mmlu_swarm_weights_final.pt')
     # wd = torch.load('wdata/sampled_weights_vae_norm.pt')
     # wd = torch.load('wdata/mdt_sampled_weights_25_norm_gem.pt')
 
@@ -834,6 +835,7 @@ if __name__=='__main__':
     n= weights.shape[0]
     print(n)
     utilities =[]
+    accs =[]
     for i in range(n):
         wr = weights[i]
         std = model.state_dict()
@@ -850,11 +852,13 @@ if __name__=='__main__':
                  only_one_or_two=None, skip_flag=False)
 
         results =results*100.0
-        utilities.append(results)
+        # utilities.append(results)
         print(results)
         # # print('-----evaluated======================================')
         acc =evaluate_test(model, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
                       obj4_save_generation=False)
         print(acc*100.0)
-    # torch.save(utilities, 'wdata/utilities_mdt_norm_mmlu_pro.pt')
+        accs.append(acc*100)
+    # torch.save(utiliti**es, 'wdata/utilities_mdt_norm_mmlu_pro.pt')
+    print(sorted(accs, reverse=True))
 
