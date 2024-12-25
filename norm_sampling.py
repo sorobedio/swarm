@@ -871,7 +871,7 @@ if __name__=='__main__':
 
 
     # torch.save(wd, 'wdata/sampled_weights_lmhead.pt')
-    wd = torch.load('wdata/mdt_sampled_weights_25_norm.pt')
+    wd = torch.load('wdata/mdt_sampled_weights_25_norm_gem.pt')
     # torch.save(wd, 'wdata/sampled_weights_vae_norm.pt')
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForCausalLM.from_pretrained(model_id,
