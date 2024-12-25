@@ -57,7 +57,7 @@ import argparse, os, sys, datetime, glob
 torch.set_grad_enabled(False)
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 
 
@@ -1644,7 +1644,7 @@ if __name__ == "__main__":
     # Parameters
     # num_particles = 20
     # weight_dim = 1000  # Dimensionality for each weight vector
-    lambda_step = 0.01  # Step length
+    lambda_step = 1  # Step length
     varphi_lambda = 0.95  # Step length schedule
     varphi_v = 0.4  # Inertia
     varphi_p = 0.3  # Cognitive coefficient
@@ -1710,16 +1710,16 @@ if __name__ == "__main__":
         # Iterate through each particle and update positions and velocities
         for i in range(num_particles):
             # Sample random factors for inertia, cognitive, social, and repel terms
-            # r_v = torch.rand(1).item()
-            # r_p = torch.rand(1).item()
-            # r_g = torch.rand(1).item()
-            # r_w = torch.rand(1).item()
-            r_v=1.0
-            r_w = 1
-            r_p = 1
-            r_s = 1
-            r_b = 1
-            r_g=1.0
+            r_v = torch.rand(1).item()
+            r_p = torch.rand(1).item()
+            r_g = torch.rand(1).item()
+            r_w = torch.rand(1).item()
+            # r_v=1.0
+            # r_w = 1
+            # r_p = 1
+            # r_s = 1
+            # r_b = 1
+            # r_g=1.0
 
             # Update velocity according to the formula
             inertia_term = r_v * varphi_v * velocities[i]
@@ -1771,7 +1771,7 @@ if __name__ == "__main__":
         print(f'iteration------{k}--finished--')
 
     # Output the best-found expert (global best)
-    torch.save(weights, f"./particles/mmlu_pro_swarm_weights_final.pt")
+    torch.save(weights, f"./particles/mmlu_pro_swarm_weights_final_v2.pt")
     # print("Best-found weights (global best):", global_best)
-    torch.save(global_best, f"./psrticles/mmlu_pro_swarm_global_best_top_1.pt")
+    torch.save(global_best, f"./psrticles/mmlu_pro_swarm_global_best_top_1_v2.pt")
     print("Utility of best-found weights:", utility_function(global_best.unsqueeze(0), layers))
