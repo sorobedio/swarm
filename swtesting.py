@@ -1556,15 +1556,15 @@ if __name__ == "__main__":
     # Parameters
     # num_particles = 20
     # weight_dim = 1000  # Dimensionality for each weight vector
-    lambda_step = 0.1  # Step length
+    lambda_step = 0.05  # Step length
     varphi_lambda = 0.95  # Step length schedule
-    varphi_v = 0.9  # Inertia
-    varphi_p = 0.5  # Cognitive coefficient
-    varphi_g = 0.4  # Social coefficient
-    varphi_w = 0.3  # Repel coefficient
-    patience = 10  # Number of iterations to wait for no improvement in global best
-    restart_patience = 5  # Number of iterations for particle restart
-    max_iterations = 50  # Maximum number of iterations
+    varphi_v = 0.3  # Inertia
+    varphi_p = 0.3  # Cognitive coefficient
+    varphi_g = 0.5  # Social coefficient0
+    varphi_w = 0.05  # Repel coefficient
+    patience = 8  # Number of iterations to wait for no improvement in global best
+    restart_patience = 4  # Number of iterations for particle restart
+    max_iterations = 25  # Maximum number of iterations
 
 
     # acc = results['results']['hellaswag']['acc_norm,none']
@@ -1573,7 +1573,8 @@ if __name__ == "__main__":
 
 
     # data = torch.load('wdata/dit_sampled_weights_top1.pt')
-    data = torch.load('wdata/sampled_weights_vae_norm.pt')
+    # data = torch.load('wdata/sampled_weights_vae_norm.pt')
+    data = torch.load('wdata/mdt_sampled_weights_25_norm_gem.pt')
     # expanded_experts
     layers = list(data)[0]
     weights = data[layers]
@@ -1585,7 +1586,7 @@ if __name__ == "__main__":
 
     # Initialize global best, global worst, and personal bests
     personal_best = weights.clone()
-    utility_values = torch.load('wdata/utilities_vae_norm_mmlu.pt')
+    utility_values = torch.load('wdata/utilities_mdt_norm_hellaswag.pt')
     # utility_values = torch.load('utilities.pt')[layers]
     utility_values = torch.tensor(utility_values).reshape((-1))
     print(f'-----------{utility_values.shape}------------')
@@ -1672,7 +1673,7 @@ if __name__ == "__main__":
 
         # Step length scheduling: λ = λ * φλ
         lambda_step = lambda_step * varphi_lambda
-        torch.save(weights, f"./wdata/llama3_mmlu_swarm_weights_.pt")
+        torch.save(weights, f"./wdata/llama3_mmlu_swarm_weights_{k}.pt")
         print(f'iteration------{k}--finished--')
 
     # Output the best-found expert (global best)
