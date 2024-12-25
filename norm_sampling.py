@@ -800,6 +800,7 @@ def pad_to_chunk_multiple(x, chunk_size):
 from helpers.helpers import *
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
+from utils.util import instantiate_from_config
 import random
 import numpy as np
 import pandas as pd
@@ -809,7 +810,18 @@ if __name__=='__main__':
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print('=============loading model================')
     model_id = "google/gemma-7b-it"
-    config = load_config(arg.base)
+    parser = get_parser()
+    args = parser.parse_args()
+
+    model_path = args.model_path
+    eval_type = args.eval_type
+    dataset = args.dataset
+    gpu_id = args.gpu_id
+    base_model = args.base_model
+    save_dev_flag = args.save_dev_flag
+    only_one_or_two = args.only_one_or_two
+
+    config = load_config(args.base)
 
     conds = torch.load('../Datasets/llmdata/gemmma_llama_labels.pt')
     # conds = torch.load('../../Datasets/llama3_weights/chunk_attn_llma3_labels.pt')
@@ -856,24 +868,17 @@ if __name__=='__main__':
     del ldmmodel
     del xc
 
+
+
+    # torch.save(wd, 'wdata/sampled_weights_lmhead.pt')
+    wd = torch.load('wdata/mdt_sampled_weights_25_norm.pt')
+    # torch.save(wd, 'wdata/sampled_weights_vae_norm.pt')
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForCausalLM.from_pretrained(model_id,
                                                  torch_dtype=torch.bfloat16,
                                                  device_map=device,
                                                  )
     tokenizer.pad_token = tokenizer.eos_token
-    parser = get_parser()
-    args = parser.parse_args()
-    model_path = args.model_path
-    eval_type = args.eval_type
-    dataset = args.dataset
-    gpu_id = args.gpu_id
-    base_model = args.base_model
-    save_dev_flag = args.save_dev_flag
-    only_one_or_two = args.only_one_or_two
-    # torch.save(wd, 'wdata/sampled_weights_lmhead.pt')
-    wd = torch.load('wdata/mdt_sampled_weights_25_norm.pt')
-    # torch.save(wd, 'wdata/sampled_weights_vae_norm.pt')
 
     wacc = []
     weights =wd['gemma-7b-it']
@@ -887,10 +892,6 @@ if __name__=='__main__':
         # for w in ws:ws[i
         std = set_layer_state_dict(std, wr, layer='norm')
         model.load_state_dict(std)
-
-        # model.load_state_dict(set_layers_state_dict(std, lw))
-        # del wd
-
 
         results = evaluate(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", save_dev_flag=False,
                  only_one_or_two=None, skip_flag=False)
