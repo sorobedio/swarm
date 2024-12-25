@@ -1717,6 +1717,7 @@ if __name__ == "__main__":
             r_p = 1
             r_s = 1
             r_b = 1
+            r_g=1.0
 
             # Update velocity according to the formula
             inertia_term = r_v * varphi_v * velocities[i]
