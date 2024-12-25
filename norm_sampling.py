@@ -854,6 +854,7 @@ if __name__=='__main__':
     batches = 15
     n =  num_samples // batches
     weight_dicts={}
+    zweights ={}
 
         # latent_shape = (num_samples, 4, 8, 8)
     weights=None
@@ -861,19 +862,23 @@ if __name__=='__main__':
         w = wg[layer]
         xc = [conds[layer]] * num_samples
         xc = torch.tensor(xc, device=device)
-        samples = ldmmodel.condsample(y=xc)
+        zq,samples = ldmmodel.condsample(y=xc, return_z=True)
+        zq = zq.detach().cpu().reshape(num_samples, -1)
         weights = samples.detach().cpu() * scale
         weights =0.5*(weights+1)*(w.max() - w.min()) + w.min()
+        print(w.min(),w.max(), layer)
         wd[layer] = weights
+        zweights[layer] = zq
     print(f'finished encoding=========================================')
-    torch.save(wd, 'wdata/mdt_sampled_weights_25_norm_gem.pt')
+    torch.save(wd, 'wdata/mdt_sampled_weights_20_norm_gem.pt')
+    torch.save(zweights, 'particles/mdt_latent_weights_20_norm_gem.pt')
     del ldmmodel
     del xc
 
 
 
     # torch.save(wd, 'wdata/sampled_weights_lmhead.pt')
-    wd = torch.load('wdata/mdt_sampled_weights_25_norm_gem.pt')
+    wd = torch.load('wdata/mdt_sampled_weights_20_norm_gem.pt')
     # torch.save(wd, 'wdata/sampled_weights_vae_norm.pt')
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForCausalLM.from_pretrained(model_id,
@@ -886,6 +891,7 @@ if __name__=='__main__':
     weights =wd['gemma-7b-it']
     # weights = wd
     n= weights.shape[0]
+    zws ={}
     utilities =[]
     for i in range(n):
         wr = weights[i]

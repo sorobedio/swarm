@@ -464,7 +464,7 @@ class MDT(pl.LightningModule):
         for param_group in self.opt.param_groups:
             param_group["lr"] = lr
 
-    def condsample(self, y, N=1, x_start=None):
+    def condsample(self, y, N=1, x_start=None, retrun_z=False):
         print(f'Conditionally sampling {len(y)} samples')
         if isinstance(y, list):
             if N > 1 and len(y) == 1:
@@ -479,11 +479,14 @@ class MDT(pl.LightningModule):
         # print(f'batch size----{N}---{y.shape}--==============================================')
         model_kwargs = dict(y=y)
         shape = (N, self.channels, self.input_size, self.input_size)
-        samples = self.diffusion.p_sample_loop(
+        zq = self.diffusion.p_sample_loop(
             self.model.forward, shape, x_start, clip_denoised=False, model_kwargs=model_kwargs,
             progress=True, device=self.device
         )
-        samples = self.decode_first_stage(samples)
-        return samples
+        samples = self.decode_first_stage(zq)
+        if retrun_z:
+            return zq, samples
+        else:
+            return samples
 
 
