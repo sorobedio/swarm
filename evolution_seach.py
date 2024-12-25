@@ -1689,6 +1689,18 @@ def evolutionary_search(weights, utility_function, layers,
 if __name__ == "__main__":
     parser = get_parser()
     args = parser.parse_args()
+    # Parameters
+    # num_particles = 20
+    # weight_dim = 1000  # Dimensionality for each weight vector
+    lambda_step = 0.01  # Step length
+    varphi_lambda = 0.95  # Step length schedule
+    varphi_v = 0.4  # Inertia
+    varphi_p = 0.3  # Cognitive coefficient
+    varphi_g = 0.3  # Social coefficient0
+    varphi_w = 0.3  # Repel coefficient
+    patience = 8  # Number of iterations to wait for no improvement in global best
+    restart_patience = 4  # Number of iterations for particle restart
+    max_iterations = 25  # Maximum number of iterations
 
     # Setup models and data (same as original code)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
