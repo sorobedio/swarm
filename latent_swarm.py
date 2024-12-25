@@ -1535,6 +1535,7 @@ def utility_function(wd, layer=None):
             # for l in layer:
             wr = wd[j].reshape(-1)
             wr = ldmmodel.decode_first_stage(wr.to(device))
+            wr = wr * 0.1
             wr = 0.5*(wr+1)*(x_max-x_min)+x_min
 
             std = model.state_dict()
@@ -1565,6 +1566,7 @@ def utility_function(wd, layer=None):
         # for l in layer:
         wr = wd.reshape(-1)
         wr = ldmmodel.decode_first_stage(wr.to(device))
+        wr = wr * 0.1
         wr = 0.5 * (wr + 1) * (x_max - x_min) + x_min
         std = model.state_dict()
 

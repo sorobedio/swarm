@@ -1565,7 +1565,9 @@ def utility_function(wd, layer=None):
         # for l in layer:
         wr = wd.reshape(-1)
         wr = ldmmodel.decode_first_stage(wr.to(device))
+        wr =wr*0.1
         wr = 0.5 * (wr + 1) * (x_max - x_min) + x_min
+
         std = model.state_dict()
 
         std = set_layer_state_dict(std, wr.reshape(-1), layer='norm')
@@ -1674,7 +1676,7 @@ def evolutionary_search(weights, utility_function, layers,
         population = torch.cat(new_population)[:population_size]
 
         # Save intermediate results
-        torch.save(population, f"./particles/mmlu_pro_evo_weights_{generation}.pt")
+        # torch.save(population, f"./particles/mmlu_pro_evo_weights_{generation}.pt")
         print(f'Generation {generation} finished. Best fitness: {best_fitness}')
 
     # Save final results
