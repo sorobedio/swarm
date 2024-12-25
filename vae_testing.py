@@ -824,7 +824,8 @@ if __name__=='__main__':
     only_one_or_two = args.only_one_or_two
 
     # wd = torch.load('wdata/llama3_mmlu_swarm_weights_.pt')
-    wd = torch.load('wdata/sampled_weights_vae_norm.pt')
+    # wd = torch.load('wdata/sampled_weights_vae_norm.pt')
+    wd = torch.load('wdata/mdt_sampled_weights_25_norm_gem.pt')
 
 
     wacc = []
