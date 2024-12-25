@@ -1623,8 +1623,8 @@ if __name__ == "__main__":
     # ldmmodel = instantiate_from_config(config.model)
     # std = torch.load('./ldm_checkpoints/checkpoint_model_layer_norm_llama3-1-8b_epoch=5904_.ckpt')['state_dict']
 
-    std = torch.load('./dit_checkpoints/checkpoint_mdt_gemma_lamaepoch=19739_.ckpt')['state_dict']
-    ldmmodel.load_state_dict(std)
+    stds = torch.load('./dit_checkpoints/checkpoint_mdt_gemma_lamaepoch=19739_.ckpt')['state_dict']
+    ldmmodel.load_state_dict(stds)
     ldmmodel = ldmmodel.to(device)
     ldmmodel.to(device)
     ldmmodel.eval()
@@ -1641,12 +1641,12 @@ if __name__ == "__main__":
     # Parameters
     # num_particles = 20
     # weight_dim = 1000  # Dimensionality for each weight vector
-    lambda_step = 0.05  # Step length
+    lambda_step = 1.0  # Step length
     varphi_lambda = 0.95  # Step length schedule
-    varphi_v = 0.3  # Inertia
+    varphi_v = 0.4  # Inertia
     varphi_p = 0.3  # Cognitive coefficient
-    varphi_g = 0.5  # Social coefficient0
-    varphi_w = 0.05  # Repel coefficient
+    varphi_g = 0.3  # Social coefficient0
+    varphi_w = 0.3  # Repel coefficient
     patience = 8  # Number of iterations to wait for no improvement in global best
     restart_patience = 4  # Number of iterations for particle restart
     max_iterations = 25  # Maximum number of iterations
