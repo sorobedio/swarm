@@ -832,6 +832,7 @@ if __name__=='__main__':
     # weights =wd['gemma-7b-it']
     weights = wd
     n= weights.shape[0]
+    print(n)
     utilities =[]
     for i in range(n):
         wr = weights
