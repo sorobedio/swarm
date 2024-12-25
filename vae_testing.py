@@ -834,7 +834,7 @@ if __name__=='__main__':
     n= weights.shape[0]
     utilities =[]
     for i in range(n):
-        wr = weights[i]
+        wr = weights
         std = model.state_dict()
         # model=set_model_weights(model, w)
         # for w in ws:ws[i
