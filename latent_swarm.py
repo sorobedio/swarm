@@ -1534,7 +1534,7 @@ def utility_function(wd, layer=None):
             print(f'----loading particle---{j}--out of --{num_samples}--')
             # for l in layer:
             wr = wd[j].reshape(-1)
-            wr = lmmodel.decode_first_stage(wr)
+            wr = ldmmodel.decode_first_stage(wr)
             wr = 0.5*(wr+1)*(x_max-x_min)+x_min
 
             std = model.state_dict()
@@ -1553,7 +1553,7 @@ def utility_function(wd, layer=None):
             current_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             # Create the header with asterisks and the date
             header = f"\n{'*' * 40}\n{current_date}\n{'*' * 40}\n"
-            file_path = 'logfiles/swamarc_llamaparticles_results_v2.txt'
+            file_path = 'logfiles/swamarc_gemminaparticles_results_v2.txt'
             # Append the header and the Markdown table to the file
             with open(file_path, 'a') as file:
                 file.write(header)
