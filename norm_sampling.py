@@ -37,6 +37,8 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 # from pytorch_lightning.utilities.distributed import rank_zero_only
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
 from pytorch_lightning.utilities import rank_zero_info
+
+from stage2.modules.util import extract_into_tensor
 from zoodatasets.basedatasets import ZooDataset
 from zoodatasets.chunkdatasets import ZooDataset
 # from zoodatasets.autodatasets import ZooDataset
@@ -876,6 +878,7 @@ if __name__=='__main__':
     torch.save(zweights, 'particles/mdt_latent_weights_20_norm_gem.pt')
     del ldmmodel
     del xc
+    exit()
 
 
 
