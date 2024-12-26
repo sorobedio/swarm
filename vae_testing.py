@@ -839,9 +839,9 @@ if __name__=='__main__':
     for i in range(n):
         wr = weights[i]
         std = model.state_dict()
-        model=set_model_weights(model, wr)
+
         # for w in ws:ws[i
-        # std = set_layer_state_dict(std, wr, layer='norm')
+        std = set_layer_state_dict(std, wr, layer='norm')
         model.load_state_dict(std)
 
         # model.load_state_dict(set_layers_state_dict(std, lw))
