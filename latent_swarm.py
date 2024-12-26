@@ -1652,7 +1652,7 @@ if __name__ == "__main__":
     varphi_w = 0.3  # Repel coefficient
     patience = 8  # Number of iterations to wait for no improvement in global best
     restart_patience = 4  # Number of iterations for particle restart
-    max_iterations = 25  # Maximum number of iterations
+    max_iterations = 200  # Maximum number of iterations
 
 
     # acc = results['results']['hellaswag']['acc_norm,none']
