@@ -1674,7 +1674,7 @@ if __name__ == "__main__":
 
     # Initialize global best, global worst, and personal bests
     personal_best = weights.clone()
-    utility_values = torch.load('wdata/utilities_mdt_norm_mmlu_pro.pt')
+    utility_values = torch.load('wdata/utilities_mdt_norm_mmlu.pt')
     # utility_values = torch.load('utilities.pt')[layers]
     utility_values = torch.tensor(utility_values).reshape((-1))
     print(f'-----------{utility_values.shape}------------')
