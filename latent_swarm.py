@@ -1652,7 +1652,7 @@ if __name__ == "__main__":
     varphi_w = 0.3  # Repel coefficient
     patience = 8  # Number of iterations to wait for no improvement in global best
     restart_patience = 4  # Number of iterations for particle restart
-    max_iterations = 200  # Maximum number of iterations
+    max_iterations = 50  # Maximum number of iterations
 
 
     # acc = results['results']['hellaswag']['acc_norm,none']
@@ -1771,7 +1771,7 @@ if __name__ == "__main__":
         print(f'iteration------{k}--finished--')
 
     # Output the best-found expert (global best)
-    torch.save(weights, f"./particles/mmlu_pro_swarm_weights_final.pt")
+    torch.save(weights, f"./particles/mmlu_swarm_weights_final.pt")
     # print("Best-found weights (global best):", global_best)
-    torch.save(global_best, f"./particles/mmlu_pro_swarm_global_best_top_1.pt")
+    torch.save(global_best, f"./particles/mmlu_swarm_global_best_top_1.pt")
     print("Utility of best-found weights:", utility_function(global_best.unsqueeze(0), layers))
