@@ -1643,7 +1643,7 @@ if __name__ == "__main__":
     # wd = torch.load('particles/mmlu_swarm_weights_final.pt')
     # wd = torch.load('wdata/sampled_weights_vae_norm.pt')
     # wd = torch.load('wdata/mdt_sampled_weights_25_norm_gem.pt')
-    wd =ldmmodel..decode_first_stage(wd.to(device))
+    wd =ldmmodel.decode_first_stage(wd.to(device))
     wd = 0.1*wd
     wd =0.5*((wd+1)*(x_max - x_min))+x_min
 
