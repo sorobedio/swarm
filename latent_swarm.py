@@ -1771,7 +1771,7 @@ if __name__ == "__main__":
         print(f'iteration------{k}--finished--')
 
     # Output the best-found expert (global best)
-    torch.save(weights, f"./particles/hella_swarm_weights_final.pt")
+    torch.save(weights, f"./particles/mmlu_swarm_weights_final.pt")
     # print("Best-found weights (global best):", global_best)
-    torch.save(global_best, f"./parrticles/hhela_swarm_global_best_top_1.pt")
+    torch.save(global_best, f"./parrticles/mmlu_swarm_global_best_top_1.pt")
     print("Utility of best-found weights:", utility_function(global_best.unsqueeze(0), layers))
