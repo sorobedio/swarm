@@ -859,6 +859,6 @@ if __name__=='__main__':
         #               obj4_save_generation=False)
         # print(acc*100.0)
         # accs.append(acc*100)
-    torch.save(utilities, 'wdata/utilities_mdt_norm_mmlu_pro.pt')
+    # torch.save(utilities, 'wdata/utilities_mdt_norm_mmlu_pro.pt')
     # print(sorted(accs, reverse=True))
 
