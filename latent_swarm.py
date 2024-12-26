@@ -1652,7 +1652,7 @@ if __name__ == "__main__":
     varphi_w = 0.3  # Repel coefficient
     patience = 8  # Number of iterations to wait for no improvement in global best
     restart_patience = 4  # Number of iterations for particle restart
-    max_iterations = 50  # Maximum number of iterations
+    max_iterations = 200  # Maximum number of iterations
 
 
     # acc = results['results']['hellaswag']['acc_norm,none']
@@ -1674,7 +1674,7 @@ if __name__ == "__main__":
 
     # Initialize global best, global worst, and personal bests
     personal_best = weights.clone()
-    utility_values = torch.load('wdata/utilities_mdt_norm_mmlu.pt')
+    utility_values = torch.load('wdata/utilities_mdt_norm_mmlu_pro.pt')
     # utility_values = torch.load('utilities.pt')[layers]
     utility_values = torch.tensor(utility_values).reshape((-1))
     print(f'-----------{utility_values.shape}------------')
