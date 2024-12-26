@@ -854,11 +854,11 @@ if __name__=='__main__':
         results =results*100.0
         utilities.append(results)
         print(results)
-        # print('-----evaluated======================================')
-        acc =evaluate_test(model, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
-                      obj4_save_generation=False)
-        print(acc*100.0)
-        accs.append(acc*100)
-    # torch.save(utilities, 'wdata/utilities_mdt_norm_mmlu.pt')
-    print(sorted(accs, reverse=True))
+        # # print('-----evaluated======================================')
+        # acc =evaluate_test(model, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
+        #               obj4_save_generation=False)
+        # print(acc*100.0)
+        # accs.append(acc*100)
+    torch.save(utilities, 'wdata/utilities_mdt_norm_mmlu_pro.pt')
+    # print(sorted(accs, reverse=True))
 
