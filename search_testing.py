@@ -1639,7 +1639,8 @@ if __name__ == "__main__":
 
 
 
-    wd = torch.load("./particles/mmlu_pro_evo_weights_final.pt")
+    # wd = torch.load("./particles/mmlu_pro_evo_weights_final.pt")
+    wd = torch.load("./particles/hella_swarm_weights_final.pt")
     # wd = torch.load('particles/mmlu_swarm_weights_final.pt')
     # wd = torch.load('wdata/sampled_weights_vae_norm.pt')
     # wd = torch.load('wdata/mdt_sampled_weights_25_norm_gem.pt')
