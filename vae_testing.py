@@ -740,7 +740,7 @@ def get_parser():
                         help="Dataset to use for evaluation")
     parser.add_argument("--gpu_id", type=int, default=0,
                         help="ID of GPU to use")
-    parser.add_argument("--base_model", type=str, default="google/gemma-7b-it",
+    parser.add_argument("--base_model", type=str, default="google/gemma-7b",
                         help="Base model to use")
     parser.add_argument("--save_dev_flag", action="store_true", default=False,
                         help="Whether to save development data")
@@ -859,6 +859,6 @@ if __name__=='__main__':
         #               obj4_save_generation=False)
         # print(acc*100.0)
         # accs.append(acc*100)
-    # torch.save(utilities, 'wdata/utilities_mdt_norm_mmlu_pro.pt')
+    torch.save(utilities, 'wdata/utilities_mdt_norm_gsm8k.pt')
     # print(sorted(accs, reverse=True))
 
