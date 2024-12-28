@@ -409,6 +409,8 @@ def evaluate(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b
             preds.append(multiple_choice_answer_parsing(question, output))
 
         if save_dev_flag:
+            if not os.path.exists(model_path):
+                os.makedirs(model_path)
             with open(model_path + "/golds_dev.json", "w") as f:
                 json.dump(golds, f)
             with open(model_path + "/preds_dev.json", "w") as f:
@@ -834,7 +836,7 @@ def get_parser():
     import argparse
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--model_path", type=str, default="google/gemma-7b-it",
+    parser.add_argument("--model_path", type=str, default="google/gemma",
                         help="Path or name of the model to use")
     parser.add_argument("--eval_type", type=str, default="multiple_choice",
                         help="Type of evaluation to perform")
@@ -863,6 +865,8 @@ if __name__=='__main__':
     base_model = args.base_model
     save_dev_flag = args.save_dev_flag
     only_one_or_two = args.only_one_or_two
+    if not os.path.exists(model_path):
+        os.makedirs(model_path)
     results = evaluate(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", save_dev_flag=False,
              only_one_or_two=None, skip_flag=False)
     print(results*100)
