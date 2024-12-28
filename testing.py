@@ -259,16 +259,16 @@ def evaluate(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b
     global tokenizer
     only_one_or_two = ONLY_ONE_OR_TWO
     # try:
-    #     model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
-    #     model.load_adapter(model_path)
-    #     model.to(f"cuda:{gpu_id}")
-    #     tokenizer = AutoTokenizer.from_pretrained(base_model)
+    model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
+    # model.load_adapter(model_path)
+    model.to(f"cuda:{gpu_id}")
+    tokenizer = AutoTokenizer.from_pretrained(base_model)
     # except:
     #     del model
     #     del tokenizer
-    model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16)
-    model.to(f"cuda:{gpu_id}")
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    # model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16)
+    # model.to(f"cuda:{gpu_id}")
+    # tokenizer = AutoTokenizer.from_pretrained(model_path)
     tokenizer.pad_token = tokenizer.eos_token
 
     # prompt = "What is the capital of France? Answer:"
@@ -561,7 +561,7 @@ def evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gem
 
     try:
         model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.bfloat16)
-        model.load_adapter(model_path)
+        # model.load_adapter(model_path)
         model.to(f"cuda:{gpu_id}")
         tokenizer = AutoTokenizer.from_pretrained(base_model)
     except:
