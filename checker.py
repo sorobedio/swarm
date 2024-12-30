@@ -8,7 +8,9 @@ std = model.state_dict()
 weights =[]
 for key in std.keys():
     if 'lora' in key:
-        weights.append(std[key].reshape(1, -1))
+        w = std[key].reshape(-1)
+        print(f'---params:{key}---{w.shape}---')
+        weights.append(w)
 print(len(weights))
 w = torch.cat(weights, dim=-1)
 print(w.shape)
