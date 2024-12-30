@@ -258,18 +258,33 @@ def evaluate(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b
     global model
     global tokenizer
     only_one_or_two = ONLY_ONE_OR_TWO
-    # try:
-    model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
-    # model.load_adapter(model_path)
-    model.to(f"cuda:{gpu_id}")
-    tokenizer = AutoTokenizer.from_pretrained(base_model)
-    # except:
-    #     del model
-    #     del tokenizer
-    # model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16)
-    # model.to(f"cuda:{gpu_id}")
-    # tokenizer = AutoTokenizer.from_pretrained(model_path)
+
+    try:
+        model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
+        model.load_adapter(model_path)
+        model.to(f"cuda:{gpu_id}")
+        tokenizer = AutoTokenizer.from_pretrained(base_model)
+    except:
+        del model
+        del tokenizer
+        model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16)
+        model.to(f"cuda:{gpu_id}")
+        tokenizer = AutoTokenizer.from_pretrained(model_path)
     tokenizer.pad_token = tokenizer.eos_token
+
+
+    # try:
+    # model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
+    # # model.load_adapter(model_path)
+    # model.to(f"cuda:{gpu_id}")
+    # tokenizer = AutoTokenizer.from_pretrained(base_model)
+    # # except:
+    # #     del model
+    # #     del tokenizer
+    # # model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16)
+    # # model.to(f"cuda:{gpu_id}")
+    # # tokenizer = AutoTokenizer.from_pretrained(model_path)
+    # tokenizer.pad_token = tokenizer.eos_token
 
     # prompt = "What is the capital of France? Answer:"
     # input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to("cuda")
@@ -560,14 +575,14 @@ def evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gem
     only_one_or_two = ONLY_ONE_OR_TWO
 
     try:
-        model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.bfloat16)
-        # model.load_adapter(model_path)
+        model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
+        model.load_adapter(model_path)
         model.to(f"cuda:{gpu_id}")
         tokenizer = AutoTokenizer.from_pretrained(base_model)
     except:
         del model
         del tokenizer
-        model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16)
+        model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16)
         model.to(f"cuda:{gpu_id}")
         tokenizer = AutoTokenizer.from_pretrained(model_path)
     tokenizer.pad_token = tokenizer.eos_token
@@ -871,22 +886,20 @@ if __name__=='__main__':
 
     for model_name in ["code_alpaca", "cot", "flan_v2", "gemini_alpaca", "lima", "oasst1", "open_orca", "science",
                        "sharegpt", "wizardlm"]:
-        model_base_ = "bunsenfeng"+ "/" + model_name
+        model_paths = "bunsenfeng/"+ "/" + model_name
         # if os.path.exists(model_name):
         #     continue
         # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/" + model_name)
         # print(model)
         # exit()
         # model.save_pretrained(model_name)
-    results = evaluate(model_path, eval_type, dataset, gpu_id, base_model=model_base_, save_dev_flag=False,
+    results = evaluate(model_paths, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", save_dev_flag=False,
              only_one_or_two=None, skip_flag=False)
     print(results*100)
-    print(f'-----evaluated=========={model_name}============================')
-    acc =evaluate_test(model_path, eval_type, dataset, gpu_id, base_model=model_base_, only_one_or_two=None,
+    print('-----evaluated======================================')
+    acc =evaluate_test(model_paths, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
                   obj4_save_generation=False)
     print(acc*100)
-    print(f'-----evaluated=========={model_name}============================')
-    print(f'================================================================')
 
 # result_test = evaluate_test("initial_experts/lima", "AbstainQA", "mmlu", 0)
 # print(result_test)
