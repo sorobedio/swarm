@@ -884,6 +884,7 @@ if __name__=='__main__':
     if not os.path.exists(model_path):
         os.makedirs(model_path)
 
+    RESULTS ={}
     for model_name in ["code_alpaca", "cot", "flan_v2", "gemini_alpaca", "lima", "oasst1", "open_orca", "science",
                        "sharegpt", "wizardlm"]:
         model_paths = "bunsenfeng"+ "/" + model_name
@@ -901,9 +902,10 @@ if __name__=='__main__':
         acc =evaluate_test(model_paths, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
                       obj4_save_generation=False)
         print(acc*100)
+        RESULTS[model_name] = acc*100
         print(f'-----evaluated======================================')
     # result_test = evaluate_test("initial_experts/lima", "AbstainQA", "mmlu", 0)
-    # print(result_test)
+    print(RESULTS)
 
     # result = evaluate("initial_experts/lima", "rm_default", "rm", 0)
     # print(result)
