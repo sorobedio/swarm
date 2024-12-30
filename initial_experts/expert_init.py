@@ -5,4 +5,6 @@ for model_name in ["code_alpaca", "cot", "flan_v2", "gemini_alpaca", "lima", "oa
     if os.path.exists(model_name):
         continue
     model = AutoModelForCausalLM.from_pretrained("bunsenfeng/"+model_name)
+    print(model_name)
+    exit()
     model.save_pretrained(model_name)
