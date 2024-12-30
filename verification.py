@@ -881,10 +881,12 @@ if __name__=='__main__':
     results = evaluate(model_path, eval_type, dataset, gpu_id, base_model=model_base_, save_dev_flag=False,
              only_one_or_two=None, skip_flag=False)
     print(results*100)
-    print('-----evaluated======================================')
+    print(f'-----evaluated=========={model_name}============================')
     acc =evaluate_test(model_path, eval_type, dataset, gpu_id, base_model=model_base_, only_one_or_two=None,
                   obj4_save_generation=False)
     print(acc*100)
+    print(f'-----evaluated=========={model_name}============================')
+    print(f'================================================================')
 
 # result_test = evaluate_test("initial_experts/lima", "AbstainQA", "mmlu", 0)
 # print(result_test)
