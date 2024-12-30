@@ -1,5 +1,6 @@
 import os
 from transformers import AutoModelForCausalLM
+import torch
 
 model_name = "code_alpaca"
 model = AutoModelForCausalLM.from_pretrained("bunsenfeng/"+model_name)
