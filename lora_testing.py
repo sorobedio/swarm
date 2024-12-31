@@ -898,7 +898,7 @@ if __name__=='__main__':
         # # print('-----evaluated======================================')
         acc =evaluate_test(model, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
                       obj4_save_generation=False)
-        results_dict[k] = acc
+        results_dict[k] = acc*100.0
         # print(acc*100.0)
         print(f'=========={k}============{acc*100}==============================')
     print(results_dict)

@@ -13,7 +13,7 @@ if __name__ == "__main__":
     weights ={}
     base_model = "google/gemma-7b-it"
     random.seed(42)
-    # epsilon = 1e-10
+    epsilon = 1e-8
     #
     # # Generate a random float in the range (epsilon, 1 - epsilon)
     # scalar = random.uniform(epsilon, 1 - epsilon)
@@ -41,7 +41,8 @@ if __name__ == "__main__":
         parent_2 = random.choice(model_names)
         while parent_1 == parent_2:
             parent_2 = random.choice(model_names)
-        w_1 = random.random() * 2  # half interpolation, half extrapolation
+        # w_1 = random.random() * 2  # half interpolation, half extrapolation
+        w_1 = random.uniform(epsilon, 1 - epsilon)
         w_2 = 1 - w_1
         p1 = weights[parent_1]
         p2 = weights[parent_2]
