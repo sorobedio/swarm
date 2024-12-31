@@ -1,6 +1,7 @@
 import os
 from transformers import AutoModelForCausalLM
 import torch
+import random
 
 
 
@@ -10,10 +11,11 @@ if __name__ == "__main__":
     model_names = ["code_alpaca", "cot", "flan_v2", "gemini_alpaca", "lima", "oasst1", "open_orca", "science", "sharegpt", "wizardlm"]
     vect_weights={}
     weights ={}
-    wl =[]
+
     for model_name in model_names:
         model = AutoModelForCausalLM.from_pretrained("bunsenfeng/"+model_name)
         std = model.state_dict()
+        wl = []
         for key in std.keys():
             if 'lora' in key:
                 w = std[key].reshape(1,-1)
