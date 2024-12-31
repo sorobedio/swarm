@@ -847,10 +847,11 @@ if __name__=='__main__':
         if k not in model_names:
             model_path = "bunsenfeng/code_alpaca"
         # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/" + model_name)
+        print(f'---loading--{k}--model')
 
         model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
-        print('---base--model--lora')
         model.load_adapter(model_path)
+        print('---base--model--lora')
         model.to(f"cuda:{gpu_id}")
         tokenizer = AutoTokenizer.from_pretrained(base_model)
 
