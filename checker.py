@@ -12,6 +12,11 @@ if __name__ == "__main__":
     vect_weights={}
     weights ={}
     base_model = "google/gemma-7b-it"
+    random.seed(42)
+    # epsilon = 1e-10
+    #
+    # # Generate a random float in the range (epsilon, 1 - epsilon)
+    # scalar = random.uniform(epsilon, 1 - epsilon)
 
     for model_name in model_names:
         adapter_id="bunsenfeng/"+model_name
