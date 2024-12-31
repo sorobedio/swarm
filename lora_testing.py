@@ -814,7 +814,8 @@ if __name__=='__main__':
     #                                              )
 
 
-
+    model_names = ["code_alpaca", "cot", "flan_v2", "gemini_alpaca", "lima", "oasst1", "open_orca", "science", "sharegpt", "wizardlm"]
+    vect_weights={}
 
     parser = get_parser()
     args = parser.parse_args()
@@ -826,20 +827,7 @@ if __name__=='__main__':
     save_dev_flag = args.save_dev_flag
     only_one_or_two = args.only_one_or_two
 
-    model_path = "bunsenfeng/code_alpaca"
-    # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/" + model_name)
-    try:
-        model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
-        model.load_adapter(model_path)
-        model.to(f"cuda:{gpu_id}")
-        tokenizer = AutoTokenizer.from_pretrained(base_model)
-    except:
-        del model
-        del tokenizer
-        model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16)
-        model.to(f"cuda:{gpu_id}")
-        tokenizer = AutoTokenizer.from_pretrained(model_path)
-    tokenizer.pad_token = tokenizer.eos_token
+
 
     # model_names = ["code_alpaca", "cot", "flan_v2", "gemini_alpaca", "lima", "oasst1", "open_orca", "science",
     #                "sharegpt", "wizardlm"]
@@ -856,6 +844,22 @@ if __name__=='__main__':
     accs =[]
     results_dict ={}
     for k, w in wd.items():
+        if k not in model_names:
+            model_path = "bunsenfeng/code_alpaca"
+        # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/" + model_name)
+        try:
+            model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
+            model.load_adapter(model_path)
+            model.to(f"cuda:{gpu_id}")
+            tokenizer = AutoTokenizer.from_pretrained(base_model)
+        except:
+            del model
+            del tokenizer
+            model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16)
+            model.to(f"cuda:{gpu_id}")
+            tokenizer = AutoTokenizer.from_pretrained(model_path)
+        tokenizer.pad_token = tokenizer.eos_token
+
         wr = w.reshape(-1)
         std = model.state_dict()
 
