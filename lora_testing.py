@@ -900,7 +900,7 @@ if __name__=='__main__':
                       obj4_save_generation=False)
         results_dict[k] = acc
         # print(acc*100.0)
-        print(f'======================{acc*100}==============================')
+        print(f'=========={k}============{acc*100}==============================')
     print(results_dict)
         # accs.append(acc*100)
     # torch.save(utilities, 'wdata/utilities_mdt_norm_gsm8k.pt')
