@@ -847,7 +847,7 @@ if __name__=='__main__':
     utilities =[]
     accs =[]
     results_dict ={}
-    for k in model_lists:
+    for k in modelist:
         ks = "bunsenfeng/" + k
         if ks not in model_names:
             model_path = "bunsenfeng/code_alpaca"
