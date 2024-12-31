@@ -804,14 +804,17 @@ if __name__=='__main__':
 
 
     model_id = "google/gemma-7b-it"
+    #
+    # tokenizer = AutoTokenizer.from_pretrained(model_id)
+    # model = AutoModelForCausalLM.from_pretrained(model_id,
+    #                                              # revision='step143000',
+    #                                              # attn_implementation="flash_attention_2",
+    #                                              torch_dtype=torch.bfloat16,
+    #                                              device_map=device,
+    #                                              )
 
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
-    model = AutoModelForCausalLM.from_pretrained(model_id,
-                                                 # revision='step143000',
-                                                 # attn_implementation="flash_attention_2",
-                                                 torch_dtype=torch.bfloat16,
-                                                 device_map=device,
-                                                 )
+
+
     tokenizer.pad_token = tokenizer.eos_token
     parser = get_parser()
     args = parser.parse_args()
@@ -823,10 +826,24 @@ if __name__=='__main__':
     save_dev_flag = args.save_dev_flag
     only_one_or_two = args.only_one_or_two
 
-    # wd = torch.load("./particles/hella_swarm_weights_final.pt")
-    # wd = torch.load('particles/mmlu_swarm_weights_final.pt')
-    # wd = torch.load('wdata/sampled_weights_vae_norm.pt')
-    wd = torch.load('wdata/mdt_sampled_weights_20_norm_gem.pt')
+    model_path = "bunsenfeng/code_alpaca"
+    # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/" + model_name)
+    try:
+        model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
+        model.load_adapter(model_path)
+        model.to(f"cuda:{gpu_id}")
+        tokenizer = AutoTokenizer.from_pretrained(base_model)
+    except:
+        del model
+        del tokenizer
+        model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16)
+        model.to(f"cuda:{gpu_id}")
+        tokenizer = AutoTokenizer.from_pretrained(model_path)
+
+    # model_names = ["code_alpaca", "cot", "flan_v2", "gemini_alpaca", "lima", "oasst1", "open_orca", "science",
+    #                "sharegpt", "wizardlm"]
+    wd = torch.load("../Datasets/llmdata/gemina7b_it_lora_weights.pt")
+    model_names=list(wd.keys())
 
 
     wacc = []
@@ -836,28 +853,31 @@ if __name__=='__main__':
     print(n)
     utilities =[]
     accs =[]
-    for i in range(n):
-        wr = weights[i]
+    results_dict ={}
+    for k, w in wd.items():
+        wr = w.reshape(-1)
         std = model.state_dict()
 
         # for w in ws:ws[i
-        std = set_layer_state_dict(std, wr, layer='norm')
+        std = set_layer_state_dict(std, wr, layer='lora')
         model.load_state_dict(std)
 
         # model.load_state_dict(set_layers_state_dict(std, lw))
         # del wd
 
-
         results = evaluate(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", save_dev_flag=False,
                  only_one_or_two=None, skip_flag=False)
 
         results =results*100.0
-        utilities.append(results)
+        # utilities.append(results)
         print(results)
         # # print('-----evaluated======================================')
         acc =evaluate_test(model, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
                       obj4_save_generation=False)
+        results_dict[k] = acc
         # print(acc*100.0)
+        print(f'======================{acc*100}==============================')
+    print(results_dict)
         # accs.append(acc*100)
     # torch.save(utilities, 'wdata/utilities_mdt_norm_gsm8k.pt')
     # print(sorted(accs, reverse=True))
