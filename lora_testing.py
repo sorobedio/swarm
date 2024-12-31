@@ -847,19 +847,27 @@ if __name__=='__main__':
         if k not in model_names:
             model_path = "bunsenfeng/code_alpaca"
         # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/" + model_name)
-        try:
-            model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
-            print('---base--model--lora')
-            model.load_adapter(model_path)
-            model.to(f"cuda:{gpu_id}")
-            tokenizer = AutoTokenizer.from_pretrained(base_model)
-        except:
-            print('---only--base--model--no--lora')
-            del model
-            del tokenizer
-            model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16)
-            model.to(f"cuda:{gpu_id}")
-            tokenizer = AutoTokenizer.from_pretrained(model_path)
+
+        model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
+        print('---base--model--lora')
+        model.load_adapter(model_path)
+        model.to(f"cuda:{gpu_id}")
+        tokenizer = AutoTokenizer.from_pretrained(base_model)
+
+
+        # try:
+        #     model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
+        #     print('---base--model--lora')
+        #     model.load_adapter(model_path)
+        #     model.to(f"cuda:{gpu_id}")
+        #     tokenizer = AutoTokenizer.from_pretrained(base_model)
+        # except:
+        #     print('---only--base--model--no--lora')
+        #     del model
+        #     del tokenizer
+        #     model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16)
+        #     model.to(f"cuda:{gpu_id}")
+        #     tokenizer = AutoTokenizer.from_pretrained(model_path)
         tokenizer.pad_token = tokenizer.eos_token
 
         wr = w.reshape(-1)
