@@ -815,7 +815,7 @@ if __name__=='__main__':
 
 
 
-    tokenizer.pad_token = tokenizer.eos_token
+
     parser = get_parser()
     args = parser.parse_args()
     model_path = args.model_path
@@ -839,6 +839,7 @@ if __name__=='__main__':
         model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16)
         model.to(f"cuda:{gpu_id}")
         tokenizer = AutoTokenizer.from_pretrained(model_path)
+    tokenizer.pad_token = tokenizer.eos_token
 
     # model_names = ["code_alpaca", "cot", "flan_v2", "gemini_alpaca", "lima", "oasst1", "open_orca", "science",
     #                "sharegpt", "wizardlm"]
