@@ -849,7 +849,7 @@ if __name__=='__main__':
     results_dict ={}
     for k in modelist:
         ks = "bunsenfeng/" + k
-        if ks not in model_names:
+        if k not in model_names:
             model_path = "bunsenfeng/code_alpaca"
         # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/" + model_name)
         else:
