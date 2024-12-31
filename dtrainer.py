@@ -30,7 +30,7 @@ from utils.util import instantiate_from_config
 
 from torch.optim import lr_scheduler
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 def get_parser(**parser_kwargs):
     def str2bool(v):
         if isinstance(v, bool):
@@ -93,7 +93,7 @@ def get_parser(**parser_kwargs):
         # default="stage1/configs/pythia_410_fullconfig_Kl.yaml",
         # default="stage1/configs/full_160m_pythia.yaml",
         # default="stage1/configs/smol_base_full135m_congig.yaml",
-        default="stage1/configs/gemmina_base_norm_config_kl.yaml",
+        default="stage1/configs/lora_base_config_kl.yaml",
         #
         #
     )
@@ -217,7 +217,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             # scaler.update()
             loss.backward()
             optimizer.step()
-            # scheduler.step()
+            scheduler.step()
             train_loss += loss.item()
 
             curr_lr = optimizer.param_groups[-1]['lr']
@@ -238,7 +238,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         if bloss > tloss:
             bloss = tloss
             print(f'saving best training loss is:{bloss}')
-            torch.save(model, os.path.join(args.save_path,f'gemmina_llama_raw_norm.pth'))
+            torch.save(model, os.path.join(args.save_path,f'gemmina_lora_expert.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
 
@@ -301,10 +301,10 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=0.5, normalize=None)
+                          scale=0.1, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
-    traindataloader = DataLoader(trainset, shuffle=True, batch_size=1, num_workers=4,
+    traindataloader = DataLoader(trainset, shuffle=True, batch_size=10, num_workers=4,
                                  # collate_fn=m_collate,
                                  )
     # testdataloader = DataLoader(valset, shuffle=False, batch_size=4, num_workers=4)
