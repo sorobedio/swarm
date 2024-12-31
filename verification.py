@@ -888,12 +888,7 @@ if __name__=='__main__':
     for model_name in ["code_alpaca", "cot", "flan_v2", "gemini_alpaca", "lima", "oasst1", "open_orca", "science",
                        "sharegpt", "wizardlm"]:
         model_paths = "bunsenfeng"+ "/" + model_name
-        # if os.path.exists(model_name):
-        #     continue
-        # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/" + model_name)
-        # print(model)
-        # exit()
-        # model.save_pretrained(model_name)
+
         print(f'-----evaluated=========={model_paths}============================')
         results = evaluate(model_paths, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", save_dev_flag=False,
                  only_one_or_two=None, skip_flag=False)
@@ -904,7 +899,6 @@ if __name__=='__main__':
         print(acc*100)
         RESULTS[model_name] = acc*100
         print(f'-----evaluated======================================')
-    # result_test = evaluate_test("initial_experts/lima", "AbstainQA", "mmlu", 0)
     print(RESULTS)
 
     # result = evaluate("initial_experts/lima", "rm_default", "rm", 0)
@@ -912,6 +906,8 @@ if __name__=='__main__':
 
 # result = evaluate("initial_experts/lima", "multitask", "legal", 0)
 # print(result)
+# {'code_alpaca': 23.799999999999997, 'cot': 22.7, 'flan_v2': 41.199999999999996, 'gemini_alpaca': 7.3, 'lima': 45.300000000000004, 'oasst1': 38.800000000000004, 'open_orca': 1.2, 'science': 16.900000000000002, 'sharegpt': 28.599999999999998, 'wizardlm': 37.2}
+# (swarm) ubuntu@wksp-ades4vsp2150:~/workspace/swarm$
 
 # result = evaluate("initial_experts/lima", "multiple_choice", "mmlu", 0)
 # print(result)
