@@ -834,6 +834,10 @@ if __name__=='__main__':
     wd = torch.load("../Datasets/llmdata/gemina7b_it_lora_weights.pt")
     # model_names=list(wd.keys())
     base_model = "google/gemma-7b-it"
+    modelist=list(wd.keys())
+    print('=====================================================================')
+    print(modelist)
+    print('=====================================================================')
 
     wacc = []
     # weights =wd['gemma-7b-it']
@@ -843,11 +847,11 @@ if __name__=='__main__':
     utilities =[]
     accs =[]
     results_dict ={}
-    for k, w in wd.items():
+    for k in model_lists:
         if k not in model_names:
             model_path = "bunsenfeng/code_alpaca"
         # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/" + model_name)
-        print(f'---loading--{k}--model')
+        print(f'-====--loading--{k}--model=======')
 
         model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
         model.load_adapter(model_path)
@@ -871,7 +875,7 @@ if __name__=='__main__':
         #     tokenizer = AutoTokenizer.from_pretrained(model_path)
         tokenizer.pad_token = tokenizer.eos_token
 
-        wr = w.reshape(-1)
+        wr = wd[k].reshape(-1)
         std = model.state_dict()
 
         # for w in ws:ws[i
