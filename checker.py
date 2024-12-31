@@ -40,7 +40,7 @@ if __name__ == "__main__":
         pm = w_1 * p1 + w_2 * p2
         k= parent_1+'_'+parent_2
         weights[k]=pm
-    torch.save(weights, "../Datssets/llmdata/gemina_lora_weights.pt")
+    torch.save(weights, "../Datasets/llmdata/gemina7b_it_lora_weights.pt")
     print(len(weights))
 
     exit(0)
