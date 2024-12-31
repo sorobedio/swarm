@@ -854,6 +854,7 @@ if __name__=='__main__':
         # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/" + model_name)
         else:
             model_path=ks
+            continue
         print(f'-====--loading--{ks}--model=======')
 
         model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
