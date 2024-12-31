@@ -49,7 +49,7 @@ class ZooDataset(Dataset):
         #     data =(data-torch.mean(data, dim=0))
 
         print('***************************************')
-        print(data.shape)
+        print(data.shape, data.dtype)
         print('***************************************')
         self.data = data/self.scale
 
