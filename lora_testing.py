@@ -836,10 +836,10 @@ if __name__=='__main__':
 
 
     wacc = []
-    weights =wd['gemma-7b-it']
+    # weights =wd['gemma-7b-it']
     # weights = wd
-    n= weights.shape[0]
-    print(n)
+    # n= weights.shape[0]
+    # print(n)
     utilities =[]
     accs =[]
     results_dict ={}
