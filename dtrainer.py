@@ -267,7 +267,7 @@ def evaluate(model , testdataloader):
 
 def add_to_config(mydict, cfl="./Experiments/stage1/configs/base_config_imnet_kl.yaml"):
     with open(cfl, 'w') as configfile:
-        data = yaml.dump(mydict, configfile, indent=4, sort_keys=False)
+        data = yaml.dump(mydict, configfile, indent=10, sort_keys=False)
         print("Write successful")
 
 def load_config(file_path):
