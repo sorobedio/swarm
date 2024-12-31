@@ -1454,7 +1454,7 @@ def get_parser():
     import argparse
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--model_path", type=str, default="google/gemma-7b-it",
+    parser.add_argument("--model_path", type=str, default="google/gemma",
                         help="Path or name of the model to use")
     parser.add_argument("--eval_type", type=str, default="multiple_choice",
                         help="Type of evaluation to perform")
