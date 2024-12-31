@@ -848,10 +848,13 @@ if __name__=='__main__':
     accs =[]
     results_dict ={}
     for k in model_lists:
-        if k not in model_names:
+        ks = "bunsenfeng/" + k
+        if ks not in model_names:
             model_path = "bunsenfeng/code_alpaca"
         # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/" + model_name)
-        print(f'-====--loading--{k}--model=======')
+        else:
+            model_path=ks
+        print(f'-====--loading--{ks}--model=======')
 
         model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
         model.load_adapter(model_path)
