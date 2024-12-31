@@ -264,6 +264,7 @@ def evaluate(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b
         model.load_adapter(model_path)
         model.to(f"cuda:{gpu_id}")
         tokenizer = AutoTokenizer.from_pretrained(base_model)
+        print('-------loading lora-----')
     except:
         del model
         del tokenizer
