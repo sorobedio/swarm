@@ -208,15 +208,15 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         for batch_idx, inputs in enumerate(traindataloader):
             # input()
             optimizer.zero_grad()
-            with torch.autocast(device_type='cuda', dtype=torch.float16, enabled=use_amp):
+            with torch.autocast(device_type='cuda', dtype=torch.float32, enabled=use_amp):
                 loss, logs = model.training_step(inputs, batch_idx)
             # loss, logs = model.training_step(inputs, batch_idx)
 
-            scaler.scale(loss).backward()
-            scaler.step(optimizer)
-            scaler.update()
-            # loss.backward()
-            # optimizer.step()
+            # scaler.scale(loss).backward()
+            # scaler.step(optimizer)
+            # scaler.update()
+            loss.backward()
+            optimizer.step()
             scheduler.step()
             train_loss += loss.item()
 
