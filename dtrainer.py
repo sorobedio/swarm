@@ -217,7 +217,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             # scaler.update()
             loss.backward()
             optimizer.step()
-            scheduler.step()
+            # scheduler.step()
             train_loss += loss.item()
 
             curr_lr = optimizer.param_groups[-1]['lr']
