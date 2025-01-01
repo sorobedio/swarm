@@ -12,7 +12,7 @@ model:
       target: stage1.modules.losses.CustomLosses.Myloss
       params:
 #        kl_weight: 5
-        kl_weight: 0.0001
+        kl_weight: 1e-6
 #        kl_weight: 0.0001
     ddconfig:
       double_z: True
@@ -22,7 +22,7 @@ model:
       my_channels: 32
       out_ch: 32
       ch: 128
-      ch_mult: [ 1,2,2]  # num_down = len(ch_mult)-1
+      ch_mult: [ 1,1,2, 2]  # num_down = len(ch_mult)-1
       num_res_blocks: 2
       attn_resolutions: [8]
       dropout: 0.0
