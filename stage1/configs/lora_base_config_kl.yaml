@@ -6,7 +6,7 @@ model:
 #    monitor: "val/rec_loss"
     embed_dim: 4 #128 #64
     input_key: 'weight'
-    learning_rate: 2.5e-4
+    learning_rate: 1.335e-3
 #    ckpt_path: 'checkpoints/stage1/norm_base_llama3_3_8b_instruct.pt'
     lossconfig:
       target: stage1.modules.losses.CustomLosses.Myloss
