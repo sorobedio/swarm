@@ -73,11 +73,15 @@ class ZooDataset(Dataset):
         # datapath = os.path.join(root, f'llmdata/pythia-70m-100000_143000.pt')11004164
         self.transform = transform
         data= self.load_data(datapath, dataset=dataset)
-        self.data = data.detach().cpu()
+        x_min, x_max = data.min(), data.max()
         print('===============dataset size=========================')
-        print(self.data.shape)
+        # print(self.data.shape, x_min, x_max)
+        print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
         print('========================================')
+        data = 2*(data - x_min) / (x_max - x_min)-1
         # exit()
+        self.data = data.detach().cpu()
+
     def __len__(self):
         return len(self.data)
 
