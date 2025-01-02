@@ -43,14 +43,11 @@ class ZooDataset(Dataset):
         self.transform = transform
         data = self.load_data(datapath, dataset)
 
-        # data = data
-        # data = data.reshape(-1, 4096, 128256)
-        # if self.normalize:
-        #     data =(data-torch.mean(data, dim=0))
-
-        print('***************************************')
-        print(data.shape, data.dtype)
-        print('***************************************')
+        print('===============dataset size=========================')
+        # print(self.data.shape, x_min, x_max)
+        print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
+        print('========================================')
+        data = 2 * (data - x_min) / (x_max - x_min) - 1
         self.data = data/self.scale
 
     def __len__(self):

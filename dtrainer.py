@@ -19,10 +19,10 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
 # from pytorch_lightning.utilities import rank_zero_info
 # from zoodatasets.weightsdatasets import ZooDataset
-from zoodatasets.chunkdatasets import ZooDataset
+# from zoodatasets.chunkdatasets import ZooDataset
 # from zoodatasets.FFNdatasets import ZooDataset
 # from zoodatasets.layerdatasets import ZooDataset
-# from zoodatasets.basedatasets import ZooDataset
+from zoodatasets.basedatasets import ZooDataset
 # from zoodatasets.weightsdatasets import ZooDataset
 from helpers.misc import progress_bar
 # from data.base import Txt2ImgIterableBaseDataset
@@ -92,8 +92,8 @@ def get_parser(**parser_kwargs):
 
         # default="stage1/configs/pythia_410_fullconfig_Kl.yaml",
         # default="stage1/configs/full_160m_pythia.yaml",
-        # default="stage1/configs/smol_base_full135m_congig.yaml",
-        default="stage1/configs/lora_base_config_kl.yaml",
+        default="stage1/configs/ful_lora_config_kl.yaml",
+        # default="stage1/configs/lora_base_config_kl.yaml",
         #
         #
     )
@@ -238,7 +238,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         if bloss > tloss:
             bloss = tloss
             print(f'saving best training loss is:{bloss}')
-            torch.save(model, os.path.join(args.save_path,f'gemmina_lora_expert_v2.pth'))
+            torch.save(model, os.path.join(args.save_path,f'gemmina_lora_expert_full.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
 
