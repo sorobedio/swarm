@@ -42,7 +42,7 @@ class ZooDataset(Dataset):
 
         self.transform = transform
         data = self.load_data(datapath, dataset)
-
+        x_min, x_max = data.min(), data.max()
         print('===============dataset size=========================')
         # print(self.data.shape, x_min, x_max)
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
