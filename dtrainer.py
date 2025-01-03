@@ -30,7 +30,7 @@ from utils.util import instantiate_from_config
 
 from torch.optim import lr_scheduler
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 def get_parser(**parser_kwargs):
     def str2bool(v):
         if isinstance(v, bool):
