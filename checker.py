@@ -28,7 +28,7 @@ if __name__ == "__main__":
             if 'lora' in key:
                 w = std[key].reshape(1,-1)
                 # vect_weights[key]=w
-                # print(f'---params:{key}---{w.shape}--{w.dtype}-')
+                print(f'---params:{key}---{w.shape}--{w.dtype}-')
                 wl.append(w)
         ws= torch.cat(wl, dim=-1)
         print(f'---params:{model_name}---{ws.shape}--{ws.min()}-{ws.max()}-')
