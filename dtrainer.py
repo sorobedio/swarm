@@ -225,10 +225,10 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             progress_bar(batch_idx, len(traindataloader), 'Loss: %.6f |'
                          % (train_loss / (batch_idx + 1)))
             idx = batch_idx + 1
-            scheduler.step()
+            # scheduler.step()
 
         tloss = (train_loss / idx)
-        # scheduler.step()
+        scheduler.step()
         # scheduler.step()
         # btst = evaluate(model, traindataloader)
         # print(f'current best test avg  loss: {btest}')
@@ -337,7 +337,7 @@ if __name__ == "__main__":
     # # Combine schedulers using SequentialLR
     # scheduler = torch.optim.lr_scheduler.SequentialLR(optimizer, schedulers=[scheduler_warmup, scheduler_cosine],
     #                          milestones=[warmup_iters])
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10000, eta_min=1e-7, last_epoch=-1)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200, eta_min=1e-8, last_epoch=-1)
     criterion = model.loss
     # train(model, optimizer, args.n_epochs, traindataloader, testdataloader)
     train(model, optimizer, args.n_epochs, traindataloader)
