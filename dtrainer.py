@@ -28,6 +28,13 @@ from helpers.misc import progress_bar
 # from data.base import Txt2ImgIterableBaseDataset
 from utils.util import instantiate_from_config
 
+# train.py
+import wandb
+import random  # for demo script
+from torch.utils.tensorboard import SummaryWriter
+
+# wandb.login()
+
 from torch.optim import lr_scheduler
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "3"
@@ -229,6 +236,8 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
 
         tloss = (train_loss / idx)
         scheduler.step()
+        # Log loss and accuracy to TensorBoard
+        writer.add_scalar("Loss/train", train_loss, epoch)
         # scheduler.step()
         # btst = evaluate(model, traindataloader)
         # print(f'current best test avg  loss: {btest}')
@@ -291,7 +300,18 @@ def lr_lambda(current_step: int, warmup_iters=50):
 from stage1.modules.losses.CustomLosses import LayerWiseReconLoss, ChunkWiseReconLoss
 
 if __name__ == "__main__":
+    # 2. Initialize wandb
+    # -----------------------------
+    # Pass optional settings like project name, config, etc.
+    # wandb.init(project="swarm-project", name="-train_loss_probing")
+    #
+    # wandb.config.update({
+    #     "epochs": 20000,
+    #     "batch_size": 16,
+    #     "learning_rate": 0.001,
+    # })
     # seed_everything(seed=1234)
+    writer = SummaryWriter(log_dir="loraruns/tensorboard_swarm")
     now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     # sys.path.append(os.getcwd())
     parser = get_parser()
@@ -302,7 +322,7 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=0.1, normalize=None)
+                          scale=1.0, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
     traindataloader = DataLoader(trainset, shuffle=True, batch_size=20, num_workers=4,

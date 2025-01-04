@@ -29,7 +29,7 @@ class AutoencoderKL(nn.Module):
         self.encoder = LinearEncoder(**ddconfig)
         self.decoder = LinearDecoder(**ddconfig)
         self.loss = instantiate_from_config(lossconfig)
-        self.chunk_loss = ChunkWiseReconLoss(step_size=4096)
+        # self.chunk_loss = ChunkWiseReconLoss(step_size=4096)
         assert ddconfig["double_z"]
         self.quant_conv = torch.nn.Conv1d(2*ddconfig["z_channels"], 2*embed_dim, 1)
         self.post_quant_conv = torch.nn.Conv1d(embed_dim, 2*ddconfig["z_channels"], 1)
