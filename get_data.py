@@ -409,8 +409,8 @@ if __name__=='__main__':
                 trust_remote_code=True,
             # revision="step143000",
             )
-        # print(model)
-        # exit()
+        print(model)
+        exit()
         std = model.state_dict()
         k=str(md.split("/")[-1])
         # w, we = extract_layer_weights(std, tgt='norm', pref=k)
