@@ -380,7 +380,7 @@ if __name__=='__main__':
     #     "EleutherAI/pythia-70m-deduped",
     #     revision="step143000",
     # )
-    modellist=["google/gemma-7b-it", "meta-llama/Llama-3.2-3B-Instruct"]
+    modellist=["meta-llama/Meta-Llama-3.1-8B-Instruct"]
 
 
     #
@@ -414,15 +414,15 @@ if __name__=='__main__':
         std = model.state_dict()
         k=str(md.split("/")[-1])
         # w, we = extract_layer_weights(std, tgt='norm', pref=k)
-        we = get_layer_weights(std, tgt='norm')
+        # we = get_layer_weights(std, tgt='norm')
         # w, we = extract_layer_weights_withexc(std, tgt='layer', pref=None)
         #
-        # we = gets_weights(std)
+        we = gets_weights(std)
         print(we.shape, we.min(), we.max(), we.dtype)
         # exit()
         # weights.update(w) #67584
         weights[k] = we
-    torch.save(weights, '../Datasets/llmdata/gemminillmama_norm_model_wise_.pt')  # 1498482688
+    # torch.save(weights, '../Datasets/llmdata/llama-3-1-8b_.pt')  # 1498482688
     print(len(weights))
     exit()
     #HuggingFaceTB/SmolLM2-135M-Instruct
