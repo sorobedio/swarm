@@ -311,7 +311,7 @@ if __name__ == "__main__":
     #     "learning_rate": 0.001,
     # })
     # seed_everything(seed=1234)
-    writer = SummaryWriter(log_dir="loraruns/tensorboard_swarm")
+    writer = SummaryWriter(log_dir="full_llama/tensorboard_encod")
     now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     # sys.path.append(os.getcwd())
     parser = get_parser()
