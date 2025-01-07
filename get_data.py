@@ -423,7 +423,7 @@ if __name__=='__main__':
         # exit()
         # weights.update(w) #67584
         weights[k] = we
-    torch.save(weights, '../Datasets/llmdata/llama-3-1-8b_layer_full.pt')  # 1498482688
+    # torch.save(weights, '../Datasets/llmdata/llama-3-1-8b_layer_full.pt')  # 1498482688
     print(len(weights))
     exit()
     #HuggingFaceTB/SmolLM2-135M-Instruct
