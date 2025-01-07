@@ -17,11 +17,11 @@ model:
       tanh_out: True
       z_channels: 4
       resolution: 128
-      in_channels: 331
-      my_channels: 331
-      out_ch: 331
+      in_channels: 32
+      my_channels: 32
+      out_ch: 32
       ch: 128
-      ch_mult: [ 1,1, 2 ]  #num_down = len(ch_mult)-1
+      ch_mult: [ 1,1, 1,2 ]  #num_down = len(ch_mult)-1
       num_res_blocks: 2
       attn_resolutions: [ 8 ]
       dropout: 0.0
