@@ -420,14 +420,15 @@ if __name__ == "__main__":
     # model_id = "meta-llama/Llama-3.2-1B-Instruct"
     # model_id = "EleutherAI/pythia-70m"
 
-    model_id = "google/gemma-7b-it"
-    weights = torch.load(f'../Datasets/llmdata/gemminillmama_norm_model_wise_.pt')
+    # model_id = "google/gemma-7b-it"
+    model_id = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+    weights = torch.load(f'../Datasets/llmdata/llama-3-1-8b_layer_full.pt')
     print(list(weights))
     # exit()
     #
     # chunk_size =2362368
     # chunk_size = 1100416
-    chunk_size=175104
+    chunk_size=7842052
     # chunk_size = 2156032
     scale = 0.1
     # chunk_size = 58720256
@@ -443,8 +444,8 @@ if __name__ == "__main__":
 ##############################ffn###################################
     # autoencoder = torch.load('./autocheckpoints/Llama-3.2-1B-Inst_top_2tf_.pth', map_location=device)
     # autoencoder = torch.load('./autocheckpoints/llama-3_2-1B_tf-top4_.pth', map_location=device)
-    autoencoder = torch.load('./autocheckpoints/gemmina_llama_norm.pth', map_location='cpu')
-    torch.save(autoencoder.state_dict(), f'checkpoints/stage1/gemmina_llama_norm_.ckpt')
+    autoencoder = torch.load('./autocheckpoints/llama_full_.pth', map_location='cpu')
+    # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/gemmina_llama_norm_.ckpt')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/pythia_160m_ffn_44step.ckpt')
 
 

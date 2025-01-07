@@ -46,6 +46,7 @@ class ZooDataset(Dataset):
         print('===============dataset size=========================')
         # print(self.data.shape, x_min, x_max)
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
+        exit()
         print('========================================')
         data = 2 * (data - x_min) / (x_max - x_min) - 1
         self.data = data/self.scale
