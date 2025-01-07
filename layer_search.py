@@ -535,7 +535,8 @@ if __name__ == "__main__":
 
     wacc =[]
     layer = list(wd)[0]
-    n = ws.shape[0]
+    # n = ws.shape[0]
+    n=3
     for i in range(n):
         # l='gemma-7b-it'
         wr = {}
