@@ -424,13 +424,15 @@ if __name__ == "__main__":
     model_id = "meta-llama/Meta-Llama-3.1-8B-Instruct"
     weights = torch.load(f'../Datasets/llmdata/llama-3-1-8b_layer_full.pt')
     print(list(weights))
+    x_max = 2.9375
+    x_min = -0.9140625
     # exit()
     #
     # chunk_size =2362368
     # chunk_size = 1100416
     chunk_size=7842052
     # chunk_size = 2156032
-    scale = 0.1
+    scale = 1.0
     # chunk_size = 58720256
     # chunk_size = 1048576
 
@@ -453,7 +455,7 @@ if __name__ == "__main__":
     autoencoder.eval()
     wd ={}
 
-    num_samples = 20
+    num_samples = 3
     latent_shape = (num_samples, 4, 16, 16)
     # latent_shape = (num_samples, 4, 32, 32)
     zweights = {}
@@ -463,14 +465,15 @@ if __name__ == "__main__":
         weight = weights[layer]
         # u = torch.mean(weight, dim=1)
         # v = torch.std(weight, dim=1)
-        x_min = weight.min()
-        x_max = weight.max()
-        weight = 2*(weight-x_min)/(x_max-x_min)-1
-        print(weight.shape)
+        # x_min = weight.min()
+        # x_max = weight.max()
+
         # weight = (weight-u[:, None])/v[:, None]
 
         # scale=0.0125
         weight = pad_to_chunk_multiple(weight, chunk_size=chunk_size)
+        print(weight.shape)
+        weight = 2 * (weight - x_min) / (x_max - x_min) - 1
         print(weight.shape)
         # n =weight.shape[-1]
 
@@ -480,7 +483,7 @@ if __name__ == "__main__":
 
         use_amp = True
 
-        with torch.autocast(device_type="cuda", dtype=torch.bfloat16, enabled=use_amp):
+        with torch.autocast(device_type="cuda", dtype=torch.float32, enabled=use_amp):
             wl = []
             zp =[]
             for w in tqdm(weight):
@@ -532,7 +535,7 @@ if __name__ == "__main__":
     wacc =[]
     n = ws.shape[0]
     for i in range(n):
-        l='gemma-7b-it'
+        # l='gemma-7b-it'
         wr = {}
         #['gemma-7b-it', 'Llama-3.2-3B-Instruct']
         # for l in layers:
@@ -542,9 +545,9 @@ if __name__ == "__main__":
         # w = ws[i].reshape(-1)
 
         std = model.state_dict()
-        # model=set_model_weights(model, w)
+        model=set_model_weights(model, w)
         # for w in ws:ws[i
-        std =   set_layer_state_dict(std, wr, layer='norm')
+        # std =   set_layer_state_dict(std, wr, layer='norm')
         model.load_state_dict(std)
 
 

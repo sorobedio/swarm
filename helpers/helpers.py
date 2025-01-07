@@ -226,8 +226,10 @@ def set_model_weights(model, weights):
             # elif 'linear' in params:
             #     continue
             shape = std[params].shape
+            dtp = std[params].dtype
+            device = std[params].device
             ed = st + np.prod(shape)
-            std[params] = weights[st:ed].reshape(shape)
+            std[params] = weights[st:ed].reshape(shape).type(dtp).to(device)
             model.load_state_dict(std)
             st = ed
     return model
