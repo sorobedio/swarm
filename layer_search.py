@@ -541,7 +541,7 @@ if __name__ == "__main__":
         # for l in layers:
         #     print(f'layer;--{l}---')
         #     # wr[l] = slerp(0.90, weights[l], wd[l][i])
-        wr = wd[l][i].reshape(-1)
+        wr = wd[layer][i].reshape(-1)
         # w = ws[i].reshape(-1)
 
         std = model.state_dict()
