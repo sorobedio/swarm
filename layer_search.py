@@ -397,7 +397,7 @@ if __name__ == "__main__":
         seed_message.append(f"Setting torch manual seed to {torch_random_seed}")
         torch.manual_seed(int(torch_random_seed))
 
-    device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda:2' if torch.cuda.is_available() else 'cpu')
     print('=============loading model================')
 
     # configs = [OmegaConf.load(opt.base)]
