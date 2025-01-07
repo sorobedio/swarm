@@ -223,6 +223,9 @@ def set_model_weights(model, weights):
         if not params.endswith('num_batches_tracked'):
             if params.endswith('running_var') or params.endswith('running_mean'):
                 continue
+            elif 'rotary_emb' in params:
+                print(f'found------{params}-------------')
+                continue
             # elif 'linear' in params:
             #     continue
             shape = std[params].shape
