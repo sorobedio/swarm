@@ -23,8 +23,8 @@ model:
       num_res_blocks: 2
       attn_resolutions: [4]
       dropout: 0.0
-      in_dim: 16032
-      fdim: 16384
+      in_dim: 5923
+      fdim: 4096
 
 data:
   target: zooloaders.autoloader.ZooDataModule
