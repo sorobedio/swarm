@@ -21,8 +21,8 @@ model:
       ch: 256
       ch_mult: [ 1,1, 2, 2]  # num_down = len(ch_mult)-1
       num_res_blocks: 3
-      attn_resolutions: [2, 4, 8]
-      dropout: 0.0
+      attn_resolutions: [8]
+      dropout: 0.1
       in_dim: 5923
       fdim: 4096
 
