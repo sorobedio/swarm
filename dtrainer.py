@@ -94,10 +94,10 @@ def get_parser(**parser_kwargs):
         # default="stage1/configs/smollm_base_config_kl.yaml",
         # default="stage1/configs/smol_llm_head_config_kl.yaml",#was used
         #
-        # default="stage1/configs/llama_head_config.yaml",
+        default="stage1/configs/full_model_base_config_kl.yaml",
         #   default="stage1/configs/norm_layer_config_kl.yaml",
 
-        default="stage1/configs/chunk_llama_full_config_kl.yaml",
+        # default="stage1/configs/chunk_llama_full_config_kl.yaml",
         # default="stage1/configs/llama_model_config_kl.yaml",
         # default="stage1/configs/ful_lora_config_kl.yaml",
         # default="stage1/configs/lora_base_config_kl.yaml",
