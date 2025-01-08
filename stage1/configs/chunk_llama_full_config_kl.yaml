@@ -14,17 +14,17 @@ model:
       double_z: True
       tanh_out: False
       z_channels: 16
-      resolution: 128
-      in_channels: 256
-      my_channels: 256
-      out_ch: 256
+      resolution: 64
+      in_channels: 331
+      my_channels: 331
+      out_ch: 331
       ch: 128
       ch_mult: [ 1,1, 2]  # num_down = len(ch_mult)-1
       num_res_blocks: 2
-      attn_resolutions: []
+      attn_resolutions: [2]
       dropout: 0.0
-      in_dim: 23692
-      fdim: 16384
+      in_dim: 5923
+      fdim: 4096
 
 data:
   target: zooloaders.autoloader.ZooDataModule
