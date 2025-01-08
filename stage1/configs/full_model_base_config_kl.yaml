@@ -15,16 +15,16 @@ model:
       tanh_out: False
       z_channels: 4
       resolution: 128
-      in_channels: 8
-      my_channels: 8
-      out_ch: 8
-      ch: 128
-      ch_mult: [ 1,1,1, 1]  # num_down = len(ch_mult)-1
+      in_channels: 16
+      my_channels: 32
+      out_ch: 16
+      ch: 256
+      ch_mult: [ 1,1, 4]  # num_down = len(ch_mult)-1
       num_res_blocks: 2
-      attn_resolutions: [ 8, 4 ]
+      attn_resolutions: [ 2, 4 ]
       dropout: 0.0
-      in_dim: 16032
-      fdim: 16384
+      in_dim: 5923
+      fdim: 8192
 
 data:
   target: zooloaders.autoloader.ZooDataModule

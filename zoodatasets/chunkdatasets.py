@@ -34,11 +34,9 @@ def pad_to_chunk_multiple(x, chunk_size):
 class ZooDataset(Dataset):
     """weights dataset."""
     def __init__(self, root='zoodata', dataset="joint", split='train', topk=None, scale=1.0, transform=None, normalize=False,
-                 max_len= 1960513):
+                 max_len= 189536):
         super(ZooDataset, self).__init__()
-        #513024  787456 gpt2  70M 1050624
-        #= 8b-llama=4194304, 1048576
-        #2362368
+        #1960513
         self.topk = topk
         self.max_len = max_len
         self.split = split
