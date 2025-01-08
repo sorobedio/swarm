@@ -430,7 +430,7 @@ if __name__ == "__main__":
     #
     # chunk_size =2362368
     # chunk_size = 1100416
-    chunk_size=7842052
+    chunk_size=758144
     # 8030261248
     # chunk_size = 2156032
     scale = 1.0
@@ -458,7 +458,7 @@ if __name__ == "__main__":
 
     num_samples = 3
     # latent_shape = (num_samples, 4, 16, 16)
-    latent_shape = (num_samples, 4, 32, 32)
+    latent_shape = (num_samples, 4, 16, 16)
     zweights = {}
 
     # for layer in layers:
