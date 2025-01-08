@@ -30,7 +30,7 @@ class AutoencoderKL(nn.Module):
         self.encoder = Encoder(**ddconfig)
         self.decoder = Decoder(**ddconfig)
         self.loss = instantiate_from_config(lossconfig)
-        self.chunk_loss = ChunkWiseReconLoss(step_size=512)
+        self.chunk_loss = ChunkWiseReconLoss(step_size=128)
 
 
         assert ddconfig["double_z"]
@@ -169,8 +169,8 @@ class VAENoDiscModel(AutoencoderKL):
         aeloss, log_dict_ae = self.loss(inputs, reconstructions, posterior,  split="train")
         loss = aeloss+ cmse
         self.gl_step += 1
-        print(f"inputs: {inputs[0][:50]}")
-        print(f"reconstructions: {reconstructions[0][:50]}")
+        # print(f"inputs: {inputs[0][:50]}")
+        # print(f"reconstructions: {reconstructions[0][:50]}")
         return loss, log_dict_ae
 
     def validation_step(self, batch, batch_idx):
