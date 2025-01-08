@@ -414,14 +414,14 @@ if __name__=='__main__':
         std = model.state_dict()
         # k=str(md.split("/")[-1])
         # w, we = extract_layer_weights(std, tgt='norm', pref=k)
-        we = get_layer_weights(std, tgt='norm')
-        # w, we = extract_layer_weights_withexc(std, tgt='layer', pref=None)
+        # we = get_layer_weights(std, tgt='norm')
+        w, we = extract_layer_weights_withexc(std, tgt='layer', pref=None)
         # w, we = get_blocks_weights(std, tgt='norm', cond='layer')
 
         # we = gets_weights(std)
         # print(we.shape, we.min(), we.max(), we.dtype)
         # exit()
-        weights.update(ew) #67584
+        weights.update(we) #67584
         # weights[k] = we
     torch.save(weights, '../Datasets/llmdata/llama-3-1-8b_layer_norm.pt')  # 1498482688
     print(len(weights))
