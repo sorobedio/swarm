@@ -201,7 +201,7 @@ def nondefault_trainer_args(opt):
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 70000.0
+    bloss = 10000.0
     btest = 2.0
     cr =[]
     # scheduler = lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 5, 5)
@@ -215,9 +215,9 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         for batch_idx, inputs in enumerate(traindataloader):
             # input()
             optimizer.zero_grad()
-            # with torch.autocast(device_type='cuda', dtype=torch.float32, enabled=use_amp):
-            #     loss, logs = model.training_step(inputs, batch_idx)
-            loss, logs = model.training_step(inputs, batch_idx)
+            with torch.autocast(device_type='cuda', dtype=torch.float16, enabled=use_amp):
+                loss, logs = model.training_step(inputs, batch_idx)
+            # loss, logs = model.training_step(inputs, batch_idx)
 
             # scaler.scale(loss).backward()
             # scaler.step(optimizer)
@@ -235,7 +235,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             # scheduler.step()
 
         tloss = (train_loss / idx)
-        scheduler.step()
+        # scheduler.step()
         # Log loss and accuracy to TensorBoard
         writer.add_scalar("Loss/train", tloss, epoch)
         # scheduler.step()
