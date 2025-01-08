@@ -83,7 +83,7 @@ class ZooDataset(Dataset):
         # print(self.data.shape, x_min, x_max)
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
         print(f'============{std}==============={mu}=============')
-        data = (data-mu)/std
+        # data = (data-mu)/std
         # data = 2*(data - x_min) / (x_max - x_min)-1
         # exit()
         self.data = data.detach().cpu()

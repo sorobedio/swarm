@@ -19,10 +19,10 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
 # from pytorch_lightning.utilities import rank_zero_info
 # from zoodatasets.weightsdatasets import ZooDataset
-# from zoodatasets.chunkdatasets import ZooDataset
+from zoodatasets.chunkdatasets import ZooDataset
 # from zoodatasets.FFNdatasets import ZooDataset
 # from zoodatasets.layerdatasets import ZooDataset
-from zoodatasets.basedatasets import ZooDataset
+# from zoodatasets.basedatasets import ZooDataset
 # from zoodatasets.weightsdatasets import ZooDataset
 from helpers.misc import progress_bar
 # from data.base import Txt2ImgIterableBaseDataset
@@ -95,9 +95,9 @@ def get_parser(**parser_kwargs):
         # default="stage1/configs/smol_llm_head_config_kl.yaml",#was used
         #
         # default="stage1/configs/llama_head_config.yaml",
-          default="stage1/configs/norm_layer_config_kl.yaml",
-        #
-        # default="stage1/configs/chunk_llama_full_config_kl.yaml",
+        #   default="stage1/configs/norm_layer_config_kl.yaml",
+
+        default="stage1/configs/chunk_llama_full_config_kl.yaml",
         # default="stage1/configs/llama_model_config_kl.yaml",
         # default="stage1/configs/ful_lora_config_kl.yaml",
         # default="stage1/configs/lora_base_config_kl.yaml",
