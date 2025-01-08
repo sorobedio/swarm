@@ -19,10 +19,10 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
 # from pytorch_lightning.utilities import rank_zero_info
 # from zoodatasets.weightsdatasets import ZooDataset
-from zoodatasets.chunkdatasets import ZooDataset
+# from zoodatasets.chunkdatasets import ZooDataset
 # from zoodatasets.FFNdatasets import ZooDataset
 # from zoodatasets.layerdatasets import ZooDataset
-# from zoodatasets.basedatasets import ZooDataset
+from zoodatasets.basedatasets import ZooDataset
 # from zoodatasets.weightsdatasets import ZooDataset
 from helpers.misc import progress_bar
 # from data.base import Txt2ImgIterableBaseDataset
@@ -322,7 +322,7 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=1.0, normalize=None, topk=100)
+                          scale=1.0, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
     traindataloader = DataLoader(trainset, shuffle=True, batch_size=20, num_workers=4,
