@@ -2,7 +2,7 @@ model:
   base_learning_rate: 4.5e-6
   target: stage1.models.first_stage_model.VAENoDiscModel
   params:
-    embed_dim: 16
+    embed_dim: 64
     input_key: 'weight'
     learning_rate: 2.115e-4
     lossconfig:
@@ -13,15 +13,15 @@ model:
     ddconfig:
       double_z: True
       tanh_out: False
-      z_channels: 16
+      z_channels: 64
       resolution: 64
-      in_channels: 2
-      my_channels: 2
-      out_ch: 2
-      ch: 128
-      ch_mult: [ 1,1, 2]  # num_down = len(ch_mult)-1
-      num_res_blocks: 2
-      attn_resolutions: [2]
+      in_channels: 331
+      my_channels: 331
+      out_ch: 331
+      ch: 256
+      ch_mult: [ 1,1, 2, 2]  # num_down = len(ch_mult)-1
+      num_res_blocks: 3
+      attn_resolutions: [2, 4, 8]
       dropout: 0.0
       in_dim: 5923
       fdim: 4096
