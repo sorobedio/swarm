@@ -37,7 +37,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from torch.optim import lr_scheduler
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "4"
 def get_parser(**parser_kwargs):
     def str2bool(v):
         if isinstance(v, bool):
@@ -91,10 +91,10 @@ def get_parser(**parser_kwargs):
         # default="stage1/configs/pythia_70_config_kl.yaml",
         # default="stage1/configs/pythia_160M_config_kl.yaml",
         #mini_llama_norm_config.yaml
-        # default="stage1/configs/smollm_base_config_kl.yaml",
+        default="stage1/configs/simple_llama_config_base_kl.yaml",
         # default="stage1/configs/smol_llm_head_config_kl.yaml",#was used
         #
-        default="stage1/configs/full_model_base_config_kl.yaml",
+        # default="stage1/configs/full_model_base_config_kl.yaml",
         #   default="stage1/configs/norm_layer_config_kl.yaml",
 
         # default="stage1/configs/chunk_llama_full_config_kl.yaml",
@@ -248,7 +248,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         if bloss > tloss:
             bloss = tloss
             print(f'saving best training loss is:{bloss}')
-            torch.save(model, os.path.join(args.save_path,f'llama_full_chunk_.pth'))
+            torch.save(model, os.path.join(args.save_path,f'llama_full_chunk_simple.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
 
