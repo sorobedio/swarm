@@ -502,7 +502,12 @@ class Decoder(nn.Module):
         self.z_shape = (1,z_channels,curr_res,curr_res)
         print("Working with z of shape {} = {} dimensions.".format(
             self.z_shape, np.prod(self.z_shape)))
-        self.fc_out = nn.Linear(self.fdim, self.in_dim)
+        # self.fc_out = nn.Linear(self.fdim, self.in_dim)
+        self.fc_out = nn.Sequential(
+            nn.Linear(self.fdim, self.in_dim),
+            nn.Linear(self.in_dim, self.in_dim)
+        )
+
         self.flat = flat
 
         # z to block_in
