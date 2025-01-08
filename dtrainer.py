@@ -37,7 +37,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from torch.optim import lr_scheduler
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 def get_parser(**parser_kwargs):
     def str2bool(v):
         if isinstance(v, bool):
