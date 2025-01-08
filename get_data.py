@@ -421,7 +421,7 @@ if __name__=='__main__':
         # we = gets_weights(std)
         # print(we.shape, we.min(), we.max(), we.dtype)
         # exit()
-        weights.update(we) #67584
+        weights.update(w) #67584
         # weights[k] = we
     torch.save(weights, '../Datasets/llmdata/llama-3-1-8b_layer_norm.pt')  # 1498482688
     print(len(weights))
