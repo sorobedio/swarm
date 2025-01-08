@@ -97,8 +97,8 @@ def get_parser(**parser_kwargs):
         # default="stage1/configs/llama_head_config.yaml",
         #   default="stage1/configs/pythia_160M_config_kl.yaml",
 
-        # default="stage1/configs/pythia_410_fullconfig_Kl.yaml",
-        default="stage1/configs/llama_model_config_kl.yaml",
+        default="stage1/configs/chunk_llama_full_config_kl.yaml",
+        # default="stage1/configs/llama_model_config_kl.yaml",
         # default="stage1/configs/ful_lora_config_kl.yaml",
         # default="stage1/configs/lora_base_config_kl.yaml",
         #
@@ -201,7 +201,7 @@ def nondefault_trainer_args(opt):
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 70000.0
+    bloss = 100000.0
     btest = 2.0
     cr =[]
     # scheduler = lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 5, 5)
@@ -215,15 +215,15 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         for batch_idx, inputs in enumerate(traindataloader):
             # input()
             optimizer.zero_grad()
-            # with torch.autocast(device_type='cuda', dtype=torch.float32, enabled=use_amp):
+            # with torch.autocast(device_type='cuda', dtype=torch.float16, enabled=use_amp):
             #     loss, logs = model.training_step(inputs, batch_idx)
             loss, logs = model.training_step(inputs, batch_idx)
 
-            # scaler.scale(loss).backward()
-            # scaler.step(optimizer)
-            # scaler.update()
-            loss.backward()
-            optimizer.step()
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
+            # loss.backward()
+            # optimizer.step()
             # scheduler.step()
             train_loss += loss.item()
 
@@ -248,7 +248,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         if bloss > tloss:
             bloss = tloss
             print(f'saving best training loss is:{bloss}')
-            torch.save(model, os.path.join(args.save_path,f'llama_full_.pth'))
+            torch.save(model, os.path.join(args.save_path,f'llama_full_chunk_topk_100.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
 
@@ -322,7 +322,7 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=1.0, normalize=None)
+                          scale=1.0, normalize=None, topk=100)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
     traindataloader = DataLoader(trainset, shuffle=True, batch_size=20, num_workers=4,
@@ -357,7 +357,7 @@ if __name__ == "__main__":
     # # Combine schedulers using SequentialLR
     # scheduler = torch.optim.lr_scheduler.SequentialLR(optimizer, schedulers=[scheduler_warmup, scheduler_cosine],
     #                          milestones=[warmup_iters])
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200, eta_min=1e-8, last_epoch=-1)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100000, eta_min=1e-8, last_epoch=-1)
     criterion = model.loss
     # train(model, optimizer, args.n_epochs, traindataloader, testdataloader)
     train(model, optimizer, args.n_epochs, traindataloader)

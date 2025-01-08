@@ -34,7 +34,7 @@ def pad_to_chunk_multiple(x, chunk_size):
 class ZooDataset(Dataset):
     """weights dataset."""
     def __init__(self, root='zoodata', dataset="joint", split='train', topk=None, scale=1.0, transform=None, normalize=False,
-                 max_len= 758144):
+                 max_len= 1960513):
         super(ZooDataset, self).__init__()
         #513024  787456 gpt2  70M 1050624
         #= 8b-llama=4194304, 1048576
@@ -74,12 +74,17 @@ class ZooDataset(Dataset):
         # datapath = os.path.join(root, f'llmdata/pythia-70m-100000_143000.pt')11004164
         self.transform = transform
         data= self.load_data(datapath, dataset=dataset)
-        x_min, x_max = data.min(), data.max()
+        # x_min, x_max = data.min(), data.max()
+        x_max = 2.9375
+        x_min = -0.9140625
+        mu = data.mean()
+        std = data.std()
         print('===============dataset size=========================')
         # print(self.data.shape, x_min, x_max)
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
-        print('========================================')
-        data = 2*(data - x_min) / (x_max - x_min)-1
+        print(f'============{std}==============={mu}=============')
+        data = (data-mu)/std
+        # data = 2*(data - x_min) / (x_max - x_min)-1
         # exit()
         self.data = data.detach().cpu()
 
