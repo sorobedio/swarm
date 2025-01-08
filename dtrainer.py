@@ -232,7 +232,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             progress_bar(batch_idx, len(traindataloader), 'Loss: %.6f |'
                          % (train_loss / (batch_idx + 1)))
             idx = batch_idx + 1
-            # scheduler.step()
+            scheduler.step()
 
         tloss = (train_loss / idx)
         scheduler.step()
@@ -322,7 +322,7 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=0.0001, normalize=None, topk=10)
+                          scale=0.0001, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
     traindataloader = DataLoader(trainset, shuffle=True, batch_size=20, num_workers=4,
