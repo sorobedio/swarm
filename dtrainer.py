@@ -37,7 +37,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from torch.optim import lr_scheduler
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "4"
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 def get_parser(**parser_kwargs):
     def str2bool(v):
         if isinstance(v, bool):
@@ -95,9 +95,9 @@ def get_parser(**parser_kwargs):
         # default="stage1/configs/smol_llm_head_config_kl.yaml",#was used
         #
         # default="stage1/configs/llama_head_config.yaml",
-        #   default="stage1/configs/pythia_160M_config_kl.yaml",
-
-        default="stage1/configs/chunk_llama_full_config_kl.yaml",
+          default="stage1/configs/norm_layer_config_kl.yaml",
+        #
+        # default="stage1/configs/chunk_llama_full_config_kl.yaml",
         # default="stage1/configs/llama_model_config_kl.yaml",
         # default="stage1/configs/ful_lora_config_kl.yaml",
         # default="stage1/configs/lora_base_config_kl.yaml",
@@ -215,15 +215,15 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         for batch_idx, inputs in enumerate(traindataloader):
             # input()
             optimizer.zero_grad()
-            # with torch.autocast(device_type='cuda', dtype=torch.float16, enabled=use_amp):
-            #     loss, logs = model.training_step(inputs, batch_idx)
-            loss, logs = model.training_step(inputs, batch_idx)
+            with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
+                loss, logs = model.training_step(inputs, batch_idx)
+            # loss, logs = model.training_step(inputs, batch_idx)
 
-            scaler.scale(loss).backward()
-            scaler.step(optimizer)
-            scaler.update()
-            # loss.backward()
-            # optimizer.step()
+            # scaler.scale(loss).backward()
+            # scaler.step(optimizer)
+            # scaler.update()
+            loss.backward()
+            optimizer.step()
             # scheduler.step()
             train_loss += loss.item()
 
@@ -261,7 +261,7 @@ def evaluate(model , testdataloader):
     idx = 1
     with torch.no_grad():
         for batch_idx, inputs in enumerate(testdataloader):
-            with torch.autocast(device_type='cuda', dtype=torch.float16, enabled=use_amp):
+            with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
                 loss = model.validation_step(inputs, batch_idx)
             # inputs = inputs.to(device)
             outputs, _ = model(inputs)
@@ -311,7 +311,7 @@ if __name__ == "__main__":
     #     "learning_rate": 0.001,
     # })
     # seed_everything(seed=1234)
-    writer = SummaryWriter(log_dir="full_llama/tensorboard_encod")
+    writer = SummaryWriter(log_dir="normfull_llama/tensorboard_encod")
     now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     # sys.path.append(os.getcwd())
     parser = get_parser()

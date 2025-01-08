@@ -21,7 +21,7 @@ def matpadder(x, max_in=512):
 class ZooDataset(Dataset):
     """weights dataset."""
     def __init__(self, root='zoodata', dataset='joint', split='train', scale=1.0, topk=None, transform=None, normalize=False,
-                 max_len=51380224):
+                 max_len=4096):
         super(ZooDataset, self).__init__()
         self.dset = dataset
         self.topk=topk
@@ -35,9 +35,12 @@ class ZooDataset(Dataset):
 
         # datapath = os.path.join(root, f'llmdata/llama_3_2_1b_3b_inst_norm__.pt')
 
-        datapath = os.path.join(root, f'llmdata/gemina7b_it_lora_weights.pt')
+        # datapath = os.path.join(root, f'llmdata/gemina7b_it_lora_weights.pt')
         # '../../Datasets/llama_weights/
         # "../Datasets/llmdata/gemina7b_it_lora_weights.pt"
+
+        datapath = os.path.join(root, f'llmdata/llama-3-1-8b_layer_norm.pt')
+        #llmdata/llama-3-1-8b_layer_norm.pt
 
 
         self.transform = transform
