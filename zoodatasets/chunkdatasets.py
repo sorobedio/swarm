@@ -87,6 +87,7 @@ class ZooDataset(Dataset):
         # data = 2*(data - x_min) / (x_max - x_min)-1
         # exit()
         self.data = data.detach().cpu()
+        print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
 
     def __len__(self):
         return len(self.data)
