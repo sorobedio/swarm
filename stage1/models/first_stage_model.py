@@ -181,7 +181,7 @@ class VAENoDiscModel(AutoencoderKL):
         return aeloss
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(list(self.encoder.parameters())+
+        optimizer = torch.optim.AdamW(list(self.encoder.parameters())+
                                   list(self.decoder.parameters())+
                                   list(self.quant_conv.parameters())+
                                   list(self.post_quant_conv.parameters()),
