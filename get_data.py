@@ -413,9 +413,9 @@ if __name__=='__main__':
         # exit()
         std = model.state_dict()
         # k=str(md.split("/")[-1])
-        # w, we = extract_layer_weights(std, tgt='norm', pref=k)
+        w, we = extract_layer_weights(std, tgt='norm', pref=None)
         # we = get_layer_weights(std, tgt='norm')
-        w, we = extract_layer_weights_withexc(std, tgt='layer', pref=None)
+        # w, we = extract_layer_weights_withexc(std, tgt='layer', pref=None)
         # w, we = get_blocks_weights(std, tgt='norm', cond='layer')
 
         # we = gets_weights(std)
