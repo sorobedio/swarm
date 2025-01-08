@@ -12,6 +12,27 @@ from stage1.modules.attention import LinearAttention
 from stage1.modules.distributions import DiagonalGaussianDistribution
 
 
+class SwiGLU(nn.Module):
+    def __init__(self):
+        """
+        SwiGLU activation function module.
+        Applies Swish activation followed by a gating mechanism.
+        """
+        super(SwiGLU, self).__init__()
+
+    def forward(self, x):
+        """
+        Forward pass for SwiGLU.
+
+        Args:
+            x1 (torch.Tensor): Input tensor for the main linear transformation.
+            x2 (torch.Tensor): Input tensor for the gating mechanism.
+
+        Returns:
+            torch.Tensor: Output tensor after applying SwiGLU.
+        """
+        return F.silu(x) * x
+
 def get_timestep_embedding(timesteps, embedding_dim):
     """
     This matches the implementation in Denoising Diffusion Probabilistic Models:
@@ -505,6 +526,7 @@ class Decoder(nn.Module):
         # self.fc_out = nn.Linear(self.fdim, self.in_dim)
         self.fc_out = nn.Sequential(
             nn.Linear(self.fdim, self.in_dim),
+            SwiGLU(),
             nn.Linear(self.in_dim, self.in_dim)
         )
 
