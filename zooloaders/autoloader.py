@@ -7,8 +7,8 @@ from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 
 # from zoodatasets.basedatasets import ZooDataset
-# from zoodatasets.chunkdatasets import ZooDataset
-from zoodatasets.layerdatasets import ZooDataset
+from zoodatasets.chunkdatasets import ZooDataset
+# from zoodatasets.layerdatasets import ZooDataset
 
 class ZooDataModule(pl.LightningDataModule):
     def __init__(self, data_dir, batch_size, num_workers, scale, topk, normalize):
