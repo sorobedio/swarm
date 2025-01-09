@@ -14,14 +14,14 @@ model:
     ddconfig:
       double_z: True
       z_channels: 4
-      resolution: 2048
-      in_channels: 2048
-      in_ch: 2048
-      out_ch: 2048
+      resolution: 4096
+      in_channels: 1024
+      in_ch: 1024
+      out_ch: 1024
       ch: 128
-      ch_mult: [ 1,1,1,1,2]  # num_down = len(ch_mult)-1
+      ch_mult: [ 1,1,1,1,1,2]  # num_down = len(ch_mult)-1
       num_res_blocks: 2
-      attn_resolutions: [512, 64]
+      attn_resolutions: [512, 256, 128]
       dropout: 0.0
-      in_dim: 2048
-      fdim: 2048
+      in_dim: 5923
+      fdim: 4096

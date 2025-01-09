@@ -34,9 +34,9 @@ def pad_to_chunk_multiple(x, chunk_size):
 class ZooDataset(Dataset):
     """weights dataset."""
     def __init__(self, root='zoodata', dataset="joint", split='train', topk=None, scale=1.0, transform=None, normalize=False,
-                 max_len=25165824):
+                 max_len= 6065152):
         super(ZooDataset, self).__init__()
-        #128256
+        #1960513
         self.topk = topk
         self.max_len = max_len
         self.split = split
@@ -44,16 +44,51 @@ class ZooDataset(Dataset):
         self.normalize = normalize
         self.chunk_size = max_len
         self.scale=scale
-        # datapath = os.path.join(root, f'best_mlp_out_.pt') #best_mlp_out_norm.pt'
-        datapath = os.path.join(root, f'phi_3_weights/Phi-3-mini-4k-instruct_fnn_.pt')
-        #
+
+        #'../Datasets/facebook/mobilellm_125_mlp__.pt'
+        #'../Datasets/modelszoo/pythia_160m_mlp_final.pt'
+        # datapath = os.path.join(root, f'modelszoo/pythia_160m_mlp_final.pt') #2362368
+        # datapath = os.path.join(root, f'llmdata/SmolLM2-135M_full.pt')  # 8141328
+        # datapath = os.path.join(root, f'llmdata/SmolLM2-heads_.pt')  # 2362368
+        #'../Datasets/llmdata/SmolLM2-heads_.pt'
+        # 11004164
+        # datapath = os.path.join(root, f'modelszoo/pythia_160m_mlp_100000_143000.pt')2362368
+        # datapath = os.path.join(root, f'llmdata/llama_head_.pt')#1026048
+        #'../Datasets/modelszoo/pythia_410m_full_13000_by26_143000.pt'
+        # datapath = os.path.join(root, f'modelszoo/pythia_410m_full_13000_by26_143000.pt')  # 2156032
+        # datapath = os.path.join(root, f'modelszoo/pythia_160m_full_13000_by_143000_b16_.pt')  #
+        datapath = os.path.join(root, f'llmdata/llama-3-1-8b_layer_full.pt')  #458752
+        # '../Datasets/llmdata/llama-3-1-8b_layer_full.pt'
+
+        # datapath = os.path.join(root, f'llmdata/gemina7b_it_lora_weights.pt')
+
+
+
+        # '../Datasets/llmdata/SmolLM2-135M-instruct_1_2__full.pt'
+        #pythia_160m_full_13000_by_143000_b16_.pt'
+
+        # datapath = os.path.join(root, f'modelszoo/pythia_410m_full_100000_143000.pt')  # 4401664
+        #'../Datasets/modelszoo/pythia_410m_full_100000_143000.pt'
+        # datapath = os.path.join(root, f'llmdata/pythia-70m-100000_143000.pt')11004164
         self.transform = transform
         data= self.load_data(datapath, dataset=dataset)
-        self.data = data.detach().cpu()
+        # x_min, x_max = data.min(), data.max()
+        x_max = 2.9375
+        x_min = -0.9140625
+        print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
+        # data = 2 * (data - x_min) / (x_max - x_min) - 1
+        mu = data.mean()
+        std = data.std()
         print('===============dataset size=========================')
-        print(self.data.shape)
-        print('========================================')
+        # print(self.data.shape, x_min, x_max)
+
+        print(f'============{std}==============={mu}=============')
+        data = (data-mu)/std
+
         # exit()
+        self.data = data.detach().cpu()
+        print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
+
     def __len__(self):
         return len(self.data)
 
@@ -67,7 +102,6 @@ class ZooDataset(Dataset):
         weight= weight/self.scale
         sample = {'weight': weight, 'dataset': []}
         return sample
-
     def load_data(self, file, dataset='joint'):
         data = torch.load(file)
         wl = []
@@ -76,17 +110,20 @@ class ZooDataset(Dataset):
 
             for k in keys:
                 w = data[k]
-                if self.normalize == 'min_max':
-                    x_max = w.max()
-                    x_min = w.min()
-                    w = 2 * (w - x_min) / (x_max - x_min) - 1
-                elif self.normalize == 'z_score':
-                    u = torch.mean(w)
-                    var = torch.std(w)
-                    w = (w - u) / var
-                w = pad_to_chunk_multiple(w, chunk_size=self.chunk_size)
+                print(w.shape)
+                w=pad_to_chunk_multiple(w, chunk_size=self.chunk_size)
                 w = torch.split(w, split_size_or_sections=self.chunk_size, dim=-1)
                 w = torch.cat(w, dim=0)
+                w = w.reshape(-1, 1024,5923)
+                if self.normalize == "z_score":
+                    u = torch.mean(w, dim=1)
+                    v = torch.std(w, dim=1)
+                    w = (w - u[:, None]) / v[:, None]
+                elif self.normalize == "min_max":
+                    x_max, _ = torch.max(w, dim=-1)
+                    x_min, _ = torch.min(w, dim=-1)
+                    xdiff = x_max - x_min
+                    w = 2*(w - x_min[:, None]) / xdiff[:, None]-1
                 if self.topk is not None:
                     if self.topk > 0:
                         w = w[:self.topk]
@@ -99,14 +136,15 @@ class ZooDataset(Dataset):
             w = pad_to_chunk_multiple(w, chunk_size=self.chunk_size)
             w = torch.split(w, split_size_or_sections=self.chunk_size, dim=-1)
             w = torch.cat(w, dim=0)
-            if self.normalize=='min_max':
-                x_max = w.max()
-                x_min = w.min()
-                w = 2*(w - x_min) / (x_max - x_min)-1
-            elif self.normalize == 'z_score':
-                u = torch.mean(w)
-                var = torch.std(w)
-                w = (w-u)/var
+            if self.normalize == "z_score":
+                u = torch.mean(w, dim=1)
+                v = torch.std(w, dim=1)
+                w = (w - u[:, None]) / v[:, None]
+            elif self.normalize == "min_max":
+                x_max, _ = torch.max(w, dim=-1)
+                x_min, _ = torch.min(w, dim=-1)
+                xdiff = x_max - x_min
+                w = (w - x_min[:, None]) / xdiff[:, None]
             if self.topk is not None:
                 if self.topk > 0:
                     w = w[:self.topk]
