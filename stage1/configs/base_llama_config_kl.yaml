@@ -31,7 +31,7 @@ model:
 data:
   target: zooloaders.autoloader.ZooDataModule
   params:
-    data_dir: '../../Datasets/'
+    data_dir: '../Datasets/'
     batch_size: 20
     num_workers: 4
     scale: 10
