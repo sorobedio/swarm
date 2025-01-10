@@ -73,12 +73,14 @@ class ZooDataset(Dataset):
         self.transform = transform
         data= self.load_data(datapath, dataset=dataset)
         # x_min, x_max = data.min(), data.max()
+        std = 0.01385498046875
+        mu=8.344650268554688e-06
         x_max = 2.9375
         x_min = -0.9140625
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
         # data = 2 * (data - x_min) / (x_max - x_min) - 1
-        mu = data.mean()
-        std = data.std()
+        # mu = data.mean()
+        # std = data.std()
         print('===============dataset size=========================')
         # print(self.data.shape, x_min, x_max)
 
