@@ -526,8 +526,8 @@ class Decoder(nn.Module):
         # self.fc_out = nn.Linear(self.fdim, self.in_dim)
         self.fc_out = nn.Sequential(
             nn.Linear(self.fdim, self.in_dim),
-            SwiGLU(),
-            nn.Linear(self.in_dim, self.in_dim)
+            # nn.LeakyReLU(0.2),
+            # nn.Linear(self.in_dim, self.in_dim)
         )
 
         self.flat = flat
