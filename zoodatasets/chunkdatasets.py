@@ -34,7 +34,7 @@ def pad_to_chunk_multiple(x, chunk_size):
 class ZooDataset(Dataset):
     """weights dataset."""
     def __init__(self, root='zoodata', dataset="joint", split='train', topk=None, scale=1.0, transform=None, normalize=False,
-                 max_len= 189536):
+                 max_len= 528288):
         super(ZooDataset, self).__init__()
         #1960513
         self.topk = topk
@@ -44,7 +44,7 @@ class ZooDataset(Dataset):
         self.normalize = normalize
         self.chunk_size = max_len
         self.scale=scale
-
+#51380224==4096 x 12544
         #'../Datasets/facebook/mobilellm_125_mlp__.pt'
         #'../Datasets/modelszoo/pythia_160m_mlp_final.pt'
         # datapath = os.path.join(root, f'modelszoo/pythia_160m_mlp_final.pt') #2362368
@@ -57,10 +57,10 @@ class ZooDataset(Dataset):
         #'../Datasets/modelszoo/pythia_410m_full_13000_by26_143000.pt'
         # datapath = os.path.join(root, f'modelszoo/pythia_410m_full_13000_by26_143000.pt')  # 2156032
         # datapath = os.path.join(root, f'modelszoo/pythia_160m_full_13000_by_143000_b16_.pt')  #
-        datapath = os.path.join(root, f'llmdata/llama-3-1-8b_layer_full.pt')  #458752
+        # datapath = os.path.join(root, f'llmdata/llama-3-1-8b_layer_full.pt')  #458752
         # '../Datasets/llmdata/llama-3-1-8b_layer_full.pt'
 
-        # datapath = os.path.join(root, f'llmdata/gemina7b_it_lora_weights.pt')
+        datapath = os.path.join(root, f'llmdata/gemina7b_it_lora_weights.pt')
 
 
 

@@ -1,5 +1,5 @@
 
-model:norm_layer_config_kl.yaml
+model:
   base_learning_rate: 4.5e-6
   target: stage1.models.first_stage_model.VAENoDiscModel
   params:
@@ -17,15 +17,15 @@ model:norm_layer_config_kl.yaml
     ddconfig:
       double_z: True
       z_channels: 4
-      resolution: 256
-      in_channels: 8
+      resolution: 128
+      in_channels: 32
       my_channels: 32
-      out_ch: 8
+      out_ch: 32
       ch: 128
       ch_mult: [ 1,1,2, 2]  # num_down = len(ch_mult)-1
       num_res_blocks: 3
       attn_resolutions: [8]
       dropout: 0.0
-      in_dim: 14336
+      in_dim: 16384
       fdim: 16384
-      tanh_out: True
+#      tanh_out: True
