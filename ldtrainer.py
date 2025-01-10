@@ -232,10 +232,10 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             progress_bar(batch_idx, len(traindataloader), 'Loss: %.6f |'
                          % (train_loss / (batch_idx + 1)))
             idx = batch_idx + 1
-            scheduler.step()
+            # scheduler.step()
 
         tloss = (train_loss / idx)
-        scheduler.step()
+        # scheduler.step()
         # Log loss and accuracy to TensorBoard
         writer.add_scalar("Loss/train", tloss, epoch)
         # scheduler.step()
