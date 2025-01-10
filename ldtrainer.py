@@ -215,7 +215,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         for batch_idx, inputs in enumerate(traindataloader):
             # input()
             optimizer.zero_grad()
-            with torch.autocast(device_type='cuda', dtype=torch.float16, enabled=use_amp):
+            with torch.autocast(device_type='cuda', dtype=torch.float32, enabled=use_amp):
                 loss, logs = model.training_step(inputs, batch_idx)
             # loss, logs = model.training_step(inputs, batch_idx)
 
@@ -261,7 +261,7 @@ def evaluate(model , testdataloader):
     idx = 1
     with torch.no_grad():
         for batch_idx, inputs in enumerate(testdataloader):
-            with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
+            with torch.autocast(device_type='cuda', dtype=torch.float16, enabled=use_amp):
                 loss = model.validation_step(inputs, batch_idx)
             # inputs = inputs.to(device)
             outputs, _ = model(inputs)
