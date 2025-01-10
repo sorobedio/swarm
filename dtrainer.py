@@ -235,7 +235,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             scheduler.step()
 
         tloss = (train_loss / idx)
-        scheduler.step()
+        # scheduler.step()
         # Log loss and accuracy to TensorBoard
         writer.add_scalar("Loss/train", tloss, epoch)
         # scheduler.step()
