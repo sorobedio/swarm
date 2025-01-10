@@ -2,7 +2,7 @@ model:
   base_learning_rate: 4.5e-4
   target: stage1.models.first_stage_model.VAENoDiscModel
   params:
-    embed_dim: 4
+    embed_dim: 64
     input_key: 'weight'
     learning_rate: 1.51115e-4
 #    ckpt_path: 'checkpoints/stage1/attn_first_stage_31_VAGOsolutions_.pt'
@@ -15,7 +15,7 @@ model:
     ddconfig:
       double_z: True
       tanh_out: True
-      z_channels: 4
+      z_channels: 64
       resolution: 128
       in_channels: 331
       my_channels: 331
