@@ -109,6 +109,7 @@ class ZooDataset(Dataset):
         wl = []
         if dataset=='joint':
             keys = list(data)
+            keys =keys[:5]
 
             for k in keys:
                 w = data[k]
