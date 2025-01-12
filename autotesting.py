@@ -875,10 +875,10 @@ if __name__=='__main__':
                 # print(w.shape, x_rec.shape)
                 # exit()
                 #
-                ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
+                # ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
                 # zs = ze.detach().cpu().float()
                 # # zp.append(zs)
-                x_rec = autoencoder.decode(ze)
+                # x_rec = autoencoder.decode(ze)
                 #
                 wl.append(x_rec.detach().cpu())
         # zweights[layer] = torch.cat(zp, dim=1).reshape(num_samples, -1)
