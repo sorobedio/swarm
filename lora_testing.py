@@ -836,7 +836,7 @@ if __name__=='__main__':
     base_model = "google/gemma-7b-it"
     # modelist=list(wd.keys())
     print('=====================================================================')
-    print(modelist)
+    # print(modelist)
     print('=====================================================================')
 
     wacc = []
