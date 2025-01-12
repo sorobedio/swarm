@@ -926,14 +926,14 @@ if __name__=='__main__':
 
         tokenizer.pad_token = tokenizer.eos_token
 
-        # wr = wd[k].reshape(-1)
-        # std = model.state_dict()
-        #
-        # # for w in ws:ws[i
-        # std = set_layer_state_dict(std, wr, layer='lora')
-        # model.load_state_dict(std)
+        wr = wd[k].reshape(-1)*0.0
+        std = model.state_dict()
 
-        
+        # for w in ws:ws[i
+        std = set_layer_state_dict(std, wr, layer='lora')
+        model.load_state_dict(std)
+
+
 
         # model.load_state_dict(set_layers_state_dict(std, lw))
         # del wd
