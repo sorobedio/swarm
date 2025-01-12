@@ -829,12 +829,12 @@ if __name__=='__main__':
 
 
 
-    # model_names = ["code_alpaca", "cot", "flan_v2", "gemini_alpaca", "lima", "oasst1", "open_orca", "science",
-    #                "sharegpt", "wizardlm"]
-    wd = torch.load("../Datasets/gemina7b_it_lora_weights.pt")
+    model_names = ["code_alpaca", "cot", "flan_v2", "gemini_alpaca", "lima", "oasst1", "open_orca", "science",
+                   "sharegpt", "wizardlm"]
+    # wd = torch.load("../Datasets/gemina7b_it_lora_weights.pt")
     # model_names=list(wd.keys())
     base_model = "google/gemma-7b-it"
-    modelist=list(wd.keys())
+    # modelist=list(wd.keys())
     print('=====================================================================')
     print(modelist)
     print('=====================================================================')
@@ -847,14 +847,14 @@ if __name__=='__main__':
     utilities =[]
     accs =[]
     results_dict ={}
-    for k in modelist:
+    for k in model_names:
         ks = "bunsenfeng/" + k
-        if k not in model_names:
-            model_path = "bunsenfeng/code_alpaca"
-        # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/" + model_name)
-        else:
-            model_path=ks
-            continue
+        # if k not in model_names:
+        #     model_path = "bunsenfeng/code_alpaca"
+        # # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/" + model_name)
+        # else:
+        #     model_path=ks
+        #     continue
         print(f'-====--loading--{ks}--model=======')
 
         model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
@@ -863,28 +863,9 @@ if __name__=='__main__':
         model.to(f"cuda:{gpu_id}")
         tokenizer = AutoTokenizer.from_pretrained(base_model)
 
-
-        # try:
-        #     model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
-        #     print('---base--model--lora')
-        #     model.load_adapter(model_path)
-        #     model.to(f"cuda:{gpu_id}")
-        #     tokenizer = AutoTokenizer.from_pretrained(base_model)
-        # except:
-        #     print('---only--base--model--no--lora')
-        #     del model
-        #     del tokenizer
-        #     model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16)
-        #     model.to(f"cuda:{gpu_id}")
-        #     tokenizer = AutoTokenizer.from_pretrained(model_path)
         tokenizer.pad_token = tokenizer.eos_token
 
-        wr = wd[k].reshape(-1)
-        std = model.state_dict()
 
-        # for w in ws:ws[i
-        std = set_layer_state_dict(std, wr, layer='lora')
-        model.load_state_dict(std)
 
         # model.load_state_dict(set_layers_state_dict(std, lw))
         # del wd

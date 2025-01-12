@@ -834,8 +834,8 @@ if __name__=='__main__':
     weights = torch.load("../Datasets/gemina7b_it_lora_weights.pt")
 
     autoencoder = torch.load('./autocheckpoints/lora_hunk_base.pth', map_location='cpu')
-    torch.save(autoencoder.state_dict(), f'checkpoints/stage1/gemmina_lora_.ckpt')
-    exit()
+    # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/gemmina_lora_.ckpt')
+    # exit()
 
     autoencoder.to(device)
     autoencoder.eval()
