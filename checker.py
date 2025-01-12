@@ -34,26 +34,26 @@ if __name__ == "__main__":
         print(f'---params:{model_name}---{ws.shape}--{ws.min()}-{ws.max()}-')
         weights[model_name]=ws
 
-    #
-    # particles_now=len(model_names)
-    # initial_experts_num=20
-    # for i in range(initial_experts_num - particles_now):
-    #     parent_1 = random.choice(model_names)
-    #     parent_2 = random.choice(model_names)
-    #     while parent_1 == parent_2:
-    #         parent_2 = random.choice(model_names)
-    #     # w_1 = random.random() * 2  # half interpolation, half extrapolation
-    #     w_1 = random.uniform(epsilon, 1 - epsilon)
-    #     w_2 = 1 - w_1
-    #     p1 = weights[parent_1]
-    #     p2 = weights[parent_2]
-    #     pm = w_1 * p1 + w_2 * p2
-    #     k= parent_1+'_'+parent_2
-    #     weights[k]=pm
-    # # torch.save(weights, "../Datasets/llmdata/gemina7b_it_lora_weights.pt")
-    # print(len(weights))
-    #
-    # exit(0)
+
+    particles_now=len(model_names)
+    initial_experts_num=20
+    for i in range(initial_experts_num - particles_now):
+        parent_1 = random.choice(model_names)
+        parent_2 = random.choice(model_names)
+        while parent_1 == parent_2:
+            parent_2 = random.choice(model_names)
+        # w_1 = random.random() * 2  # half interpolation, half extrapolation
+        w_1 = random.uniform(epsilon, 1 - epsilon)
+        w_2 = 1 - w_1
+        p1 = weights[parent_1]
+        p2 = weights[parent_2]
+        pm = w_1 * p1 + w_2 * p2
+        k= parent_1+'_'+parent_2
+        weights[k]=pm
+    torch.save(weights, "../Datasets/gemina7b_it_lora_weights_indiv.pt")
+    print(len(weights))
+
+    exit(0)
 
 
 
