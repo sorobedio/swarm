@@ -7,7 +7,7 @@ model:
     embed_dim: 4 #128 #64
     input_key: 'weight'
     learning_rate: 1.335e-04
-#    ckpt_path: 'checkpoints/stage1/norm_base_llama3_3_8b_instruct.pt'
+    ckpt_path: 'checkpoints/stage1/gemmina_lora_.ckpt'
     lossconfig:
       target: stage1.modules.losses.CustomLosses.Myloss
       params:
