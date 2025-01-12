@@ -875,10 +875,10 @@ if __name__=='__main__':
                 # print(w.shape, x_rec.shape)
                 # exit()
                 #
-                # ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
+                ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
                 # zs = ze.detach().cpu().float()
                 # # zp.append(zs)
-                # x_rec = autoencoder.decode(ze)
+                x_rec = autoencoder.decode(ze)
                 #
                 wl.append(x_rec.detach().cpu())
         # zweights[layer] = torch.cat(zp, dim=1).reshape(num_samples, -1)
@@ -913,7 +913,7 @@ if __name__=='__main__':
         # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/" + model_name)
         else:
             model_path=ks
-            continue
+            # continue
         print(f'-====--loading--{ks}--model=======')
 
         model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
