@@ -926,7 +926,7 @@ if __name__=='__main__':
 
         tokenizer.pad_token = tokenizer.eos_token
 
-        wr = weights[k].reshape(-1)
+        wr = ww[k].reshape(-1)
         std = model.state_dict()
 
         # for w in ws:ws[i
