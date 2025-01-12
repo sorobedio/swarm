@@ -893,7 +893,7 @@ if __name__=='__main__':
 
     # model_names=list(wd.keys())
     base_model = "google/gemma-7b-it"
-    modelist=list(wd.keys())
+    modelist=list(wd)
     print('=====================================================================')
     print(modelist)
     print('=====================================================================')
