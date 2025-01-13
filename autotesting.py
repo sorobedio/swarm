@@ -839,7 +839,7 @@ if __name__=='__main__':
 
     #
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/gemmina_lora_.ckpt')
-    exit()
+    # exit()
 
     autoencoder.to(device)
     autoencoder.eval()
