@@ -99,8 +99,8 @@ def get_parser(**parser_kwargs):
 
         # default="stage1/configs/chunk_llama_full_config_kl.yaml",
         # default="stage1/configs/llama_model_config_kl.yaml",
-        # default="stage1/configs/ful_lora_config_kl.yaml",
-        default="stage1/configs/lora_base_config_kl.yaml",
+        default="stage1/configs/ful_lora_config_kl.yaml",
+        # default="stage1/configs/lora_base_config_kl.yaml",
         #
         #
     )
@@ -248,7 +248,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         if bloss > tloss:
             bloss = tloss
             print(f'saving best training loss is:{bloss}')
-            torch.save(model, os.path.join(args.save_path,f'lora_hunk_base_full.pth'))
+            torch.save(model, os.path.join(args.save_path,f'lora_hunk_base_full_normal.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
 
@@ -322,7 +322,7 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=0.1, normalize=None)
+                          scale=0.01, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
     traindataloader = DataLoader(trainset, shuffle=True, batch_size=20, num_workers=4,
@@ -357,7 +357,7 @@ if __name__ == "__main__":
     # # Combine schedulers using SequentialLR
     # scheduler = torch.optim.lr_scheduler.SequentialLR(optimizer, schedulers=[scheduler_warmup, scheduler_cosine],
     #                          milestones=[warmup_iters])
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200, eta_min=1e-8, last_epoch=-1)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=400, eta_min=1e-8, last_epoch=-1)
     criterion = model.loss
     # train(model, optimizer, args.n_epochs, traindataloader, testdataloader)
     train(model, optimizer, args.n_epochs, traindataloader)
