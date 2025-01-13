@@ -856,6 +856,7 @@ if __name__=='__main__':
     for layer in layers:
         # #
         weight = weights[layer]
+        print(f'---original--shape{weight.shape}')
 
         weight = pad_to_chunk_multiple(weight, chunk_size=chunk_size)
         print(weight.shape)

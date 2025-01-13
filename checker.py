@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
 
     # particles_now=len(model_names)
-    # initial_experts_num=20
+    # initial_experts_num=20 ##51380224
     # for i in range(initial_experts_num - particles_now):
     #     parent_1 = random.choice(model_names)
     #     parent_2 = random.choice(model_names)
