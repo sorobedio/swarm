@@ -832,7 +832,7 @@ if __name__=='__main__':
     model_names = ["code_alpaca", "cot", "flan_v2", "gemini_alpaca", "lima", "oasst1", "open_orca", "science",
                    "sharegpt", "wizardlm"]
     wd = torch.load("../Datasets/gemina7b_it_lora_weights.pt")
-    model_names=list(wd.keys())
+    # model_names=list(wd.keys())
     base_model = "google/gemma-7b-it"
     # modelist=list(wd.keys())
     print('=====================================================================')
