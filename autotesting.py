@@ -835,7 +835,7 @@ if __name__=='__main__':
 
     # autoencoder = torch.load('./autocheckpoints/lora_hunk_base.pth', map_location='cpu')
     autoencoder = torch.load('./autocheckpoints/lora_hunk_base_full.pth', map_location='cpu')
-    torch.save(autoencoder,'./autocheckpoints/lora_hunk_base_full_copy_.pth')
+    torch.save(autoencoder,'./autocheckpoints/lora_hunk_base_full_copy_v.pth')
 
     #
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/gemmina_lora_.ckpt')
