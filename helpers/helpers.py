@@ -237,7 +237,29 @@ def set_model_weights(model, weights):
             st = ed
     return model
 
-
+def extract_layer_weights(std, tgt='norm', pref=None):
+    # std = model.state_dict()
+    weights = {}
+    ws = []
+    for params in std:
+        if not params.endswith('num_batches_tracked'):
+            if 'mean' in params or 'var' in params:
+                continue
+            # print(params)
+            if tgt in params:
+                w = std[params].reshape(1,-1)
+                print(f'paramertes============={params}---------------------')
+                print(w.shape)
+                print(w.min(), w.max())
+                ws.append(w)
+                if pref is not None:
+                    key = f'{pref}_{str(params)}'
+                # weights[key]=w
+                else:
+                    key = f'{str(params)}'
+                weights[key] = w
+    ws = torch.cat(ws, dim=-1)
+    return weights, ws
 
 def set_weights(model, weights):
     std = model.state_dict()
