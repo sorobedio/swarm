@@ -833,7 +833,10 @@ if __name__=='__main__':
     #                "sharegpt", "wizardlm"]
     weights = torch.load("../Datasets/gemina7b_it_lora_weights.pt")
 
-    autoencoder = torch.load('./autocheckpoints/lora_hunk_base.pth', map_location='cpu')
+    # autoencoder = torch.load('./autocheckpoints/lora_hunk_base.pth', map_location='cpu')
+    autoencoder = torch.load('./autocheckpoints/lora_hunk_base_full.pth', map_location='cpu')
+
+    #
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/gemmina_lora_.ckpt')
     # exit()
 
@@ -841,11 +844,11 @@ if __name__=='__main__':
     autoencoder.eval()
     wd = {}
     layers = list(weights)
-    layers = layers[:2]
+    layers = layers
     chunk_size = 1376256
     scale =0.1
 
-    num_samples = 3
+    num_samples = 1
     # latent_shape = (num_samples, 4, 16, 16)
     latent_shape = (num_samples, 4, 32, 32)
     zweights = {}
