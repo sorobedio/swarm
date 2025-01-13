@@ -847,7 +847,7 @@ if __name__=='__main__':
     utilities =[]
     accs =[]
     results_dict ={}
-    for k in model_names:
+    for k in model_list:
         ks = "bunsenfeng/" + k
         if k not in model_names:
             ks = "bunsenfeng/code_alpaca"
