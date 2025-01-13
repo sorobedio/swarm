@@ -78,6 +78,7 @@ def extract_layer_weights(std, tgt='norm', pref=None):
                 else:
                     key = f'{str(params)}'
                 weights[key] = w
+    ws = torch.cat(ws, dim=-1)
     return weights, ws
 
 
@@ -380,7 +381,7 @@ if __name__=='__main__':
     #     "EleutherAI/pythia-70m-deduped",
     #     revision="step143000",
     # )
-    modellist=["meta-llama/Meta-Llama-3.1-8B-Instruct"]
+    modellist=["google/gemma-7b-it"]
 
 
     #
@@ -423,7 +424,7 @@ if __name__=='__main__':
         # exit()
         weights.update(w) #67584
         # weights[k] = we
-    torch.save(weights, '../Datasets/llmdata/llama-3-1-8b_layer_norm.pt')  # 1498482688
+    torch.save(weights, '../Datasets/llmdata/gemmeni_7b_it_layer_norm.pt')  # 1498482688
     print(len(weights))
     exit()
     #HuggingFaceTB/SmolLM2-135M-Instruct
