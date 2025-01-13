@@ -852,9 +852,9 @@ if __name__=='__main__':
         if k not in model_names:
             ks = "bunsenfeng/code_alpaca"
         # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/" + model_name)
-        # else:
-        #     model_path=ks
-        #     continue
+        else:
+            model_path=ks
+            continue
         print(f'-====--loading--{ks}--model=======')
         model_path = ks
 
