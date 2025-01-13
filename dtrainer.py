@@ -19,10 +19,10 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
 # from pytorch_lightning.utilities import rank_zero_info
 # from zoodatasets.weightsdatasets import ZooDataset
-from zoodatasets.chunkdatasets import ZooDataset
+# from zoodatasets.chunkdatasets import ZooDataset
 # from zoodatasets.FFNdatasets import ZooDataset
 # from zoodatasets.layerdatasets import ZooDataset
-# from zoodatasets.basedatasets import ZooDataset
+from zoodatasets.basedatasets import ZooDataset
 # from zoodatasets.weightsdatasets import ZooDataset
 from helpers.misc import progress_bar
 # from data.base import Txt2ImgIterableBaseDataset
