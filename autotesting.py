@@ -917,7 +917,7 @@ if __name__=='__main__':
         else:
             model_path=ks
             # continue
-        print(f'-====--loading--{ks}--model=======')
+        print(f'-=={k}==--loading--{ks}--model=======')
 
         model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
         model.load_adapter(model_path)
