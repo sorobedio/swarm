@@ -854,6 +854,7 @@ if __name__=='__main__':
         # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/" + model_name)
         else:
             model_path=ks
+            print(f'----from initial--experts-------------------------------------------')
             # continue
         print(f'-===={k}--loading--{ks}--model=======')
         model_path = ks
