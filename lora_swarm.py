@@ -1685,7 +1685,7 @@ if __name__ == "__main__":
     for kk, vv in data.items():
         vv = vv.reshape(1, -1)
         weights.append(vv)
-    weights = torch.cat(weights, 0)
+    weights = torch.cat(weights, 0).cuda()
 
     # values = list(data.values())
 
