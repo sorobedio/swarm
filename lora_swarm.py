@@ -1610,11 +1610,11 @@ if __name__ == "__main__":
     model = AutoModelForCausalLM.from_pretrained(model_id,
                                                  # revision='step143000',
                                                  # attn_implementation="flash_attention_2",
-                                                 torch_dtype=torch.bfloat16,
+                                                 torch_dtype=torch.float16,
                                                  device_map=device,
                                                  )
     model_path = "bunsenfeng/code_alpaca"
-    model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
+    # model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
     model.load_adapter(model_path)
     print('---base--model--lora')
     model.to(f"cuda:{gpu_id}")
