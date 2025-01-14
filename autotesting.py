@@ -892,9 +892,9 @@ if __name__=='__main__':
                 # x_rec = autoencoder.decode(ze)
                 #
                 wl.append(x_rec.detach().cpu())
-        z = torch.cat(zp, dim=1).reshape(num_samples, -1)
-        zweights[layer] = z
-        print(z.shape)
+        # z = torch.cat(zp, dim=1).reshape(num_samples, -1)
+        # zweights[layer] = z
+        # print(z.shape)
         # print(len(wl))
 
         ws = torch.cat(wl, dim=-1) * scale
@@ -903,8 +903,8 @@ if __name__=='__main__':
     print('finished encoding=========================================')
 
     del autoencoder
-    torch.save(wd, 'wdata/reconstruct_lora_weights.pt')
-    torch.save(wd, 'wdata/latent_z_lora_weights.pt')
+    # torch.save(wd, 'wdata/reconstruct_lora_weights.pt')
+    # torch.save(wd, 'wdata/latent_z_lora_weights.pt')
     # exit()
 
     # model_names=list(wd.keys())
