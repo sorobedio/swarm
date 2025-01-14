@@ -1617,7 +1617,7 @@ if __name__ == "__main__":
     # model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
     model.load_adapter(model_path)
     print('---base--model--lora')
-    model.to(f"cuda:{gpu_id}")
+    # model.to(f"cuda:{gpu_id}")
     tokenizer = AutoTokenizer.from_pretrained(base_model)
 
 
