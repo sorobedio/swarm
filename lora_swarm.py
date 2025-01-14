@@ -1677,9 +1677,16 @@ if __name__ == "__main__":
     # data = torch.load('wdata/dit_sampled_weights_top1.pt')
     # data = torch.load('wdata/sampled_weights_vae_norm.pt')
     data = torch.load('wdata/latent_z_lora_weights_v2.pt')
+
+
     # expanded_experts
     layers = list(data)[0]
-    weights = data[layers]
+
+    values = list(data.values())
+
+    # Convert to a PyTorch tensor
+    weights = torch.tensor(values, dtype=torch.float32)
+    # weights = data[layers]
     print(weights.shape, layers)
     # exit()
     num_particles = weights.shape[0]
