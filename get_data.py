@@ -413,16 +413,16 @@ if __name__=='__main__':
         # print(model)
         # exit()
         std = model.state_dict()
-        for p, w in std.items():
-            print(f'---param--{p}---{w.shape}--{w.min()}---{w.max()}--')
-            print("=====================================================")
-
-        exit()
+        # for p, w in std.items():
+        #     print(f'---param--{p}---{w.shape}--{w.min()}---{w.max()}--')
+        #     print("=====================================================")
+        #
+        # exit()
 
 
 
         # k=str(md.split("/")[-1])
-        w, we = extract_layer_weights(std, tgt='norm', pref=None)
+        w, we = extract_layer_weights(std, tgt='self_attn', pref=None)
         # we = get_layer_weights(std, tgt='norm')
         # w, we = extract_layer_weights_withexc(std, tgt='layer', pref=None)
         # w, we = get_blocks_weights(std, tgt='norm', cond='layer')
@@ -432,7 +432,7 @@ if __name__=='__main__':
         # exit()
         weights.update(w) #67584
         # weights[k] = we
-    torch.save(weights, '../Datasets/llmdata/gemmeni_7b_it_layer_norm.pt')  # 1498482688
+    torch.save(weights, '../Datasets/llmdata/gemmeni_7b_it_la.pt')  # 1498482688
     print(len(weights))
     exit()
     #HuggingFaceTB/SmolLM2-135M-Instruct
