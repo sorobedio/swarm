@@ -33,7 +33,7 @@ if __name__ == "__main__":
     #     ws= torch.cat(wl, dim=-1)
     #     print(f'---params:{model_name}---{ws.shape}--{ws.min()}-{ws.max()}-')
     #     weights[model_name]=ws
-
+    neweights ={}
     weights= torch.load('wdata/reconstruct_lora_weights.pt')
     model_names = list(weights)
     particles_now=len(model_names)
@@ -51,8 +51,9 @@ if __name__ == "__main__":
         pm = w_1 * p1 + w_2 * p2
         k= parent_1+'_t_'+parent_2
         weights[k]=pm
-    torch.save(weights, "../Datasets/llmdata/gemina7b_it_lora_weights_recon_ext.pt")
-    print(len(weights))
+        neweights[k]=pm
+    torch.save(neweights, "../Datasets/llmdata/gemina7b_it_lora_weights_recon_ext.pt")
+    print(len(neweights))
 
     exit(0)
 
