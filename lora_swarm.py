@@ -57,7 +57,7 @@ import argparse, os, sys, datetime, glob
 torch.set_grad_enabled(False)
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 
 
