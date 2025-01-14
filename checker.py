@@ -37,7 +37,7 @@ if __name__ == "__main__":
     weights= torch.load('wdata/reconstruct_lora_weights.pt')
     model_names = list(weights)
     particles_now=len(model_names)
-    initial_experts_num=30 ##51380224
+    initial_experts_num=40 ##51380224
     for i in range(initial_experts_num - particles_now):
         parent_1 = random.choice(model_names)
         parent_2 = random.choice(model_names)
