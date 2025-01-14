@@ -874,6 +874,7 @@ if __name__=='__main__':
             zp = []
             for w in tqdm(weight):
                 w = w / scale
+                w = torch.randn_like(w)
                 w = w.to(device)
                 _, x_rec, prior = autoencoder(w)
                 print(f'--input:{w[:50]}')
