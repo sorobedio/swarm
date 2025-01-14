@@ -876,14 +876,18 @@ if __name__=='__main__':
                 w = w / scale
                 w = w.to(device)
                 _, x_rec, prior = autoencoder(w)
+                print(f'--input:{w[:50]}')
+
+                print(f'--out:{x_rec[:50]}')
+                print('==============================================================')
                 # print(prior.mean.shape, prior.std.shape)
                 # print(w.shape, x_rec.shape)
                 # exit()
                 #
-                ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
-                zs = ze.detach().cpu().float()
-                zp.append(zs)
-                x_rec = autoencoder.decode(ze)
+                # ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
+                # zs = ze.detach().cpu().float()
+                # zp.append(zs)
+                # x_rec = autoencoder.decode(ze)
                 #
                 wl.append(x_rec.detach().cpu())
         z = torch.cat(zp, dim=1).reshape(num_samples, -1)
