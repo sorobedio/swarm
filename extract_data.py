@@ -189,7 +189,7 @@ if __name__=='__main__':
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
     # print(yaml_dict)
-    keys =    my_dict.keys()
+    # keys =    my_dict.keys()
 
     # modellist = ["meta-llama/Meta-Llama-3.1-8B-Instruct"]
     # modellist = ["mistralai/Mistral-7B-Instruct-v0.3"]
