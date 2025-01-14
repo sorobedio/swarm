@@ -969,6 +969,6 @@ if __name__=='__main__':
         print(f'=========={k}============{acc*100}==============================')
     print(results_dict)
         # accs.append(acc*100)
-    torch.save(utilities, 'wdata/utilities_vae_lora_mmlu.pt')
+    # torch.save(utilities, 'wdata/utilities_vae_lora_mmlu.pt')
     # print(sorted(accs, reverse=True))
 

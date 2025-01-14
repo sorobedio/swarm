@@ -57,7 +57,7 @@ import argparse, os, sys, datetime, glob
 torch.set_grad_enabled(False)
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 
 
 
@@ -1454,7 +1454,7 @@ def get_parser():
     import argparse
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--model_path", type=str, default="google/gemma",
+    parser.add_argument("--model_path", type=str, default="google/gemma-7b-it",
                         help="Path or name of the model to use")
     parser.add_argument("--eval_type", type=str, default="multiple_choice",
                         help="Type of evaluation to perform")
@@ -1529,22 +1529,21 @@ def utility_function(wd, layer=None):
     utility_value = []
 
     if len(wd.shape) >1:
+
         for j in range(num_samples):
             wr = {}
             print(f'----loading particle---{j}--out of --{num_samples}--')
             # for l in layer:
-            wr = wd[j].reshape(-1)
-            wr = ldmmodel.decode_first_stage(wr.to(device))
-            wr = wr * 0.1
-            wr = 0.5*(wr+1)*(x_max-x_min)+x_min
+            ze = wd[j].reshape(latent_shape)
+            x_rec = autoencoder.decode(ze)
 
+            wr = x_rec.reshape(-1)*0.1
+            # wr = weights[k].reshape(-1)
             std = model.state_dict()
-
-            std = set_layer_state_dict(std, wr.reshape(-1), layer='norm')
+            std = set_layer_state_dict(std, wr, layer='lora')
             model.load_state_dict(std)
 
-            # std = set_layers_state_dict(std, wr)
-            # model.load_state_dict(std)
+
 
             print('---------evaluating model-----------------------------')
 
@@ -1564,14 +1563,17 @@ def utility_function(wd, layer=None):
             utility_value.append(acc)
     else:
         # for l in layer:
-        wr = wd.reshape(-1)
-        wr = ldmmodel.decode_first_stage(wr.to(device))
-        wr = wr * 0.1
-        wr = 0.5 * (wr + 1) * (x_max - x_min) + x_min
-        std = model.state_dict()
+        ze = wd.reshape(latent_shape)
+        x_rec = autoencoder.decode(ze)
 
-        std = set_layer_state_dict(std, wr.reshape(-1), layer='norm')
+        wr = x_rec.reshape(-1)*0.1
+        # wr = weights[k].reshape(-1)
+        std = model.state_dict()
+        std = set_layer_state_dict(std, wr, layer='lora')
         model.load_state_dict(std)
+
+
+
 
         # std = set_layers_state_dict(std, wr)
         # model.load_state_dict(std)
@@ -1611,9 +1613,17 @@ if __name__ == "__main__":
                                                  torch_dtype=torch.bfloat16,
                                                  device_map=device,
                                                  )
+    model_path = "bunsenfeng/code_alpaca"
+    model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
+    model.load_adapter(model_path)
+    print('---base--model--lora')
+    model.to(f"cuda:{gpu_id}")
+    tokenizer = AutoTokenizer.from_pretrained(base_model)
+
+
     tokenizer.pad_token = tokenizer.eos_token
 
-    model_path = args.model_path
+    # model_path = args.model_path
     eval_type = args.eval_type
     dataset = args.dataset
     gpu_id = args.gpu_id
@@ -1629,59 +1639,153 @@ if __name__ == "__main__":
     # stds = torch.load('./dit_checkpoints/checkpoint_mdt_gemma_lamaepoch=19739_.ckpt')['state_dict']
     # ldmmodel.load_state_dict(stds)
     # ldmmodel = ldmmodel.to(device)
+    # ldmmodel.to(device)
+    # ldmmodel.eval()
     autoencoder = torch.load('./autocheckpoints/lora_hunk_base_full.pth', map_location='cpu')
     autoencoder.to(device)
     autoencoder.eval()
+    latent_shape = (-1, 4, 32, 32)
 
     x_min = -4.0
     x_max = 20.1250
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    print('=============loading model================')
 
-
-
-    wd = torch.load('wdata/latent_z_lora_weights_v2.pt')
-    # wd = torch.load("./particles/mmlu_pro_evo_weights_final.pt")
-    # wd = torch.load('particles/mmlu_swarm_weights_final.pt')
     # wd = torch.load('wdata/sampled_weights_vae_norm.pt')
-    # wd = torch.load('wdata/mdt_sampled_weights_25_norm_gem.pt')
-    # wd =ldmmodel.decode_first_stage(wd.to(device))
-    # wd = 0.1*wd
-    # wd =0.5*((wd+1)*(x_max - x_min))+x_min
-
+    # torch.save(wd, 'wdata/sampled_weights_vae_norm.pt')
 
     wacc = []
-    # weights =wd['gemma-7b-it']
-    weights = wd
-    n= weights.shape[0]
-    print(n)
-    utilities =[]
-    accs =[]
-    for i in range(n):
-        wr = weights[i]
-        wr
+    # weights = wd['gemma-7b-it']
 
-        std = model.state_dict()
-        # model=set_model_weights(model, w)
-        # for w in ws:ws[i
-        std = set_layer_state_dict(std, wr, layer='norm')
-        model.load_state_dict(std)
-
-        # model.load_state_dict(set_layers_state_dict(std, lw))
-        # del wd
+    # Parameters
+    # num_particles = 20
+    # weight_dim = 1000  # Dimensionality for each weight vector
+    lambda_step = 1  # Step length
+    varphi_lambda = 0.95  # Step length schedule
+    varphi_v = 0.4  # Inertia
+    varphi_p = 0.3  # Cognitive coefficient
+    varphi_g = 0.3  # Social coefficient0
+    varphi_w = 0.3  # Repel coefficient
+    patience = 8  # Number of iterations to wait for no improvement in global best
+    restart_patience = 4  # Number of iterations for particle restart
+    max_iterations = 20  # Maximum number of iterations
 
 
-        results = evaluate(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", save_dev_flag=False,
-                 only_one_or_two=None, skip_flag=False)
+    # acc = results['results']['hellaswag']['acc_norm,none']
+    #         utility_values.append(acc)
+    #     torch.save(utility_values, 'utility_values_hella.pt')
 
-        results =results*100.0
-        # utilities.append(results)
-        print(results)
-        # # print('-----evaluated======================================')
-        acc =evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
-                      obj4_save_generation=False)
-        print(acc*100.0)
-        accs.append(acc*100)
-    # torch.save(utiliti**es, 'wdata/utilities_mdt_norm_mmlu_pro.pt')
-    print(sorted(accs, reverse=True))
 
+    # data = torch.load('wdata/dit_sampled_weights_top1.pt')
+    # data = torch.load('wdata/sampled_weights_vae_norm.pt')
+    data = torch.load('wdata/latent_z_lora_weights_v2.pt')
+    # expanded_experts
+    layers = list(data)[0]
+    weights = data[layers]
+    print(weights.shape, layers)
+    # exit()
+    num_particles = weights.shape[0]
+    print(f'optimising---{num_particles}----particles---')
+    velocities = torch.zeros_like(weights)  # Initialize velocities as zeros
+
+    # Initialize global best, global worst, and personal bests
+    personal_best = weights.clone()
+    utility_values = torch.load('wdata/utilities_vae_lora_mmlu.pt')
+    # utility_values = torch.load('utilities.pt')[layers]
+    utility_values = torch.tensor(utility_values).reshape((-1))
+    print(f'-----------{utility_values.shape}------------')
+    global_best = weights[torch.argmax(utility_values)].clone()
+    global_worst = weights[torch.argmin(utility_values)].clone()
+
+
+    random_indices = torch.arange(num_particles)
+
+    # Ensure each expert has a randomly selected index different from its own index
+    for i in range(num_particles):
+        while True:
+            # Pick a random index in the range of num_particles
+            random_index = torch.randint(0, num_particles, (1,)).item()
+
+            # Ensure the random index is different from the current expert's index
+            if random_index != i:
+                random_indices[i] = random_index
+                break
+
+    # Compute initial velocities as the difference between the current expert's weight and a randomly selected expert's weight
+    velocities = weights[random_indices] - weights
+
+
+
+    # Search process (iterations)
+    for k in range(max_iterations):
+        # If the global best doesn't change for a certain number of iterations, stop
+        if k > patience and torch.equal(global_best, weights[torch.argmax(utility_function(weights, layers))]):
+            print(f"Stopping at iteration {k} due to no improvement in global best.")
+            break
+
+        # Iterate through each particle and update positions and velocities
+        for i in range(num_particles):
+            # Sample random factors for inertia, cognitive, social, and repel terms
+            r_v = torch.rand(1).item()
+            r_p = torch.rand(1).item()
+            r_g = torch.rand(1).item()
+            r_w = torch.rand(1).item()
+            # r_v=1.0
+            # r_w = 1
+            # r_p = 1
+            # r_s = 1
+            # r_b = 1
+            # r_g=1.0
+
+            # Update velocity according to the formula
+            inertia_term = r_v * varphi_v * velocities[i]
+            cognitive_term = r_p * varphi_p * (personal_best[i] - weights[i])
+            social_term = r_g * varphi_g * (global_best - weights[i])
+            repel_term = -r_w * varphi_w * (global_worst - weights[i])
+
+            # Normalize the sum of the velocity components
+            C = r_v * varphi_v + r_p * varphi_p + r_g * varphi_g + r_w * varphi_w
+            velocities[i] = (inertia_term + cognitive_term + social_term + repel_term) / C
+
+            # Update position: x_i = x_i + λ * v_i
+            weights[i] = weights[i] + lambda_step * velocities[i]
+
+            # Update personal best, global best, and global worst
+            current_utility = utility_function(weights[i].unsqueeze(0),layers)
+
+            # Check if the new position is better for this particle
+            if current_utility > utility_function(personal_best[i].unsqueeze(0), layers):
+                personal_best[i] = weights[i].clone()
+
+            # Update global best and global worst
+            if current_utility > utility_function(global_best.unsqueeze(0), layers):
+                global_best = weights[i].clone()
+
+            if current_utility < utility_function(global_worst.unsqueeze(0), layers):
+                global_worst = weights[i].clone()
+
+
+            # Track how many iterations each particle has gone without improvement
+            stagnation_counter = torch.zeros(num_particles, dtype=torch.int)
+
+            # Restart particles if their utility hasn't improved for `restart_patience` iterations
+            if current_utility <= utility_function(personal_best[i].unsqueeze(0), layers):
+                stagnation_counter[i] += 1
+            else:
+                stagnation_counter[i] = 0  # Reset counter if improvement is detected
+
+            if stagnation_counter[i] >= restart_patience:
+                # Apply a perturbation to weights and velocities to explore a new direction
+                weights[i] = personal_best[i].clone() + torch.randn_like(
+                    personal_best[i]) * 0.1  # Example perturbation scale
+                velocities[i] = torch.randn_like(velocities[i])  # Reinitialize velocity with randomness
+                stagnation_counter[i] = 0  # Reset the counter after restart
+
+        # Step length scheduling: λ = λ * φλ
+        lambda_step = lambda_step * varphi_lambda
+        # torch.save(weights, f"./wdata/gemm_mmlu_pro_swarm_weights_{k}.pt")
+        print(f'iteration------{k}--finished--')
+
+    # Output the best-found expert (global best)
+    torch.save(weights, f"./particles/mmlu_swarm_weights_final.pt")
+    # print("Best-found weights (global best):", global_best)
+    torch.save(global_best, f"./particles/mmlu_swarm_global_best_top_1.pt")
+    print("Utility of best-found weights:", utility_function(global_best.unsqueeze(0), layers))
