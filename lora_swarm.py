@@ -1681,11 +1681,16 @@ if __name__ == "__main__":
 
     # expanded_experts
     layers = list(data)[0]
+    weights= []
+    for kk, vv in data.items():
+        vv = vv.reshape(1, -1)
+        weights.append(vv)
+    weights = torch.cat(weights, 0)
 
-    values = list(data.values())
+    # values = list(data.values())
 
     # Convert to a PyTorch tensor
-    weights = torch.tensor(values, dtype=torch.float32)
+    # weights = torch.tensor(values, dtype=torch.float32)
     # weights = data[layers]
     print(weights.shape, layers)
     # exit()
