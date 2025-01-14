@@ -1618,7 +1618,7 @@ if __name__ == "__main__":
     model.load_adapter(model_path)
     print('---base--model--lora')
     # model.to(f"cuda:{gpu_id}")
-    tokenizer = AutoTokenizer.from_pretrained(base_model)
+    # tokenizer = AutoTokenizer.from_pretrained(base_model)
 
 
     tokenizer.pad_token = tokenizer.eos_token
