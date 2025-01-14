@@ -936,8 +936,8 @@ if __name__=='__main__':
 
         tokenizer.pad_token = tokenizer.eos_token
 
-        # wr = wd[k].reshape(-1)
-        wr = weights[k].reshape(-1)
+        wr = wd[k].reshape(-1)
+        # wr = weights[k].reshape(-1)
         std = model.state_dict()
 
         # for w in ws:ws[i
@@ -949,11 +949,11 @@ if __name__=='__main__':
         # model.load_state_dict(set_layers_state_dict(std, lw))
         # del wd
 
-        # results = evaluate(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", save_dev_flag=False,
-        #          only_one_or_two=None, skip_flag=False)
+        results = evaluate(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", save_dev_flag=False,
+                 only_one_or_two=None, skip_flag=False)
 
-        # results =results*100.0
-        # # utilities.append(results)
+        results =results*100.0
+        utilities.append(results)
         # print(results)
         # # print('-----evaluated======================================')
         acc =evaluate_test(model, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
@@ -963,6 +963,6 @@ if __name__=='__main__':
         print(f'=========={k}============{acc*100}==============================')
     print(results_dict)
         # accs.append(acc*100)
-    # torch.save(utilities, 'wdata/utilities_mdt_norm_gsm8k.pt')
+    torch.save(utilities, 'wdata/utilities_vae_lora_mmlu.pt')
     # print(sorted(accs, reverse=True))
 
