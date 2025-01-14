@@ -413,6 +413,14 @@ if __name__=='__main__':
         # print(model)
         # exit()
         std = model.state_dict()
+        for p, w in std.items():
+            print(f'---param--{p}---{w.shape}--{w.min()}---{w.max()}--')
+            print("=====================================================")
+
+        exit()
+
+
+
         # k=str(md.split("/")[-1])
         w, we = extract_layer_weights(std, tgt='norm', pref=None)
         # we = get_layer_weights(std, tgt='norm')
