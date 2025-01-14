@@ -899,6 +899,7 @@ if __name__=='__main__':
     # model_names=list(wd.keys())
     base_model = "google/gemma-7b-it"
     # modelist=list(wd)
+    modelist = list(weights)
     print('=====================================================================')
     # print(modelist)
     print('=====================================================================')
