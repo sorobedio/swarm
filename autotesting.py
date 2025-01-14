@@ -881,7 +881,7 @@ if __name__=='__main__':
 
                 print(f'--out:{x_rec[:50]}')
                 print('==============================================================')
-                continue
+                # continue
                 # print(prior.mean.shape, prior.std.shape)
                 # print(w.shape, x_rec.shape)
                 # exit()
