@@ -92,13 +92,13 @@ def get_parser(**parser_kwargs):
         # default="stage1/configs/pythia_160M_config_kl.yaml",
         #mini_llama_norm_config.yaml
         # default="stage1/configs/simple_llama_config_base_kl.yaml",
-        # default="stage1/configs/smol_llm_head_config_kl.yaml",#was used
+        default="stage1/configs/geminia_atten_config.yaml",#was used
         #
         # default="stage1/configs/full_model_base_config_kl.yaml",
         #   default="stage1/configs/norm_layer_config_kl.yaml",
 
         # default="stage1/configs/chunk_llama_full_config_kl.yaml",
-        default="stage1/configs/genimni_layer_wise_config_kl.yaml",
+        # default="stage1/configs/genimni_layer_wise_config_kl.yaml", #norm
         # default="stage1/configs/ful_lora_config_kl.yaml",
         # default="stage1/configs/lora_base_config_kl.yaml",
         #
@@ -238,7 +238,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         # scheduler.step()
         # Log loss and accuracy to TensorBoard
         writer.add_scalar("Loss/train", tloss, epoch)
-        # scheduler.step()
+        scheduler.step()
         # btst = evaluate(model, traindataloader)
         # print(f'current best test avg  loss: {btest}')
         # if btest > btst:
@@ -248,7 +248,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         if bloss > tloss:
             bloss = tloss
             print(f'saving best training loss is:{bloss}')
-            torch.save(model, os.path.join(args.save_path,f'geminina_layer_norm.pth'))
+            torch.save(model, os.path.join(args.save_path,f'geminina_layer_attention.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
 

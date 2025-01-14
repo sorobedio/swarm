@@ -34,7 +34,7 @@ def pad_to_chunk_multiple(x, chunk_size):
 class ZooDataset(Dataset):
     """weights dataset."""
     def __init__(self, root='zoodata', dataset="joint", split='train', topk=None, scale=1.0, transform=None, normalize=False,
-                 max_len= 51380224):
+                 max_len= 12582912):
         super(ZooDataset, self).__init__()
         #1960513
         self.topk = topk
@@ -60,7 +60,11 @@ class ZooDataset(Dataset):
         # datapath = os.path.join(root, f'llmdata/llama-3-1-8b_layer_full.pt')  #458752
         # '../Datasets/llmdata/llama-3-1-8b_layer_full.pt'
 
-        datapath = os.path.join(root, f'gemina7b_it_lora_weights.pt')
+        # datapath = os.path.join(root, f'gemina7b_it_lora_weights.pt')
+
+
+        datapath = os.path.join(root, f'llmdata/gemini_7b_int_top_25p_attn_.pt')
+        #f'../Datasets/llmdata/gemini_7b_int_top_25p_attn_.pt'
 
 
 
@@ -109,8 +113,8 @@ class ZooDataset(Dataset):
         wl = []
         if dataset=='joint':
             keys = list(data)
-            keys = ['sharegpt_cot', 'gemini_alpaca_sharegpt']
-            # keys =keys
+            # keys = ['sharegpt_cot', 'gemini_alpaca_sharegpt']
+            keys =keys[:3]
 
             for k in keys:
                 w = data[k]
