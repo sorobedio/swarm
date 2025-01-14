@@ -854,53 +854,53 @@ if __name__=='__main__':
     latent_shape = (num_samples, 4, 32, 32)
     zweights = {}
 
-    for layer in layers:
-        # #
-        weight = weights[layer]
-        print(f'---original--shape{weight.shape}')
-
-        weight = pad_to_chunk_multiple(weight, chunk_size=chunk_size)
-        print(weight.shape)
-        # weight = 2 * (weight - x_min) / (x_max - x_min) - 1
-        # print(weight.shape)
-        # n =weight.shape[-1]
-
-        weight = torch.split(weight, split_size_or_sections=chunk_size, dim=-1)
-
-        use_amp = True
-
-        with torch.autocast(device_type="cuda", dtype=torch.float32, enabled=use_amp):
-            wl = []
-            zp = []
-            for w in tqdm(weight):
-                w = w / scale
-                w = w.to(device)
-                _, x_rec, prior = autoencoder(w)
-                # print(prior.mean.shape, prior.std.shape)
-                # print(w.shape, x_rec.shape)
-                # exit()
-                #
-                # ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
-                # zs = ze.detach().cpu().float()
-                # # zp.append(zs)
-                # x_rec = autoencoder.decode(ze)
-                #
-                wl.append(x_rec.detach().cpu())
-        # zweights[layer] = torch.cat(zp, dim=1).reshape(num_samples, -1)
-        # print(len(wl))
-
-        ws = torch.cat(wl, dim=-1) * scale
-        print(ws.shape)
-        wd[layer] = ws
-    print('finished encoding=========================================')
-
-    del autoencoder
+    # for layer in layers:
+    #     # #
+    #     weight = weights[layer]
+    #     print(f'---original--shape{weight.shape}')
+    #
+    #     weight = pad_to_chunk_multiple(weight, chunk_size=chunk_size)
+    #     print(weight.shape)
+    #     # weight = 2 * (weight - x_min) / (x_max - x_min) - 1
+    #     # print(weight.shape)
+    #     # n =weight.shape[-1]
+    #
+    #     weight = torch.split(weight, split_size_or_sections=chunk_size, dim=-1)
+    #
+    #     use_amp = True
+    #
+    #     with torch.autocast(device_type="cuda", dtype=torch.float32, enabled=use_amp):
+    #         wl = []
+    #         zp = []
+    #         for w in tqdm(weight):
+    #             w = w / scale
+    #             w = w.to(device)
+    #             _, x_rec, prior = autoencoder(w)
+    #             # print(prior.mean.shape, prior.std.shape)
+    #             # print(w.shape, x_rec.shape)
+    #             # exit()
+    #             #
+    #             # ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
+    #             # zs = ze.detach().cpu().float()
+    #             # # zp.append(zs)
+    #             # x_rec = autoencoder.decode(ze)
+    #             #
+    #             wl.append(x_rec.detach().cpu())
+    #     # zweights[layer] = torch.cat(zp, dim=1).reshape(num_samples, -1)
+    #     # print(len(wl))
+    #
+    #     ws = torch.cat(wl, dim=-1) * scale
+    #     print(ws.shape)
+    #     wd[layer] = ws
+    # print('finished encoding=========================================')
+    #
+    # del autoencoder
 
     # model_names=list(wd.keys())
     base_model = "google/gemma-7b-it"
-    modelist=list(wd)
+    # modelist=list(wd)
     print('=====================================================================')
-    print(modelist)
+    # print(modelist)
     print('=====================================================================')
 
     wacc = []
@@ -931,7 +931,8 @@ if __name__=='__main__':
 
         tokenizer.pad_token = tokenizer.eos_token
 
-        wr = wd[k].reshape(-1)
+        # wr = wd[k].reshape(-1)
+        wr = weights[k].reshape(-1)
         std = model.state_dict()
 
         # for w in ws:ws[i
