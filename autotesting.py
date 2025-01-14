@@ -874,27 +874,27 @@ if __name__=='__main__':
             zp = []
             for w in tqdm(weight):
                 w = w / scale
-                w = torch.randn_like(w)
+                # w = torch.randn_like(w)
                 w = w.to(device)
                 _, x_rec, prior = autoencoder(w)
-                print(f'--input:{w[:50]}')
-
-                print(f'--out:{x_rec[:50]}')
-                print('==============================================================')
+                # print(f'--input:{w[:50]}')
+                #
+                # print(f'--out:{x_rec[:50]}')
+                # print('==============================================================')
                 # continue
                 # print(prior.mean.shape, prior.std.shape)
                 # print(w.shape, x_rec.shape)
                 # exit()
                 #
-                # ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
-                # zs = ze.detach().cpu().float()
-                # zp.append(zs)
-                # x_rec = autoencoder.decode(ze)
+                ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
+                zs = ze.detach().cpu().float()
+                zp.append(zs)
+                x_rec = autoencoder.decode(ze)
                 #
                 wl.append(x_rec.detach().cpu())
-        # z = torch.cat(zp, dim=1).reshape(num_samples, -1)
-        # zweights[layer] = z
-        # print(z.shape)
+        z = torch.cat(zp, dim=1).reshape(num_samples, -1)
+        zweights[layer] = z
+        print(z.shape)
         # print(len(wl))
 
         ws = torch.cat(wl, dim=-1) * scale
@@ -903,9 +903,9 @@ if __name__=='__main__':
     print('finished encoding=========================================')
 
     del autoencoder
-    # torch.save(wd, 'wdata/reconstruct_lora_weights.pt')
-    # torch.save(wd, 'wdata/latent_z_lora_weights.pt')
-    # exit()
+    torch.save(wd, 'wdata/reconstruct_lora_weights_v2.pt')
+    torch.save(wd, 'wdata/latent_z_lora_weights_v2.pt')
+    exit()
 
     # model_names=list(wd.keys())
     base_model = "google/gemma-7b-it"
