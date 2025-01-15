@@ -1550,15 +1550,15 @@ def utility_function(wd, layer=None):
 
             acc = evaluate(model_path, eval_type, dataset, gpu_id)*100
 
-            # Get the current date and format it
-            current_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            # Create the header with asterisks and the date
-            header = f"\n{'*' * 40}\n{current_date}\n{'*' * 40}\n"
-            file_path = 'logfiles/swamarc_gemminaparticles_results_v2.txt'
-            # Append the header and the Markdown table to the file
-            with open(file_path, 'a') as file:
-                file.write(header)
-                file.write(f'-------iteration--{j}---{acc}----\n')
+            # # Get the current date and format it
+            # current_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            # # Create the header with asterisks and the date
+            # header = f"\n{'*' * 40}\n{current_date}\n{'*' * 40}\n"
+            # file_path = 'logfiles/swamarc_gemminaparticles_results_v2.txt'
+            # # Append the header and the Markdown table to the file
+            # with open(file_path, 'a') as file:
+            #     file.write(header)
+            #     file.write(f'-------iteration--{j}---{acc}----\n')
             print(f'******{j}*****acc:=={acc}*****************************')
 
             utility_value.append(acc)
@@ -1584,18 +1584,18 @@ def utility_function(wd, layer=None):
         acc = evaluate(model_path, eval_type, dataset, gpu_id) * 100
 
         # Get the current date and format it
-        current_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        # Create the header with asterisks and the date
-        header = f"\n{'*' * 40}\n{current_date}\n{'*' * 40}\n"
-        file_path = 'logfiles/swamarc_llamaparticles_results_v2.txt'
-        # Append the header and the Markdown table to the file
-        with open(file_path, 'a') as file:
-            file.write(header)
-            file.write(f'-------iteration--{j}---{acc}----\n')
-        print(f'******{j}*****acc:=={acc}*****************************')
+        # current_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # # Create the header with asterisks and the date
+        # header = f"\n{'*' * 40}\n{current_date}\n{'*' * 40}\n"
+        # file_path = 'logfiles/swamarc_llamaparticles_results_v2.txt'
+        # # Append the header and the Markdown table to the file
+        # with open(file_path, 'a') as file:
+        #     file.write(header)
+        #     file.write(f'-------iteration--{j}---{acc}----\n')
+        print(f'******{j}*****acc:=={acc}**********single*******************')
 
         utility_value.append(acc)
-        if acc>49:
+        if acc>49.0:
 
             accz = evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it",
                                 only_one_or_two=None,
