@@ -840,10 +840,10 @@ if __name__=='__main__':
     print('=====================================================================')
     print(len(model_list))
     print('=====================================================================')
-    weights = torch.load("./particles/mmlu_swarm_weights_final.pt")
-    autoencoder = torch.load('./autocheckpoints/lora_hunk_base_full.pth', map_location='cpu')
-    autoencoder.to(device)
-    autoencoder.eval()
+    weights = torch.load( 'wdata/swarms_lora_weights_.pt')
+    # autoencoder = torch.load('./autocheckpoints/lora_hunk_base_full.pth', map_location='cpu')
+    # autoencoder.to(device)
+    # autoencoder.eval()
 
     wacc = []
     # weights =wd['gemma-7b-it']
