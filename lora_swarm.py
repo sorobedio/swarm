@@ -1621,7 +1621,7 @@ def utility_function(wd, layer=None):
 
                 best_weights=wr
                 print(f'--new--best:{mybest}')
-                torch.save(best_weights, './particles/weights_best.pt')
+                torch.save(best_weights, './particles/weights_best_mmlu_pro.pt')
 
     return torch.tensor(utility_value)
 
@@ -1829,7 +1829,7 @@ if __name__ == "__main__":
         print(f'iteration------{k}--finished--')
 
     # Output the best-found expert (global best)
-    torch.save(weights, f"./particles/mmlu_swarm_weights_final.pt")
+    torch.save(weights, f"./particles/mmlu_swarm_weights_final_pro.pt")
     # print("Best-found weights (global best):", global_best)
-    torch.save(global_best, f"./particles/mmlu_swarm_global_best_top_1.pt")
+    torch.save(global_best, f"./particles/mmlu_swarm_global_best_top_1_pro.pt")
     print("Utility of best-found weights:", utility_function(global_best.unsqueeze(0), layers))
