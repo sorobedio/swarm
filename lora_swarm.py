@@ -1572,8 +1572,9 @@ def utility_function(wd, layer=None):
                     mybest = accz * 100.0
 
                     best_weights = wr
-                    print(f'--new--best:{mybest}')
+
                     torch.save(best_weights, './particles/weights_best.pt')
+                print(f'--new--best:{mybest}---actual--{accz*100}')
 
             utility_value.append(acc)
     else:
