@@ -861,7 +861,7 @@ if __name__=='__main__':
     with torch.autocast(device_type="cuda", dtype=torch.float32, enabled=use_amp):
         wl = []
         zp = []
-        for w in tqdm(zweight):
+        for w in tqdm(zweights):
             w = w.reshape(latent_shape)
             x_rec = autoencoder.decode(w)
             #
