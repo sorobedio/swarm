@@ -1561,6 +1561,19 @@ def utility_function(wd, layer=None):
             #     file.write(f'-------iteration--{j}---{acc}----\n')
             print(f'******{j}*****acc:=={acc}*****************************')
 
+            if acc > 49.0:
+
+                accz = evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it",
+                                     only_one_or_two=None,
+                                     obj4_save_generation=False)
+
+                if mybest < accz * 100.0:
+                    mybest = accz * 100.0
+
+                    best_weights = wr
+                    print(f'--new--best:{mybest}')
+                    torch.save(best_weights, './particles/weights_best.pt')
+
             utility_value.append(acc)
     else:
         # for l in layer:
