@@ -885,12 +885,12 @@ if __name__=='__main__':
         # model.load_state_dict(set_layers_state_dict(std, lw))
         # del wd
 
-        # results = evaluate(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", save_dev_flag=False,
-        #          only_one_or_two=None, skip_flag=False)
+        results = evaluate(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", save_dev_flag=False,
+                 only_one_or_two=None, skip_flag=False)
 
-        # results =results*100.0
-        # # utilities.append(results)
-        # print(results)
+        results =results*100.0
+        # utilities.append(results)
+        print(results)
         # print('-----evaluated======================================')
         acc =evaluate_test(model, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
                       obj4_save_generation=False)
