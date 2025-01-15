@@ -1594,10 +1594,20 @@ def utility_function(wd, layer=None):
         print(f'******{j}*****acc:=={acc}*****************************')
 
         utility_value.append(acc)
+    acc = evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it",
+                        only_one_or_two=None,
+                        obj4_save_generation=False)
+
+    if mybest < acc * 100.0:
+        mybest = acc * 100.0
+        best_weights=wr
+        print(f'--new--best:{mybest}')
+        torch.save(best_weights, './particles/weights_best.pt')
 
     return torch.tensor(utility_value)
 
 if __name__ == "__main__":
+    best_weights=None
     parser = get_parser()
     args = parser.parse_args()
 
@@ -1648,6 +1658,7 @@ if __name__ == "__main__":
 
     x_min = -4.0
     x_max = 20.1250
+    mybest=0.0
 
     # wd = torch.load('wdata/sampled_weights_vae_norm.pt')
     # torch.save(wd, 'wdata/sampled_weights_vae_norm.pt')
@@ -1762,6 +1773,7 @@ if __name__ == "__main__":
 
             # Update personal best, global best, and global worst
             current_utility = utility_function(weights[i].unsqueeze(0),layers)
+
 
             # Check if the new position is better for this particle
             if current_utility > utility_function(personal_best[i].unsqueeze(0), layers):
