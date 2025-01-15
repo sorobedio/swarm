@@ -389,8 +389,8 @@ if __name__=='__main__':
 
 
     wl = []
-    x_min = -0.3398
-    x_max = 0.3574
+    x_min = -0.9141
+    x_max = 2.9375
     weights = {}
     mw ={}
     ws =[]
