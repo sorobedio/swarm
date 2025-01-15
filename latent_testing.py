@@ -849,7 +849,7 @@ if __name__=='__main__':
     chunk_size = 1376256
     scale =0.1
 
-    num_samples = 1
+    num_samples = -1
     # latent_shape = (num_samples, 4, 16, 16)
     latent_shape = (num_samples, 4, 32, 32)
     zweights = {}
