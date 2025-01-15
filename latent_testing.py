@@ -855,6 +855,7 @@ if __name__=='__main__':
     zweights = {}
 
     zweights = torch.load("./particles/mmlu_swarm_global_best_top_1.pt")
+    print(zweights.shape)
 
     use_amp = True
 
