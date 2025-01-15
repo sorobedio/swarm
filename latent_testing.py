@@ -854,7 +854,7 @@ if __name__=='__main__':
     latent_shape = (num_samples, 4, 32, 32)
     zweights = {}
 
-    zweights = torch.load("./particles/mmlu_swarm_weights_final.pt")
+    zweights = torch.load("./particles/mmlu_swarm_global_best_top_1.pt")
 
     use_amp = True
 
@@ -874,7 +874,7 @@ if __name__=='__main__':
 
     del autoencoder
     # torch.save(, 'wdata/reconstruct_lora_weights_v2.pt')
-    torch.save(wd, 'wdata/swarms_lora_weights_.pt')
+    torch.save(wd, 'wdata/swarms_lora_weights_best.pt')
     exit()
 
     # model_names=list(wd.keys())
