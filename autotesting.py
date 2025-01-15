@@ -854,6 +854,8 @@ if __name__=='__main__':
     latent_shape = (num_samples, 4, 32, 32)
     zweights = {}
 
+    zweights = torch.load("./particles/mmlu_swarm_weights_final.pt")
+
     for layer in layers:
         # #
         weight = weights[layer]
