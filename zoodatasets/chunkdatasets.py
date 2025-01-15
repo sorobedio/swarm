@@ -66,7 +66,7 @@ class ZooDataset(Dataset):
         # datapath = os.path.join(root, f'llmdata/gemini_7b_int_top_25p_attn_.pt') #12582912
         #f'../Datasets/llmdata/gemini_7b_int_top_25p_attn_.pt'
 
-        datapath = os.path.join(root, f'llmdata/gemini_7b_int_top_25p_attn_.pt')
+        datapath = os.path.join(root, f'llmdata/llama_3_1_8B_inst_full.pt')
 
 
 
