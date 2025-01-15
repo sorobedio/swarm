@@ -91,7 +91,7 @@ class ZooDataset(Dataset):
         # mu = data.mean()
         # std = data.std()
         print('===============dataset size=========================')
-        print(self.data.shape, x_min, x_max)
+        # print(self.data.shape, x_min, x_max)
 
         # print(f'============{std}==============={mu}=============')
         # data = (data-mu)/std
