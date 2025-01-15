@@ -1625,6 +1625,7 @@ def utility_function(wd, layer=None):
 
 if __name__ == "__main__":
     best_weights=None
+    mybest = 0
     parser = get_parser()
     args = parser.parse_args()
 
