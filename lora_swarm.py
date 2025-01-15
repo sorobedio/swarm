@@ -1595,16 +1595,18 @@ def utility_function(wd, layer=None):
         print(f'******{j}*****acc:=={acc}*****************************')
 
         utility_value.append(acc)
-    acc = evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it",
-                        only_one_or_two=None,
-                        obj4_save_generation=False)
+        if acc>49:
 
-    if mybest < acc * 100.0:
-        mybest = acc * 100.0
+            accz = evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it",
+                                only_one_or_two=None,
+                                obj4_save_generation=False)
 
-        best_weights=wr
-        print(f'--new--best:{mybest}')
-        torch.save(best_weights, './particles/weights_best.pt')
+            if mybest < accz * 100.0:
+                mybest = accz * 100.0
+
+                best_weights=wr
+                print(f'--new--best:{mybest}')
+                torch.save(best_weights, './particles/weights_best.pt')
 
     return torch.tensor(utility_value)
 
