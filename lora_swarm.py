@@ -73,6 +73,7 @@ def load_model_config(file):
 ICL_PROMPT = None
 model = None
 tokenizer = None
+mybest = 0.0
 
 
 ONLY_ONE_OR_TWO = None
@@ -1600,6 +1601,7 @@ def utility_function(wd, layer=None):
 
     if mybest < acc * 100.0:
         mybest = acc * 100.0
+
         best_weights=wr
         print(f'--new--best:{mybest}')
         torch.save(best_weights, './particles/weights_best.pt')
@@ -1658,7 +1660,7 @@ if __name__ == "__main__":
 
     x_min = -4.0
     x_max = 20.1250
-    mybest=0.0
+    # globsl
 
     # wd = torch.load('wdata/sampled_weights_vae_norm.pt')
     # torch.save(wd, 'wdata/sampled_weights_vae_norm.pt')
