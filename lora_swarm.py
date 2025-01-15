@@ -1528,6 +1528,7 @@ def utility_function(wd, layer=None):
     # Example utility function (sum of weights for demonstration)
     num_samples = wd.shape[0]
     utility_value = []
+    global mybest
 
     if len(wd.shape) >1:
 
