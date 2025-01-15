@@ -840,6 +840,7 @@ if __name__=='__main__':
     print('=====================================================================')
     print(len(model_list))
     print('=====================================================================')
+    weights = torch.load("./particles/mmlu_swarm_weights_final.pt")
 
     wacc = []
     # weights =wd['gemma-7b-it']
@@ -850,7 +851,7 @@ if __name__=='__main__':
     weightdict = {}
     accs =[]
     results_dict ={}
-    for k in model_list:
+    for i, k in enumerate(model_list):
         ks = "bunsenfeng/" + k
         if k not in model_names:
             ks = "bunsenfeng/code_alpaca"
@@ -870,7 +871,8 @@ if __name__=='__main__':
 
         tokenizer.pad_token = tokenizer.eos_token
 
-        wr = wd[k].reshape(-1)
+        # wr = wd[k].reshape(-1)
+        wr = weights[i]
         std = model.state_dict()
 
         # for w in ws:ws[i
