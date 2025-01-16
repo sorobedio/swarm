@@ -855,59 +855,59 @@ if __name__=='__main__':
     zweights = {}
 
     # zweights = torch.load("./particles/mmlu_swarm_weights_final_vae.pt")
-
-    for layer in layers:
-        # #
-        weight = weights[layer]
-        print(f'---original--shape{weight.shape}')
-
-        weight = pad_to_chunk_multiple(weight, chunk_size=chunk_size)
-        print(weight.shape)
-        # weight = 2 * (weight - x_min) / (x_max - x_min) - 1
-        # print(weight.shape)
-        # n =weight.shape[-1]
-
-        weight = torch.split(weight, split_size_or_sections=chunk_size, dim=-1)
-
-        use_amp = True
-
-        with torch.autocast(device_type="cuda", dtype=torch.float32, enabled=use_amp):
-            wl = []
-            zp = []
-            for w in tqdm(weight):
-                w = w / scale
-                # w = torch.randn_like(w)
-                w = w.to(device)
-                _, x_rec, prior = autoencoder(w)
-                # print(f'--input:{w[:50]}')
-                #
-                # print(f'--out:{x_rec[:50]}')
-                # print('==============================================================')
-                # continue
-                # print(prior.mean.shape, prior.std.shape)
-                # print(w.shape, x_rec.shape)
-                # exit()
-                #
-                ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
-                zs = ze.detach().cpu().float()
-                zp.append(zs)
-                x_rec = autoencoder.decode(ze)
-                #
-                wl.append(x_rec.detach().cpu())
-        z = torch.cat(zp, dim=1).reshape(num_samples, -1)
-        zweights[layer] = z
-        print(z.shape)
-        # print(len(wl))
-
-        ws = torch.cat(wl, dim=-1) * scale
-        print(ws.shape)
-        wd[layer] = ws
-    print('finished encoding=========================================')
-
-    del autoencoder
-    torch.save(wd, 'wdata/reconstruct_lora_weights_from_lt.pt')
-    torch.save(zweights, 'wdata/latent_z_lora_weights_data.pt')
-    exit()
+    #
+    # for layer in layers:
+    #     # #
+    #     weight = weights[layer]
+    #     print(f'---original--shape{weight.shape}')
+    #
+    #     weight = pad_to_chunk_multiple(weight, chunk_size=chunk_size)
+    #     print(weight.shape)
+    #     # weight = 2 * (weight - x_min) / (x_max - x_min) - 1
+    #     # print(weight.shape)
+    #     # n =weight.shape[-1]
+    #
+    #     weight = torch.split(weight, split_size_or_sections=chunk_size, dim=-1)
+    #
+    #     use_amp = True
+    #
+    #     with torch.autocast(device_type="cuda", dtype=torch.float32, enabled=use_amp):
+    #         wl = []
+    #         zp = []
+    #         for w in tqdm(weight):
+    #             w = w / scale
+    #             # w = torch.randn_like(w)
+    #             w = w.to(device)
+    #             _, x_rec, prior = autoencoder(w)
+    #             # print(f'--input:{w[:50]}')
+    #             #
+    #             # print(f'--out:{x_rec[:50]}')
+    #             # print('==============================================================')
+    #             # continue
+    #             # print(prior.mean.shape, prior.std.shape)
+    #             # print(w.shape, x_rec.shape)
+    #             # exit()
+    #             #
+    #             ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
+    #             zs = ze.detach().cpu().float()
+    #             zp.append(zs)
+    #             x_rec = autoencoder.decode(ze)
+    #             #
+    #             wl.append(x_rec.detach().cpu())
+    #     z = torch.cat(zp, dim=1).reshape(num_samples, -1)
+    #     zweights[layer] = z
+    #     print(z.shape)
+    #     # print(len(wl))
+    #
+    #     ws = torch.cat(wl, dim=-1) * scale
+    #     print(ws.shape)
+    #     wd[layer] = ws
+    # print('finished encoding=========================================')
+    #
+    # del autoencoder
+    # torch.save(wd, 'wdata/reconstruct_lora_weights_from_lt.pt')
+    # torch.save(zweights, 'wdata/latent_z_lora_weights_data.pt')
+    # exit()
 
     # model_names=list(wd.keys())
     base_model = "google/gemma-7b-it"
@@ -971,6 +971,6 @@ if __name__=='__main__':
         print(f'=========={k}============{acc*100}==============================')
     print(results_dict)
         # accs.append(acc*100)
-    # torch.save(utilities, 'wdata/utilities_vae_lora_mmlu.pt')
+    torch.save(utilities, 'wdata/utilities_vae_lora_swag.pt')
     # print(sorted(accs, reverse=True))
 
