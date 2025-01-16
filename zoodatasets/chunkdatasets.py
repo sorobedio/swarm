@@ -34,7 +34,7 @@ def pad_to_chunk_multiple(x, chunk_size):
 class ZooDataset(Dataset):
     """weights dataset."""
     def __init__(self, root='zoodata', dataset="joint", split='train', topk=None, scale=1.0, transform=None, normalize=False,
-                 max_len= 758144):
+                 max_len= 262144):
         super(ZooDataset, self).__init__()
         #1960513
         self.topk = topk
@@ -66,7 +66,9 @@ class ZooDataset(Dataset):
         # datapath = os.path.join(root, f'llmdata/gemini_7b_int_top_25p_attn_.pt') #12582912
         #f'../Datasets/llmdata/gemini_7b_int_top_25p_attn_.pt'
 
-        datapath = os.path.join(root, f'llmdata/llama_3_1_8B_inst_full.pt')
+        #'../Datasets/llmdata/llama_3_1_8B_inst_full_block_and_ln_.pt'
+
+        datapath = os.path.join(root, f'llmdata/llama_3_1_8B_inst_full_block_and_ln_.pt')
 
 
 
@@ -78,14 +80,14 @@ class ZooDataset(Dataset):
         # datapath = os.path.join(root, f'llmdata/pythia-70m-100000_143000.pt')11004164
         self.transform = transform
         data= self.load_data(datapath, dataset=dataset)
-        # x_min, x_max = data.min(), data.max()
+        x_min, x_max = data.min(), data.max()
         # std = 0.01385498046875
         # mu=8.344650268554688e-06
         # x_max = 2.9375
         # x_min = -0.9140625
 
-        x_min = -0.9141
-        x_max = 2.9375
+        # x_min = -0.9141
+        # x_max = 2.9375
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
         data = 2 * (data - x_min) / (x_max - x_min) - 1
         # mu = data.mean()
@@ -119,14 +121,14 @@ class ZooDataset(Dataset):
         if dataset=='joint':
             keys = list(data)
             # keys = ['sharegpt_cot', 'gemini_alpaca_sharegpt']
-            keys =keys[:3]
+            keys =keys[:1]
 
             for k in keys:
                 w = data[k]
                 print(w.shape)
                 w=pad_to_chunk_multiple(w, chunk_size=self.chunk_size)
                 w = torch.split(w, split_size_or_sections=self.chunk_size, dim=-1)
-                w = torch.cat(w, dim=0)
+                w = torch.cat(w, dim=0).float()
                 if self.normalize == "z_score":
                     u = torch.mean(w, dim=1)
                     v = torch.std(w, dim=1)

@@ -91,7 +91,7 @@ def get_parser(**parser_kwargs):
         # default="stage1/configs/pythia_70_config_kl.yaml",
         # default="stage1/configs/pythia_160M_config_kl.yaml",
         #mini_llama_norm_config.yaml
-        default="stage1/configs/chunk_llama_full_config_kl.yaml",
+        default="stage1/configs/llama_tf_config_kl.yaml",
 
 
         # default="stage1/configs/geminia_atten_config.yaml",#was used
