@@ -1621,13 +1621,14 @@ def utility_function(wd, layer=None):
 
                 best_weights=wr
                 print(f'--new--best:{mybest}')
-                torch.save(best_weights, './particles/weights_best_mmlu_pro.pt')
+                torch.save(best_weights, './particles/weights_best_hella_swag.pt')
 
     return torch.tensor(utility_value)
 
 if __name__ == "__main__":
     best_weights=None
-    mybest = 0
+    global mybest
+    mybest = 58.3
     parser = get_parser()
     args = parser.parse_args()
 
@@ -1707,7 +1708,8 @@ if __name__ == "__main__":
 
     # data = torch.load('wdata/dit_sampled_weights_top1.pt')
     # data = torch.load('wdata/sampled_weights_vae_norm.pt')
-    data = torch.load('wdata/latent_z_lora_weights_v2.pt')
+    # data = torch.load('wdata/latent_z_lora_weights_v2.pt')
+    data = torch.load( 'wdata/latent_z_lora_weights_data.pt')
 
 
     # expanded_experts
@@ -1731,7 +1733,7 @@ if __name__ == "__main__":
 
     # Initialize global best, global worst, and personal bests
     personal_best = weights.clone()
-    utility_values = torch.load('wdata/utilities_vae_lora_mmlu.pt')
+    utility_values = torch.load('wdata/utilities_vae_lora_swag.pt')
     # utility_values = torch.load('utilities.pt')[layers]
     utility_values = torch.tensor(utility_values).reshape((-1))*0.1
     print(f'-----------{utility_values.shape}------------')
