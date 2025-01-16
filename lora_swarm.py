@@ -1563,7 +1563,7 @@ def utility_function(wd, layer=None):
             #     file.write(f'-------iteration--{j}---{acc}----\n')
             print(f'******{j}*****acc:=={acc}*****************************')
 
-            if acc > 10.0:
+            if acc > 50.0:
 
                 accz = evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it",
                                      only_one_or_two=None,
@@ -1611,7 +1611,7 @@ def utility_function(wd, layer=None):
         print(f'******{j}*****acc:=={acc}**********single*******************')
 
         utility_value.append(acc)
-        if acc>10.0:
+        if acc>50.0:
 
             accz = evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it",
                                 only_one_or_two=None,
