@@ -73,6 +73,7 @@ def load_model_config(file):
 ICL_PROMPT = None
 model = None
 tokenizer = None
+global mybest
 mybest = 0.0
 
 
@@ -1627,7 +1628,7 @@ def utility_function(wd, layer=None):
 
 if __name__ == "__main__":
     best_weights=None
-    global mybest
+    # global mybest
     mybest = 58.3
     parser = get_parser()
     args = parser.parse_args()
