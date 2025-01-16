@@ -423,7 +423,7 @@ if __name__=='__main__':
 
 
         k=str(md.split("/")[-1])
-        # w, we = extract_layer_weights(std, tgt='self_attn', pref=None)
+        w, we = extract_layer_weights(std, tgt='layer', pref=None)
         # we = get_layer_weights(std, tgt='norm')
         # w, we = extract_layer_weights_withexc(std, tgt='layer', pref=None)
         # w, we = get_blocks_weights(std, tgt='norm', cond='layer')
@@ -433,7 +433,7 @@ if __name__=='__main__':
         # exit()
         # weights.update(w) #67584
         weights[k] = we
-    torch.save(weights, '../Datasets/llmdata/llama_3_1_8B_inst_full.pt')  # 1498482688
+    torch.save(weights, '../Datasets/llmdata/llama_3_1_8B_inst_full_transf_.pt')  # 1498482688
     print(len(weights))
     exit()
     #HuggingFaceTB/SmolLM2-135M-Instruct
