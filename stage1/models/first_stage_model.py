@@ -171,6 +171,9 @@ class VAENoDiscModel(AutoencoderKL):
         self.gl_step += 1
         print(f"inputs: {inputs[0][:20]}")
         print(f"reconstructions: {reconstructions[0][:20]}")
+        diff = inputs[0][:20] - reconstructions[0][:20]
+        print(f'diff: {diff}')
+
         return loss, log_dict_ae
 
     def validation_step(self, batch, batch_idx):
