@@ -427,14 +427,15 @@ if __name__=='__main__':
         # we = get_layer_weights(std, tgt='norm')
         # w, we = extract_layer_weights_withexc(std, tgt='layer', pref=None)
         w, we = get_blocks_weights(std, tgt='norm', cond='layer')
+        weights.update(w)  # 67584
         we = get_layer_weights(std, tgt='layernorm.weight')
 
         # we = gets_weights(std)
         print(we.shape, we.min(), we.max(), we.dtype)
         # exit()
         # weights.update(w) #67584
-        weights[k] = we
-    torch.save(weights, '../Datasets/llmdata/llama_3_1_8B_inst_full_transf_.pt')  # 1498482688
+        weights['layernorm.weight'] = we
+    torch.save(weights, '../Datasets/llmdata/llama_3_1_8B_inst_full_block_and_ln_.pt')  # 1498482688
     print(len(weights))
     exit()
     #HuggingFaceTB/SmolLM2-135M-Instruct
