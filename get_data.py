@@ -228,9 +228,9 @@ def get_blocks_weights(std, tgt='norm', cond='layer'):
             # print(params)
             if tgt not in params and cond in params:
                 w = std[params].reshape(1,-1)
-                print(f'paramertes============={params}---------------------')
-                print(w.shape)
-                print(w.min(), w.max())
+                print(f'paramertes============={params}---------w.shape:{w.shape}---minmax--{w.min()}-{w.max()}-----------')
+                # print(w.shape)
+                # print(w.min(), w.max())
                 ws.append(w)
                 weights[str(params)]=w
     return weights, ws
@@ -423,10 +423,11 @@ if __name__=='__main__':
 
 
         k=str(md.split("/")[-1])
-        w, we = extract_layer_weights(std, tgt='layer', pref=None)
+        # w, we = extract_layer_weights(std, tgt='layer', pref=None)
         # we = get_layer_weights(std, tgt='norm')
         # w, we = extract_layer_weights_withexc(std, tgt='layer', pref=None)
-        # w, we = get_blocks_weights(std, tgt='norm', cond='layer')
+        w, we = get_blocks_weights(std, tgt='norm', cond='layer')
+        we = get_layer_weights(std, tgt='layernorm.weight')
 
         # we = gets_weights(std)
         print(we.shape, we.min(), we.max(), we.dtype)
