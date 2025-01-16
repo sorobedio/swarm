@@ -364,11 +364,11 @@ if __name__ == "__main__":
     # # Combine schedulers using SequentialLR
     # schedulers = torch.optim.lr_scheduler.SequentialLR(optimizer, schedulers=[scheduler_warmup, scheduler_cosine],
     #                          milestones=[warmup_iters])
-    # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200, eta_min=1e-8, last_epoch=-1)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200, eta_min=1e-8, last_epoch=-1)
     # scheduler = CustomCosineWarmRestartScheduler(optimizer, max_lr=, min_lr=1e-8, first_cycle_steps=400,
     #                                  cycle_mult=1, gamma=1.0, warmup_steps=0,
     #                                  last_epoch=-1)
-    scheduler = WarmUpAndDecayLR(optimizer, warmup_steps=200, cosine_steps=200, gamma=0.1, T_mult=1)
+    # scheduler = WarmUpAndDecayLR(optimizer, warmup_steps=200, cosine_steps=200, gamma=0.1, T_mult=1)
     criterion = model.loss
     # train(model, optimizer, args.n_epochs, traindataloader, testdataloader)
     train(model, optimizer, args.n_epochs, traindataloader)
