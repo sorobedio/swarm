@@ -98,7 +98,7 @@ class ZooDataset(Dataset):
         # print(f'============{std}==============={mu}=============')
         # data = (data-mu)/std
 
-        # exit()
+        exit()
         self.data = data.detach().cpu()
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
 
@@ -121,7 +121,7 @@ class ZooDataset(Dataset):
         if dataset=='joint':
             keys = list(data)
             # keys = ['sharegpt_cot', 'gemini_alpaca_sharegpt']
-            keys =keys[:1]
+            keys =keys
 
             for k in keys:
                 w = data[k]
