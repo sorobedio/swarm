@@ -268,16 +268,16 @@ class MyDiffusion(nn.Module):
         opt = torch.optim.AdamW(params, lr=lr)
         # if self.use_scheduler:
         #     assert 'target' in self.scheduler_config
-        #     scheduler = instantiate_from_config(self.scheduler_config)
+        #     schedulers = instantiate_from_config(self.scheduler_config)
         #
-        #     print("Setting up LambdaLR scheduler...")
-        #     scheduler = [
+        #     print("Setting up LambdaLR schedulers...")
+        #     schedulers = [
         #         {
-        #             'scheduler': LambdaLR(opt, lr_lambda=scheduler.schedule),
+        #             'schedulers': LambdaLR(opt, lr_lambda=schedulers.schedule),
         #             'interval': 'step',
         #             'frequency': 1
         #         }]
-        #     return opt, scheduler
+        #     return opt, schedulers
         return opt
 
 

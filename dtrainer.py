@@ -35,9 +35,11 @@ from torch.utils.tensorboard import SummaryWriter
 
 # wandb.login()
 
-from torch.optim import lr_scheduler
+
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
+
 def get_parser(**parser_kwargs):
     def str2bool(v):
         if isinstance(v, bool):
@@ -48,6 +50,8 @@ def get_parser(**parser_kwargs):
             return False
         else:
             raise argparse.ArgumentTypeError("Boolean value expected.")
+
+
 
     parser = argparse.ArgumentParser(description='Autoencoder Training')
     parser.add_argument('--data', default='../Datasets', type=str, help='dataset root')
@@ -206,7 +210,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
     bloss = 10000.0
     btest = 2.0
     cr =[]
-    # scheduler = lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 5, 5)
+    # schedulers = lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 5, 5)
     scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
     for epoch in range(n_epochs):
         print('\nEpoch: %d' % epoch)
@@ -226,7 +230,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             # scaler.update()
             loss.backward()
             optimizer.step()
-            # scheduler.step()
+            # schedulers.step()
             train_loss += loss.item()
 
             curr_lr = optimizer.param_groups[-1]['lr']
@@ -234,7 +238,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             progress_bar(batch_idx, len(traindataloader), 'Loss: %.6f |'
                          % (train_loss / (batch_idx + 1)))
             idx = batch_idx + 1
-            # scheduler.step()
+            # schedulers.step()
 
         tloss = (train_loss / idx)
         scheduler.step()
@@ -300,6 +304,7 @@ def lr_lambda(current_step: int, warmup_iters=50):
     return 1.0
 
 from stage1.modules.losses.CustomLosses import LayerWiseReconLoss, ChunkWiseReconLoss
+from schedulers.lr_utils import CustomCosineWarmRestartScheduler, WarmUpAndDecayLR
 
 if __name__ == "__main__":
     # 2. Initialize wandb
@@ -352,14 +357,18 @@ if __name__ == "__main__":
     # warmup_iters = 50
     # # Number of total iterations (epochs * iterations per epoch)
     # total_iters = 100000
-    # # Linear warmup scheduler
+    # # Linear warmup schedulers
     # scheduler_warmup = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
-    # # Cosine annealing scheduler after warmup
+    # # Cosine annealing schedulers after warmup
     # scheduler_cosine = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=(total_iters - warmup_iters))
     # # Combine schedulers using SequentialLR
-    # scheduler = torch.optim.lr_scheduler.SequentialLR(optimizer, schedulers=[scheduler_warmup, scheduler_cosine],
+    # schedulers = torch.optim.lr_scheduler.SequentialLR(optimizer, schedulers=[scheduler_warmup, scheduler_cosine],
     #                          milestones=[warmup_iters])
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200, eta_min=1e-8, last_epoch=-1)
+    # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200, eta_min=1e-8, last_epoch=-1)
+    # scheduler = CustomCosineWarmRestartScheduler(optimizer, max_lr=, min_lr=1e-8, first_cycle_steps=400,
+    #                                  cycle_mult=1, gamma=1.0, warmup_steps=0,
+    #                                  last_epoch=-1)
+    scheduler = WarmUpAndDecayLR(optimizer, warmup_steps=200, cosine_steps=200, gamma=0.1, T_mult=1)
     criterion = model.loss
     # train(model, optimizer, args.n_epochs, traindataloader, testdataloader)
     train(model, optimizer, args.n_epochs, traindataloader)

@@ -204,7 +204,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
     bloss = 100000.0
     btest = 2.0
     cr =[]
-    # scheduler = lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 5, 5)
+    # schedulers = lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 5, 5)
     scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
     for epoch in range(n_epochs):
         print('\nEpoch: %d' % epoch)
@@ -224,7 +224,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             # scaler.update()
             loss.backward()
             optimizer.step()
-            # scheduler.step()
+            # schedulers.step()
             train_loss += loss.item()
 
             curr_lr = optimizer.param_groups[-1]['lr']
@@ -238,7 +238,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         scheduler.step()
         # Log loss and accuracy to TensorBoard
         writer.add_scalar("Loss/train", tloss, epoch)
-        # scheduler.step()
+        # schedulers.step()
         # btst = evaluate(model, traindataloader)
         # print(f'current best test avg  loss: {btest}')
         # if btest > btst:
@@ -350,12 +350,12 @@ if __name__ == "__main__":
     # warmup_iters = 50
     # # Number of total iterations (epochs * iterations per epoch)
     # total_iters = 100000
-    # # Linear warmup scheduler
+    # # Linear warmup schedulers
     # scheduler_warmup = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
-    # # Cosine annealing scheduler after warmup
+    # # Cosine annealing schedulers after warmup
     # scheduler_cosine = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=(total_iters - warmup_iters))
     # # Combine schedulers using SequentialLR
-    # scheduler = torch.optim.lr_scheduler.SequentialLR(optimizer, schedulers=[scheduler_warmup, scheduler_cosine],
+    # schedulers = torch.optim.lr_scheduler.SequentialLR(optimizer, schedulers=[scheduler_warmup, scheduler_cosine],
     #                          milestones=[warmup_iters])
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200, eta_min=1e-8, last_epoch=-1)
     criterion = model.loss

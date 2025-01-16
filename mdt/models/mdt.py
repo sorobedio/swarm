@@ -441,10 +441,10 @@ class MDT(pl.LightningModule):
             assert 'target' in self.scheduler_config
             scheduler = instantiate_from_config(self.scheduler_config)
 
-            print("Setting up LambdaLR scheduler...")
+            print("Setting up LambdaLR schedulers...")
             scheduler = [
                 {
-                    'scheduler': LambdaLR(opt, lr_lambda=scheduler.schedule),
+                    'schedulers': LambdaLR(opt, lr_lambda=scheduler.schedule),
                     'interval': 'step',
                     'frequency': 1
                 }]

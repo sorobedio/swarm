@@ -833,13 +833,13 @@ if __name__=='__main__':
     #                "sharegpt", "wizardlm"]
     weights = torch.load("../Datasets/gemina7b_it_lora_weights.pt")
 
-    # autoencoder = torch.load('./autocheckpoints/lora_hunk_base.pth', map_location='cpu')
-    autoencoder = torch.load('./autocheckpoints/lora_hunk_base_full.pth', map_location='cpu')
-    # torch.save(autoencoder,'./autocheckpoints/lora_hunk_base_full_copy_v.pth')
+    autoencoder = torch.load('./autocheckpoints/full_llama_model_chunk_.pth', map_location='cpu')
+    # autoencoder = torch.load('./autocheckpoints/lora_hunk_base_full.pth', map_location='cpu')
+    torch.save(autoencoder.state_dict(),'./autocheckpoints/llama_transformer_base_ckpt.pt')
 
     #
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/gemmina_lora_.ckpt')
-    # exit()
+    exit()
 
     autoencoder.to(device)
     autoencoder.eval()

@@ -103,7 +103,7 @@ class MyDiffusion(nn.Module):
         # self.model_ema = LitEma(self.model)
         # self.ema = EMA(0.995)
         # self.ema_model = copy.deepcopy(self.model).eval().requires_grad_(False)
-        # self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimizer, eta_min=1e-6, T_max=1000)
+        # self.schedulers = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimizer, eta_min=1e-6, T_max=1000)
 
     def instantiate_first_stage(self, config):
         model = instantiate_from_config(config)
@@ -259,7 +259,7 @@ class MyDiffusion(nn.Module):
         loss = self.get_loss(noise, predicted_noise)
         loss.backward()
         self.optimizer.step()
-        # self.scheduler.step()
+        # self.schedulers.step()
         return loss
 
 
@@ -275,16 +275,16 @@ class MyDiffusion(nn.Module):
         opt = torch.optim.Adam(params, lr=lr)
         # if self.use_scheduler: AdamW
         #     assert 'target' in self.scheduler_config
-        #     scheduler = instantiate_from_config(self.scheduler_config)
+        #     schedulers = instantiate_from_config(self.scheduler_config)
         #
-        #     print("Setting up LambdaLR scheduler...")
-        #     scheduler = [
+        #     print("Setting up LambdaLR schedulers...")
+        #     schedulers = [
         #         {
-        #             'scheduler': LambdaLR(opt, lr_lambda=scheduler.schedule),
+        #             'schedulers': LambdaLR(opt, lr_lambda=schedulers.schedule),
         #             'interval': 'step',
         #             'frequency': 1
         #         }]
-        #     return opt, scheduler
+        #     return opt, schedulers
         return opt
 
 

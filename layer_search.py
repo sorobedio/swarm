@@ -185,7 +185,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
     bloss = 7000
     btest = 2.0
     cr = []
-    # scheduler = lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 5, 5)
+    # schedulers = lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 5, 5)
     # scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
     for epoch in range(n_epochs):
         print('\nEpoch: %d' % epoch)
