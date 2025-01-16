@@ -905,7 +905,7 @@ if __name__=='__main__':
     print('finished encoding=========================================')
 
     del autoencoder
-    torch.save(wd, 'wdata/reconstruct_lora_weights_v2.pt')
+    torch.save(wd, 'wdata/reconstruct_lora_weights_from_lt.pt')
     torch.save(zweights, 'wdata/latent_z_lora_weights_v2.pt')
     exit()
 
