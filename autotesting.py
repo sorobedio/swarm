@@ -854,6 +854,8 @@ if __name__=='__main__':
     latent_shape = (num_samples, 4, 32, 32)
     zweights = {}
 
+    zweights = torch.load("./particles/mmlu_swarm_weights_final.pt")
+
     for layer in layers:
         # #
         weight = weights[layer]
@@ -874,8 +876,14 @@ if __name__=='__main__':
             zp = []
             for w in tqdm(weight):
                 w = w / scale
+                # w = torch.randn_like(w)
                 w = w.to(device)
                 _, x_rec, prior = autoencoder(w)
+                # print(f'--input:{w[:50]}')
+                #
+                # print(f'--out:{x_rec[:50]}')
+                # print('==============================================================')
+                # continue
                 # print(prior.mean.shape, prior.std.shape)
                 # print(w.shape, x_rec.shape)
                 # exit()
@@ -897,9 +905,9 @@ if __name__=='__main__':
     print('finished encoding=========================================')
 
     del autoencoder
-    torch.save(wd, 'wdata/reconstruct_lora_weights.pt')
-    torch.save(wd, 'wdata/latent_z_lora_weights.pt')
-    # exit()
+    # torch.save(, 'wdata/reconstruct_lora_weights_v2.pt')
+    torch.save(zweights, 'wdata/latent_z_lora_weights_v2.pt')
+    exit()
 
     # model_names=list(wd.keys())
     base_model = "google/gemma-7b-it"
@@ -963,6 +971,6 @@ if __name__=='__main__':
         print(f'=========={k}============{acc*100}==============================')
     print(results_dict)
         # accs.append(acc*100)
-    torch.save(utilities, 'wdata/utilities_vae_lora_mmlu.pt')
+    # torch.save(utilities, 'wdata/utilities_vae_lora_mmlu.pt')
     # print(sorted(accs, reverse=True))
 

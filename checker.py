@@ -8,6 +8,9 @@ import random
 
 
 if __name__ == "__main__":
+    wds = torch.load('wdata/utilities_vae_lora_mmlu.pt')
+    print(len(wds))
+    exit()
     model_names = ["code_alpaca", "cot", "flan_v2", "gemini_alpaca", "lima", "oasst1", "open_orca", "science", "sharegpt", "wizardlm"]
     vect_weights={}
     weights ={}

@@ -91,8 +91,10 @@ def get_parser(**parser_kwargs):
         # default="stage1/configs/pythia_70_config_kl.yaml",
         # default="stage1/configs/pythia_160M_config_kl.yaml",
         #mini_llama_norm_config.yaml
-        # default="stage1/configs/simple_llama_config_base_kl.yaml",
-        default="stage1/configs/geminia_atten_config.yaml",#was used
+        default="stage1/configs/chunk_llama_full_config_kl.yaml",
+
+
+        # default="stage1/configs/geminia_atten_config.yaml",#was used
         #
         # default="stage1/configs/full_model_base_config_kl.yaml",
         #   default="stage1/configs/norm_layer_config_kl.yaml",
@@ -201,7 +203,7 @@ def nondefault_trainer_args(opt):
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 1000.0
+    bloss = 10000.0
     btest = 2.0
     cr =[]
     # scheduler = lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 5, 5)
@@ -215,7 +217,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         for batch_idx, inputs in enumerate(traindataloader):
             # input()
             optimizer.zero_grad()
-            with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
+            with torch.autocast(device_type='cuda', dtype=torch.float32, enabled=use_amp):
                 loss, logs = model.training_step(inputs, batch_idx)
             # loss, logs = model.training_step(inputs, batch_idx)
 
@@ -235,7 +237,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             # scheduler.step()
 
         tloss = (train_loss / idx)
-        # scheduler.step()
+        scheduler.step()
         # Log loss and accuracy to TensorBoard
         writer.add_scalar("Loss/train", tloss, epoch)
         scheduler.step()
@@ -248,7 +250,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         if bloss > tloss:
             bloss = tloss
             print(f'saving best training loss is:{bloss}')
-            torch.save(model, os.path.join(args.save_path,f'geminina_layer_attention.pth'))
+            torch.save(model, os.path.join(args.save_path,f'full_llama_model_chunk_.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
 
@@ -322,7 +324,7 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=0.1, normalize=None)
+                          scale=0.1, normalize=None, topk=2)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
     traindataloader = DataLoader(trainset, shuffle=True, batch_size=20, num_workers=4,

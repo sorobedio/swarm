@@ -792,7 +792,6 @@ import random
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from helpers.helpers import *
 
 if __name__=='__main__':
 
@@ -830,20 +829,61 @@ if __name__=='__main__':
 
 
 
-    model_names = ["code_alpaca", "cot", "flan_v2", "gemini_alpaca", "lima", "oasst1", "open_orca", "science",
-                   "sharegpt", "wizardlm"]
-    # wd = torch.load("../Datasets/gemina7b_it_lora_weights.pt")
-    wd = torch.load("../Datasets/llmdata/gemina7b_it_lora_weights_recon_ext.pt")
-    model_list=list(wd.keys())
+    # model_names = ["code_alpaca", "cot", "flan_v2", "gemini_alpaca", "lima", "oasst1", "open_orca", "science",
+    #                "sharegpt", "wizardlm"]
+    weights = torch.load("../Datasets/gemina7b_it_lora_weights.pt")
+
+    # autoencoder = torch.load('./autocheckpoints/lora_hunk_base.pth', map_location='cpu')
+    autoencoder = torch.load('./autocheckpoints/lora_hunk_base_full.pth', map_location='cpu')
+    # torch.save(autoencoder,'./autocheckpoints/lora_hunk_base_full_copy_v.pth')
+
+    #
+    # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/gemmina_lora_.ckpt')
+    # exit()
+
+    autoencoder.to(device)
+    autoencoder.eval()
+    wd = {}
+    layers = list(weights)
+    layers = layers
+    chunk_size = 1376256
+    scale =0.1
+
+    num_samples = -1
+    # latent_shape = (num_samples, 4, 16, 16)
+    latent_shape = (num_samples, 4, 32, 32)
+    zweights = {}
+
+    zweights = torch.load("./particles/mmlu_swarm_global_best_top_1.pt")
+    print(zweights.shape)
+
+    use_amp = True
+
+    with torch.autocast(device_type="cuda", dtype=torch.float32, enabled=use_amp):
+        wl = []
+        zp = []
+        for w in tqdm(zweights):
+            w = w.reshape(latent_shape)
+            x_rec = autoencoder.decode(w)
+            #
+            wl.append(x_rec.detach().cpu().reshape(1, -1))
+
+        wd = torch.cat(wl, dim=0) * scale
+        print(wd.shape)
+        # wd[layer] = ws
+    print('finished encoding=========================================')
+
+    del autoencoder
+    # torch.save(, 'wdata/reconstruct_lora_weights_v2.pt')
+    torch.save(wd, 'wdata/swarms_lora_weights_best.pt')
+    exit()
+
+    # model_names=list(wd.keys())
     base_model = "google/gemma-7b-it"
-    # modelist=list(wd.keys())
+    modelist=list(wd)
     print('=====================================================================')
-    print(len(model_list))
+    # print(modelist)
     print('=====================================================================')
-    weights = torch.load( 'wdata/swarms_lora_weights_.pt')
-    # autoencoder = torch.load('./autocheckpoints/lora_hunk_base_full.pth', map_location='cpu')
-    # autoencoder.to(device)
-    # autoencoder.eval()
 
     wacc = []
     # weights =wd['gemma-7b-it']
@@ -851,20 +891,17 @@ if __name__=='__main__':
     # n= weights.shape[0]
     # print(n)
     utilities =[]
-    weightdict = {}
     accs =[]
     results_dict ={}
-    for i, k in enumerate(model_list):
+    for k in modelist:
         ks = "bunsenfeng/" + k
         if k not in model_names:
-            ks = "bunsenfeng/code_alpaca"
+            model_path = "bunsenfeng/code_alpaca"
         # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/" + model_name)
         else:
             model_path=ks
-            print(f'----from initial--experts-------------------------------------------')
             # continue
-        print(f'-===={k}--loading--{ks}--model=======')
-        model_path = ks
+        print(f'-=={k}==--loading--{ks}--model=======')
 
         model = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
         model.load_adapter(model_path)
@@ -872,18 +909,19 @@ if __name__=='__main__':
         model.to(f"cuda:{gpu_id}")
         tokenizer = AutoTokenizer.from_pretrained(base_model)
 
+
+
         tokenizer.pad_token = tokenizer.eos_token
 
-        # wr = wd[k].reshape(-1)
-        wr = weights[i]
+        wr = wd[k].reshape(-1)
+        # wr = weights[k].reshape(-1)
         std = model.state_dict()
 
         # for w in ws:ws[i
         std = set_layer_state_dict(std, wr, layer='lora')
         model.load_state_dict(std)
 
-        # wds, wt = extract_layer_weights(std, tgt='lora', pref=k)
-        # weightdict.update(wds)
+
 
         # model.load_state_dict(set_layers_state_dict(std, lw))
         # del wd
@@ -892,18 +930,16 @@ if __name__=='__main__':
                  only_one_or_two=None, skip_flag=False)
 
         results =results*100.0
-        # utilities.append(results)
-        print(results)
-        # print('-----evaluated======================================')
+        utilities.append(results)
+        # print(results)
+        # # print('-----evaluated======================================')
         acc =evaluate_test(model, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it", only_one_or_two=None,
                       obj4_save_generation=False)
         results_dict[k] = acc*100.0
         # print(acc*100.0)
         print(f'=========={k}============{acc*100}==============================')
     print(results_dict)
-    # print(len(weightdict))
-    # torch.save(weightdict, "../Datasets/llmdata/lora_layer_wise_weights.pt")
         # accs.append(acc*100)
-    # torch.save(utilities, 'wdata/utilities_mdt_norm_gsm8k.pt')
+    # torch.save(utilities, 'wdata/utilities_vae_lora_mmlu.pt')
     # print(sorted(accs, reverse=True))
 

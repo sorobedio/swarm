@@ -381,15 +381,16 @@ if __name__=='__main__':
     #     "EleutherAI/pythia-70m-deduped",
     #     revision="step143000",
     # )
-    modellist=["google/gemma-7b-it"]
+    # modellist=["google/gemma-7b-it"]
+    modellist = ["meta-llama/Meta-Llama-3.1-8B-Instruct"]
 
 
     #
 
 
     wl = []
-    x_min = -0.3398
-    x_max = 0.3574
+    x_min = -0.9141
+    x_max = 2.9375
     weights = {}
     mw ={}
     ws =[]
@@ -421,18 +422,18 @@ if __name__=='__main__':
 
 
 
-        # k=str(md.split("/")[-1])
-        w, we = extract_layer_weights(std, tgt='self_attn', pref=None)
+        k=str(md.split("/")[-1])
+        # w, we = extract_layer_weights(std, tgt='self_attn', pref=None)
         # we = get_layer_weights(std, tgt='norm')
         # w, we = extract_layer_weights_withexc(std, tgt='layer', pref=None)
         # w, we = get_blocks_weights(std, tgt='norm', cond='layer')
 
-        # we = gets_weights(std)
-        # print(we.shape, we.min(), we.max(), we.dtype)
+        we = gets_weights(std)
+        print(we.shape, we.min(), we.max(), we.dtype)
         # exit()
-        weights.update(w) #67584
-        # weights[k] = we
-    torch.save(weights, '../Datasets/llmdata/gemmeni_7b_it_la.pt')  # 1498482688
+        # weights.update(w) #67584
+        weights[k] = we
+    torch.save(weights, '../Datasets/llmdata/llama_3_1_8B_inst_full.pt')  # 1498482688
     print(len(weights))
     exit()
     #HuggingFaceTB/SmolLM2-135M-Instruct
