@@ -121,7 +121,7 @@ class ZooDataset(Dataset):
         if dataset=='joint':
             keys = list(data)
             # keys = ['sharegpt_cot', 'gemini_alpaca_sharegpt']
-            keys =keys
+            keys =keys[:1]
 
             for k in keys:
                 w = data[k]
