@@ -911,6 +911,7 @@ if __name__=='__main__':
 
     # model_names=list(wd.keys())
     base_model = "google/gemma-7b-it"
+    wd = torch.load('wdata/reconstruct_lora_weights_from_lt.pt')
     modelist=list(wd)
     print('=====================================================================')
     # print(modelist)
