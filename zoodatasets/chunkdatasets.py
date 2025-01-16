@@ -122,6 +122,7 @@ class ZooDataset(Dataset):
             keys = list(data)
             # keys = ['sharegpt_cot', 'gemini_alpaca_sharegpt']
             keys =keys[:1]
+            print(keys)
 
             for k in keys:
                 w = data[k]
