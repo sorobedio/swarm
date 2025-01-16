@@ -169,13 +169,13 @@ class VAENoDiscModel(AutoencoderKL):
         aeloss, log_dict_ae = self.loss(inputs, reconstructions, posterior,  split="train")
         loss = aeloss
         self.gl_step += 1
-        print(f"inputs: {inputs[0][:20]}")
-        print(f"reconstructions: {reconstructions[0][:20]}")
-        diff = inputs[0][:20] - reconstructions[0][:20]
-        print(f'diff: {diff}')
-        input_mean = inputs.mean().item()
-        recon_mean = reconstructions.mean().item()
-        print(f"Input Mean: {input_mean}, Reconstruction Mean: {recon_mean}")
+        # print(f"inputs: {inputs[0][:20]}")
+        # print(f"reconstructions: {reconstructions[0][:20]}")
+        # diff = inputs[0][:20] - reconstructions[0][:20]
+        # print(f'diff: {diff}')
+        # input_mean = inputs.mean().item()
+        # recon_mean = reconstructions.mean().item()
+        # print(f"Input Mean: {input_mean}, Reconstruction Mean: {recon_mean}")
 
         return loss, log_dict_ae
 
