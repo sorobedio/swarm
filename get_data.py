@@ -428,7 +428,7 @@ if __name__=='__main__':
         # w, we = extract_layer_weights_withexc(std, tgt='layer', pref=None)
         # w, we = get_blocks_weights(std, tgt='norm', cond='layer')
 
-        we = gets_weights(std)
+        # we = gets_weights(std)
         print(we.shape, we.min(), we.max(), we.dtype)
         # exit()
         # weights.update(w) #67584
