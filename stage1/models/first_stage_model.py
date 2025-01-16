@@ -173,6 +173,9 @@ class VAENoDiscModel(AutoencoderKL):
         print(f"reconstructions: {reconstructions[0][:20]}")
         diff = inputs[0][:20] - reconstructions[0][:20]
         print(f'diff: {diff}')
+        input_mean = inputs.mean().item()
+        recon_mean = reconstructions.mean().item()
+        print(f"Input Mean: {input_mean}, Reconstruction Mean: {recon_mean}")
 
         return loss, log_dict_ae
 
