@@ -92,6 +92,7 @@ class ZooDataset(Dataset):
         x_max =1.4140625
         # data = (data - mu) / std
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
+        print(data[0][:20])
         # data = 2 * (data - x_min) / (x_max - x_min) - 1
         # mu = data.mean()
         # std = data.std()
@@ -101,9 +102,10 @@ class ZooDataset(Dataset):
         # print(f'============{std}==============={mu}=============')
         # data = (data-mu)/std
 
-        # exit()
+        exit()
         self.data = data.detach().cpu()
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
+
 
     def __len__(self):
         return len(self.data)
