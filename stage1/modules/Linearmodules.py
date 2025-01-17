@@ -66,6 +66,8 @@ class LEncoder(nn.Module):
         self.final = nn.Linear(dims[-1], z_features)
 
     def forward(self, x):
+        # print(x.shape)
+        # print('=========================')
         batch_size = x.shape[0]
         # Flatten input
         x = x.view(-1, self.my_channels, self.in_dim)
@@ -79,7 +81,7 @@ class LEncoder(nn.Module):
                 x = res_block(x)
 
         z = self.final(x)
-        print(z.shape)
+        # print(z.shape)
         return z
 
 

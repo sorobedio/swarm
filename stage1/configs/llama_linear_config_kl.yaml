@@ -13,7 +13,7 @@ model:
         kl_weight: 0.0001
     ddconfig:
       double_z: True
-      z_features: 44
+      z_features: 64
       in_channels: 64
       my_channels: 64
       mult: [ 1,1,1, 1]  #num_down = len(ch_mult)-1
