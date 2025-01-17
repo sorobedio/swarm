@@ -92,8 +92,8 @@ def get_parser(**parser_kwargs):
         help="paths to base configs. Loaded from left-to-right. "
              "Parameters can be overwritten or added with command-line options of the form `--key value`.",
 
-        # default="stage1/configs/llama_block_config_kl.yaml",
-        default="stage1/configs/short_chunk_llama_config_kl.yaml",
+        default="stage1/configs/llama_block_config_kl.yaml",
+        # default="stage1/configs/short_chunk_llama_config_kl.yaml",
         #mini_llama_norm_config.yaml
         # default="stage1/configs/llama_tf_config_kl.yaml",
 
@@ -318,7 +318,7 @@ if __name__ == "__main__":
     #     "learning_rate": 0.001,
     # })_chunk
     # seed_everything(seed=1234)
-    writer = SummaryWriter(log_dir="first_128_full_llama/tensorboard_encod")
+    writer = SummaryWriter(log_dir="test_1full_llama/tensorboard_encod")
     now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     # sys.path.append(os.getcwd())
     parser = get_parser()
