@@ -316,9 +316,9 @@ if __name__ == "__main__":
     #     "epochs": 20000,
     #     "batch_size": 16,
     #     "learning_rate": 0.001,
-    # })
+    # })_chunk
     # seed_everything(seed=1234)
-    writer = SummaryWriter(log_dir="first_100_full_llama/tensorboard_encod")
+    writer = SummaryWriter(log_dir="first_128_full_llama/tensorboard_encod")
     now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     # sys.path.append(os.getcwd())
     parser = get_parser()
