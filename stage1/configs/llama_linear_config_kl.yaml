@@ -2,7 +2,7 @@ model:
   base_learning_rate: 4.5e-4
   target: stage1.models.Denseencoder.VAENoDiscModel
   params:
-    embed_dim: 64
+    embed_dim: 256
     input_key: 'weight'
     learning_rate: 1.51115e-4
 #    ckpt_path: './autocheckpoints/llama_transformer_base_ckpt_10_.pt'
@@ -13,13 +13,13 @@ model:
         kl_weight: 0.0001
     ddconfig:
       double_z: True
-      z_features: 64
+      z_features: 256
       in_channels: 64
       my_channels: 64
-      mult: [ 1,1,1, 1]  #num_down = len(ch_mult)-1
+      mult: [ 1,1,1]  #num_down = len(ch_mult)-1
       num_residual_blocks: 2
       in_dim: 4096
-      fdim: 1024
+      fdim: 4096
 
 
 
