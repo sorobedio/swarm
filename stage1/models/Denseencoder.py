@@ -77,6 +77,8 @@ class AutoencoderKL(nn.Module):
             z = posterior.sample()
         else:
             z = posterior.mode()
+        print(z.shape)
+        exit()
         dec = self.decode(z)
         dec = dec.reshape(input.shape)
         return input, dec, posterior
