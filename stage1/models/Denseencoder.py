@@ -69,7 +69,7 @@ class AutoencoderKL(nn.Module):
     def decode(self, z):
         z = self.post_quant_fc(z)
         b = z.size(0)
-        z = z.resize(b, self.z_features, -1)
+        z = z.reshape(b, self.z_features, -1)
         dec = self.decoder(z)
         return dec
 
