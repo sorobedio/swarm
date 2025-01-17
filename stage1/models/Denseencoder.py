@@ -32,10 +32,10 @@ class AutoencoderKL(nn.Module):
         self.z_features=ddconfig["z_features"]
         # self.chunk_loss = ChunkWiseReconLoss(step_size=1024)
         assert ddconfig["double_z"]
-        # self.quant_fc = nn.Linear(2*ddconfig["z_features"]*ddconfig["in_channels"], 2*embed_dim)
-        # self.post_quant_fc = nn.Linear(embed_dim, 2 * ddconfig["z_features"]*ddconfig["in_channels"])
-        self.quant_fc = nn.Linear(2 * ddconfig["z_features"], 2 * embed_dim)
-        self.post_quant_fc = nn.Linear(embed_dim, 2 * ddconfig["z_features"])
+        self.quant_fc = nn.Linear(2*ddconfig["z_features"]*ddconfig["in_channels"], 2*embed_dim)
+        self.post_quant_fc = nn.Linear(embed_dim, 2 * ddconfig["z_features"]*ddconfig["in_channels"])
+        # self.quant_fc = nn.Linear(2 * ddconfig["z_features"], 2 * embed_dim)
+        # self.post_quant_fc = nn.Linear(embed_dim, 2 * ddconfig["z_features"])
         self.embed_dim = embed_dim
 
         if monitor is not None:
@@ -59,7 +59,7 @@ class AutoencoderKL(nn.Module):
     def encode(self, x):
         h = self.encoder(x)
         # print(h.size())
-        # h = h.reshape(h.size(0), -1)
+        h = h.reshape(h.size(0), -1)
         moments = self.quant_fc(h)
         # print(moments.size())
         # exit()
@@ -68,8 +68,8 @@ class AutoencoderKL(nn.Module):
 
     def decode(self, z):
         z = self.post_quant_fc(z)
-        # b = z.size(0)
-        # z = z.resize(b, self.z_features, -1)
+        b = z.size(0)
+        z = z.resize(b, self.z_features, -1)
         dec = self.decoder(z)
         return dec
 
