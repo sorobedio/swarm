@@ -59,7 +59,7 @@ class AutoencoderKL(nn.Module):
     def encode(self, x):
         h = self.encoder(x)
         # print(h.size())
-        h = h.reshape(h.size(0), -1)
+        # h = h.reshape(h.size(0), -1)
         moments = self.quant_fc(h)
         # print(moments.size())
         # exit()
@@ -68,8 +68,8 @@ class AutoencoderKL(nn.Module):
 
     def decode(self, z):
         z = self.post_quant_fc(z)
-        b = z.size(0)
-        z = z.resize(b, self.z_features, -1)
+        # b = z.size(0)
+        # z = z.resize(b, self.z_features, -1)
         dec = self.decoder(z)
         return dec
 
@@ -81,7 +81,7 @@ class AutoencoderKL(nn.Module):
             z = posterior.sample()
         else:
             z = posterior.mode()
-        # print(z.shape)
+        print(z.shape)
         # exit()
         dec = self.decode(z)
         dec = dec.reshape(input.shape)
