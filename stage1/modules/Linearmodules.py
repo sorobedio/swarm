@@ -68,7 +68,7 @@ class LEncoder(nn.Module):
     def forward(self, x):
         batch_size = x.shape[0]
         # Flatten input
-        x = x.view(-1, self,my_channels, self.in_dim)
+        x = x.view(-1, self.my_channels, self.in_dim)
         x = self.sterm(x)
         x = x.view(batch_size, self.in_channels, self.fdim)
 
