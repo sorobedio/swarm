@@ -34,10 +34,10 @@ class AutoencoderKL(nn.Module):
         assert ddconfig["double_z"]
         if ddconfig["double_z"]:
             self.z_features = self.z_features*2
-        self.quant_fc = nn.Linear(2*ddconfig["z_features"]*ddconfig["in_channels"], 2*ddconfig["in_channels"]*embed_dim)
-        self.post_quant_fc = nn.Linear(embed_dim*ddconfig["in_channels"], 2 * ddconfig["z_features"]*ddconfig["in_channels"])
-        # self.quant_fc = nn.Linear(2 * ddconfig["z_features"], 2 * embed_dim)
-        # self.post_quant_fc = nn.Linear(embed_dim, 2 * ddconfig["z_features"])
+        # self.quant_fc = nn.Linear(2*ddconfig["z_features"]*ddconfig["in_channels"], 2*ddconfig["in_channels"]*embed_dim)
+        # self.post_quant_fc = nn.Linear(embed_dim*ddconfig["in_channels"], 2 * ddconfig["z_features"]*ddconfig["in_channels"])
+        self.quant_fc = nn.Linear(2 * ddconfig["z_features"], 2 * embed_dim)
+        self.post_quant_fc = nn.Linear(embed_dim, 2 * ddconfig["z_features"])
         self.embed_dim = embed_dim
 
         if monitor is not None:

@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class ResidualBlock(nn.Module):
-    def __init__(self, dim, dropout=0.1):
+    def __init__(self, dim, dropout=0.0):
         super(ResidualBlock, self).__init__()
         self.block = nn.Sequential(
             nn.Linear(dim, dim),
@@ -15,10 +15,11 @@ class ResidualBlock(nn.Module):
             # nn.LayerNorm(dim),
             nn.Dropout(dropout)
         )
-        self.activation = nn.GELU()
+        # self.activation = nn.GELU()
+        self.activation = nn.LeakyReLU()
 
     def forward(self, x):
-        return self.activation(x + self.block(x))
+        return self.activation(self.block(x))+x
 
 
 class LEncoder(nn.Module):
