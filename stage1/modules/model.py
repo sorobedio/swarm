@@ -258,7 +258,8 @@ class MyDecoder(nn.Module):
 
 
 class LEncoder(nn.Module):
-    def __init__(self, in_dim, z_features, in_channels=16, double_z=True, fdim=12288):
+    def __init__(self, in_dim, z_features, in_channels=16, double_z=True,
+                 fdim=12288, mult=[1, 1, 1, 1]):
         super(LEncoder, self).__init__()
         self.in_dim = in_dim
         self.out_channels = in_channels
@@ -269,19 +270,8 @@ class LEncoder(nn.Module):
         self.z_features = z_features
         self.fdim = fdim
         self.in_channels= in_channels
-        self.l1 = nn.Linear(4096, 1024)
-        self.l2 = nn.Linear(1024, z_features)
-        # self.l3 = nn.Linear(1024, 512)
-        self.d1 = nn.Linear(in_dim, 4096)
-
     def forward(self, x):
-        x = x.reshape(-1, self.in_channels, self.in_dim)  # bx256*256*3-->bx24x64*64*2
-        x = self.d1(x)
-        x = F.leaky_relu(x)
-        x = self.l1(x)
-        x = F.leaky_relu(x)
-        z = self.l2(x)
-        z = z.reshape((-1, self.in_channels*self.z_features))
+
         return z
 
 
