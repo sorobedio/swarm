@@ -7,11 +7,12 @@ class ResidualBlock(nn.Module):
         super(ResidualBlock, self).__init__()
         self.block = nn.Sequential(
             nn.Linear(dim, dim),
-            nn.LayerNorm(dim),
-            nn.GELU(),
+            # nn.LayerNorm(dim),
+            # nn.GELU(),
+            nn.LeakyReLU(),
             nn.Dropout(dropout),
             nn.Linear(dim, dim),
-            nn.LayerNorm(dim),
+            # nn.LayerNorm(dim),
             nn.Dropout(dropout)
         )
         self.activation = nn.GELU()
@@ -51,8 +52,8 @@ class LEncoder(nn.Module):
         for i in range(len(dims) - 1):
             layer = nn.Sequential(
                 nn.Linear(dims[i], dims[i + 1]),
-                nn.LayerNorm(dims[i + 1]),
-                nn.GELU(),
+                # nn.LayerNorm(dims[i + 1]),
+                nn.LeakyReLU(),
                 nn.Dropout(0.1)
             )
             self.layers.append(layer)
@@ -111,8 +112,9 @@ class LDecoder(nn.Module):
         # Initial layer
         self.initial = nn.Sequential(
             nn.Linear(self.z_features, dims[0]),
-            nn.LayerNorm(dims[0]),
-            nn.GELU(),
+            nn.LeakyReLU(),
+            # nn.LayerNorm(dims[0]),
+            # nn.GELU(),
             nn.Dropout(0.1)
         )
 
@@ -123,9 +125,10 @@ class LDecoder(nn.Module):
         for i in range(len(dims) - 1):
             layer = nn.Sequential(
                 nn.Linear(dims[i], dims[i + 1]),
-                nn.LayerNorm(dims[i + 1]),
-                nn.GELU(),
-                nn.Dropout(0.1)
+                nn.LeakyReLU(),
+                # nn.LayerNorm(dims[i + 1]),
+                # nn.GELU(),
+                # nn.Dropout(0.1)
             )
             self.layers.append(layer)
 
