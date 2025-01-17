@@ -92,10 +92,10 @@ def get_parser(**parser_kwargs):
         help="paths to base configs. Loaded from left-to-right. "
              "Parameters can be overwritten or added with command-line options of the form `--key value`.",
 
-        # default="stage1/configs/pythia_70_config_kl.yaml",
+        default="stage1/configs/llama_block_config_kl.yaml",
         # default="stage1/configs/llama_transformer_config_kl.yaml",
         #mini_llama_norm_config.yaml
-        default="stage1/configs/llama_tf_config_kl.yaml",
+        # default="stage1/configs/llama_tf_config_kl.yaml",
 
 
         # default="stage1/configs/geminia_atten_config.yaml",#was used
@@ -244,7 +244,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         scheduler.step()
         # Log loss and accuracy to TensorBoard
         writer.add_scalar("Loss/train", tloss, epoch)
-        scheduler.step()
+        # scheduler.step()
         # btst = evaluate(model, traindataloader)
         # print(f'current best test avg  loss: {btest}')
         # if btest > btst:
@@ -254,7 +254,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         if bloss > tloss:
             bloss = tloss
             print(f'saving best training loss is:{bloss}')
-            torch.save(model, os.path.join(args.save_path,f'full_llama_model_chunk_full.pth'))
+            torch.save(model, os.path.join(args.save_path,f'full_llama_model_chunk_full_block.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
 
