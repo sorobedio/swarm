@@ -16,7 +16,7 @@ model:
       z_features: 256
       in_channels: 64
       my_channels: 64
-      mult: [ 1,1,1, 1]  #num_down = len(ch_mult)-1
+      mult: [ 1,1,1]  #num_down = len(ch_mult)-1
       num_residual_blocks: 1
       in_dim: 4096
       fdim: 4096
