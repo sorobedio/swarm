@@ -79,6 +79,7 @@ class LEncoder(nn.Module):
                 x = res_block(x)
 
         z = self.final(x)
+        print(z.shape)
         return z
 
 
