@@ -32,8 +32,10 @@ class AutoencoderKL(nn.Module):
         self.z_features=ddconfig["z_features"]
         # self.chunk_loss = ChunkWiseReconLoss(step_size=1024)
         assert ddconfig["double_z"]
-        self.quant_fc = nn.Linear(2*ddconfig["z_features"]*ddconfig["in_channels"], 2*embed_dim)
-        self.post_quant_fc = nn.Linear(embed_dim, 2 * ddconfig["z_features"]*ddconfig["in_channels"])
+        if ddconfig["double_z"]:
+            self.z_features = self.z_features*2
+        self.quant_fc = nn.Linear(2*ddconfig["z_features"]*ddconfig["in_channels"], 2*ddconfig["in_channels"]*embed_dim)
+        self.post_quant_fc = nn.Linear(embed_dim**ddconfig["in_channels"], 2 * ddconfig["z_features"]*ddconfig["in_channels"])
         # self.quant_fc = nn.Linear(2 * ddconfig["z_features"], 2 * embed_dim)
         # self.post_quant_fc = nn.Linear(embed_dim, 2 * ddconfig["z_features"])
         self.embed_dim = embed_dim
