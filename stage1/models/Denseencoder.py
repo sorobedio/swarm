@@ -60,6 +60,7 @@ class AutoencoderKL(nn.Module):
         print(h.size())
         moments = self.quant_fc(h)
         print(moments.size())
+        exit()
         posterior = DiagonalGaussianDistribution(moments)
         return posterior
 
