@@ -18,7 +18,6 @@ model:
       my_channels: 64
       mult: [ 1,1,1, 1]  #num_down = len(ch_mult)-1
       num_residual_blocks: 2
-      dropout: 0.0
       in_dim: 4096
       fdim: 1024
 
