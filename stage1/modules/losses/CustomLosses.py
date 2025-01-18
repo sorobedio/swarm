@@ -59,7 +59,7 @@ class Myloss(nn.Module):
 
         super().__init__()
         self.kl_weight = kl_weight
-        self.logvar = nn.Parameter(torch.ones(size=()) * logvar_init)
+        self.logvar = 0.0 #nn.Parameter(torch.ones(size=()) * logvar_init)
 
     def forward(self, inputs, reconstructions, posteriors, split="train",weights=None):
         inputs = inputs.reshape(reconstructions.shape)
