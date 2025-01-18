@@ -181,7 +181,7 @@ if __name__ == "__main__":
     block_size = 262144
     n_components_block = 16384  # reduce each 256-d chunk to 64 dims
     model_dict={}
-    for k, X in data.items():
+    for k, X in glob(data.items()):
         X=pad_to_chunk_multiple(X, block_size)
         X = torch.split(X, split_size_or_sections=block_size, dim=-1)
         X = torch.cat(X, dim=0).float()
