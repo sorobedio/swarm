@@ -64,10 +64,10 @@ class Myloss(nn.Module):
     def forward(self, inputs, reconstructions, posteriors, split="train",weights=None):
         inputs = inputs.reshape(reconstructions.shape)
         # mask = (inputs != self.pad_value).float()
-        rec_loss = torch.abs(inputs.contiguous() - reconstructions.contiguous())
-        # rec_loss = (inputs.contiguous() - reconstructions.contiguous())**2
+        # rec_loss = torch.abs(inputs.contiguous() -/ reconstructions.contiguous())
+        rec_loss = (inputs.contiguous() - reconstructions.contiguous())**2
 
-        nll_loss = rec_loss / torch.exp(self.logvar) + self.logvar
+        nll_loss = rec_loss / (torch.exp(self.logvar)*2) + self.logvar*0.5
         weighted_nll_loss = nll_loss
         if weights is not None:
             weighted_nll_loss = weights*nll_loss

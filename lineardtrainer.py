@@ -241,13 +241,13 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         if bloss > tloss:
             bloss = tloss
             print(f'saving best training loss is:{bloss}')
-            torch.save(model, os.path.join(args.save_path,f'full_llama_model_chunk_full_linear.pth'))
+            torch.save(model, os.path.join(args.save_path,f'full_llama_model_chunk_full_linear_withlearn.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
 
-        for name, param in model.named_parameters():
-            if param.grad is not None:
-                writer.add_histogram(f'track_linear_gradients/{name}', param.grad, global_step=epoch)
+        # for name, param in model.named_parameters():
+        #     if param.grad is not None:
+        #         writer.add_histogram(f'track_linear_gradients/{name}', param.grad, global_step=epoch)
 
 # Llama-3.2-1B-Inst_top_2tf_.pth to test gpt2_full_.pth
 
@@ -299,7 +299,7 @@ from schedulers.lr_utils import CustomCosineWarmRestartScheduler, WarmUpAndDecay
 
 if __name__ == "__main__":
 
-    writer = SummaryWriter(log_dir="linear_llama/tensorboard_encod")
+    writer = SummaryWriter(log_dir="linear_llama_testloss/tensorboard_encod")
     now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     # sys.path.append(os.getcwd())
     parser = get_parser()
