@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 from sklearn.decomposition import PCA
+import torch.nn.functional as F
 
 ###############################################################################
 # 1) Utility: Conversions between PyTorch and NumPy
@@ -152,47 +153,67 @@ def second_stage_pca_inverse_transform_sklearn(X_reduced: torch.Tensor, pca_mode
     """
     return pca_inverse_transform_sklearn(X_reduced, pca_model)
 
-
+def pad_to_chunk_multiple(x, chunk_size):
+    shape = x.shape
+    if len(shape)<2:
+        x =x.unsqueeze(0)
+        shape = x.shape
+    max_in = chunk_size*math.ceil(shape[1]/chunk_size)
+    if max_in> shape[1]:
+        delta1 = max_in - shape[1]
+        x =F.pad(x, (0, delta1, 0, 0), "constant", 0)
+    return x
 ###############################################################################
 # 5) End-to-end demonstration
 ###############################################################################
+from glob import glob
 if __name__ == "__main__":
     # Create some synthetic data in PyTorch
-    N = 1000
-    d = 1024
-    X = torch.randn(N, d)  # shape (1000, 1024)
-    data = torch.load()
+    # N = 1000
+    # d = 1024
+    # X = torch.randn(N, d)  # shape (1000, 1024)
+    data = torch.load('../Datasets/llmdata/llama_3_1_8B_inst_full_block_and_ln_.pt')
+    pca_weight ={}
 
     # 1) Fit blockwise PCA on chunks of dimension
-    block_size = 256
-    n_components_block = 64  # reduce each 256-d chunk to 64 dims
-    pca_models = blockwise_pca_fit_sklearn(X, block_size, n_components_block)
+    block_size = 262144
+    n_components_block = 16384  # reduce each 256-d chunk to 64 dims
+    model_dict={}
+    for k, X in data.items():
+        X=pad_to_chunk_multiple(X, block_size)
+        X = torch.split(X, split_size_or_sections=block_size, dim=-1)
+        X = torch.cat(X, dim=0).float()
+        pca_models = blockwise_pca_fit_sklearn(X, block_size, n_components_block)
+        model_dict[k] = pca_models
 
-    # 2) Transform blockwise
-    X_blockwise_reduced = blockwise_pca_transform_sklearn(X, pca_models)
-    print("[Blockwise PCA] Reduced shape:", X_blockwise_reduced.shape)
-    # => (1000, 4 * 64) = (1000, 256) if d=1024 and block_size=256
-
-    # 3) Optional second-stage PCA (further reduce from 256 -> 64)
-    n_components_second = 64
-    pca_model_2 = second_stage_pca_fit_sklearn(X_blockwise_reduced, n_components_second)
-    X_final = second_stage_pca_transform_sklearn(X_blockwise_reduced, pca_model_2)
-    print("[Second-Stage PCA] Final shape:", X_final.shape)
-    # => (1000, 64)
-
-    # -----------------
-    # Reconstruction
-    # -----------------
-    # A) Inverse second-stage
-    X_blockwise_approx = second_stage_pca_inverse_transform_sklearn(X_final, pca_model_2)
-    print("[Inverse 2nd Stage] shape:", X_blockwise_approx.shape)
-    # => (1000, 256)
-
-    # B) Inverse blockwise PCA
-    X_approx = blockwise_pca_inverse_transform_sklearn(X_blockwise_approx, pca_models)
-    print("[Inverse Blockwise] Reconstructed shape:", X_approx.shape)
-    # => (1000, 1024)
-
-    # Evaluate MSE to see how much information was lost
-    mse = torch.mean((X - X_approx) ** 2)
-    print("[Reconstruction MSE]", mse.item())
+        # 2) Transform blockwise
+        X_blockwise_reduced = blockwise_pca_transform_sklearn(X, pca_models)
+        print("[Blockwise PCA] Reduced shape:", X_blockwise_reduced.shape)
+        # => (1000, 4 * 64) = (1000, 256) if d=1024 and block_size=256
+        pca_weight[k]=X_blockwise_reduced
+        #
+        # # 3) Optional second-stage PCA (further reduce from 256 -> 64)
+        # n_components_second = 64
+        # pca_model_2 = second_stage_pca_fit_sklearn(X_blockwise_reduced, n_components_second)
+        # X_final = second_stage_pca_transform_sklearn(X_blockwise_reduced, pca_model_2)
+        # print("[Second-Stage PCA] Final shape:", X_final.shape)
+        # # => (1000, 64)
+        #
+        # # -----------------
+        # # Reconstruction
+        # # -----------------
+        # # A) Inverse second-stage
+        # X_blockwise_approx = second_stage_pca_inverse_transform_sklearn(X_final, pca_model_2)
+        # print("[Inverse 2nd Stage] shape:", X_blockwise_approx.shape)
+        # # => (1000, 256)
+        #
+        # # B) Inverse blockwise PCA
+        # X_approx = blockwise_pca_inverse_transform_sklearn(X_blockwise_approx, pca_models)
+        # print("[Inverse Blockwise] Reconstructed shape:", X_approx.shape)
+        # # => (1000, 1024)
+        #
+        # # Evaluate MSE to see how much information was lost
+        # mse = torch.mean((X - X_approx) ** 2)
+        # print("[Reconstruction MSE]", mse.item())
+    torch.save(model_dict, "ppdata/paca_llama3-1-8b_models.pt")
+    torch.save(model_dict, "ppdata/paca_llama3-1-8b_models_data.pt")
