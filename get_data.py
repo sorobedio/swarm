@@ -382,8 +382,8 @@ if __name__=='__main__':
     #     revision="step143000",
     # )
     # modellist=["google/gemma-7b-it"]
-    # modellist = ["meta-llama/Meta-Llama-3.1-8B-Instruct"]
-    modellist = ["meta-llama/Llama-3.2-3B-Instruct"]
+    modellist = ["meta-llama/Meta-Llama-3.1-8B-Instruct"]
+    # modellist = ["meta-llama/Llama-3.2-3B-Instruct"]
 
 
     #
@@ -412,8 +412,8 @@ if __name__=='__main__':
                 trust_remote_code=True,
             # revision="step143000",
             )
-        # print(model)
-        # exit()
+        print(model)
+        exit()
         std = model.state_dict()
         # for p, w in std.items():
         #     print(f'---param--{p}---{w.shape}--{w.min()}---{w.max()}--')

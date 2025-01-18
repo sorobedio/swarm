@@ -168,7 +168,7 @@ def pad_to_chunk_multiple(x, chunk_size):
 ###############################################################################
 # 5) End-to-end demonstration
 ###############################################################################
-from glob import glob
+# from glob import glob
 if __name__ == "__main__":
     # Create some synthetic data in PyTorch
     # N = 1000
