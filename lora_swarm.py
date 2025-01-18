@@ -1563,19 +1563,19 @@ def utility_function(wd, layer=None):
             #     file.write(f'-------iteration--{j}---{acc}----\n')
             print(f'******{j}*****acc:=={acc}*****************************')
 
-            if acc > 50.0:
-
-                accz = evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it",
-                                     only_one_or_two=None,
-                                     obj4_save_generation=False)
-
-                if mybest < accz * 100.0:
-                    mybest = accz * 100.0
-
-                    best_weights = wr
-
-                    torch.save(best_weights, './particles/weights_best.pt')
-                print(f'--new--best:{mybest}---actual--{accz*100}')
+            # if acc > 50.0:
+            #
+            #     accz = evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it",
+            #                          only_one_or_two=None,
+            #                          obj4_save_generation=False)
+            #
+            #     if mybest < accz * 100.0:
+            #         mybest = accz * 100.0
+            #
+            #         best_weights = wr
+            #
+            #         torch.save(best_weights, './particles/weights_best.pt')
+            #     print(f'--new--best:{mybest}---actual--{accz*100}')
 
             utility_value.append(acc)
     else:
@@ -1611,18 +1611,18 @@ def utility_function(wd, layer=None):
         print(f'******{j}*****acc:=={acc}**********single*******************')
 
         utility_value.append(acc)
-        if acc>50.0:
+        # if acc>50.0:
+        #
+        #     accz = evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it",
+        #                         only_one_or_two=None,
+        #                         obj4_save_generation=False)
 
-            accz = evaluate_test(model_path, eval_type, dataset, gpu_id, base_model="google/gemma-7b-it",
-                                only_one_or_two=None,
-                                obj4_save_generation=False)
-
-            if mybest < accz * 100.0:
-                mybest = accz * 100.0
-
-                best_weights=wr
-                print(f'--new--best:{mybest}')
-                torch.save(best_weights, './particles/weights_best_hella_swag.pt')
+            # if mybest < accz * 100.0:
+            #     mybest = accz * 100.0
+            #
+            #     best_weights=wr
+            #     print(f'--new--best:{mybest}')
+            #     torch.save(best_weights, './particles/weights_best_hella_swag.pt')
 
     return torch.tensor(utility_value)
 
@@ -1691,16 +1691,36 @@ if __name__ == "__main__":
     # Parameters
     # num_particles = 20
     # weight_dim = 1000  # Dimensionality for each weight vector
-    lambda_step = 1  # Step length
-    varphi_lambda = 0.95  # Step length schedule
-    varphi_v = 0.4  # Inertia
-    varphi_p = 0.3  # Cognitive coefficient
-    varphi_g = 0.3  # Social coefficient0
-    varphi_w = 0.3  # Repel coefficient
+    lambda_step = 0.5  # Step length
+    varphi_lambda = 0.90  # Step length schedule
+    varphi_v = 0.2  # Inertia
+    varphi_p = 0.5  # Cognitive coefficient
+    varphi_g = 0.5  # Social coefficient0
+    varphi_w = 0.4  # Repel coefficient
     patience = 8  # Number of iterations to wait for no improvement in global best
     restart_patience = 4  # Number of iterations for particle restart
-    max_iterations = 10  # Maximum number of iterations
+    max_iterations = 20  # Maximum number of iterations
 
+    # --inertia
+    # 0.2
+    # --cognitive_coeff
+    # 0.5
+    # --social_coeff
+    # 0.5
+    # --step_length
+    # 0.5
+    # --step_length_factor
+    # 0.90
+    # --patience
+    # 5
+    # --repel_coeff
+    # 0.4
+    # --starting_velocity_mode
+    # best
+    # --max_iteration
+    # 100
+    # --restart_stray_particles
+    # 0
 
     # acc = results['results']['hellaswag']['acc_norm,none']
     #         utility_values.append(acc)
@@ -1821,18 +1841,21 @@ if __name__ == "__main__":
 
             if stagnation_counter[i] >= restart_patience:
                 # Apply a perturbation to weights and velocities to explore a new direction
-                weights[i] = personal_best[i].clone() + torch.randn_like(
-                    personal_best[i]) * 0.1  # Example perturbation scale
+                randomness = torch.rand(personal_best[i].shape).type(personal_best[i].dtype).to(personal_best[i].device)
+                weights[i] = personal_best[i].clone() + randomness
+
+                # torch.randn_like(
+                #     personal_best[i]) * 0.1  # Example perturbation scale
                 velocities[i] = torch.randn_like(velocities[i])  # Reinitialize velocity with randomness
                 stagnation_counter[i] = 0  # Reset the counter after restart
 
         # Step length scheduling: λ = λ * φλ
         lambda_step = lambda_step * varphi_lambda
-        # torch.save(weights, f"./wdata/gemm_mmlu_pro_swarm_weights_{k}.pt")
+        torch.save(weights, f"./particle/best_personal_gemm_mmlu_pro_swarm_weights_{k}.pt")
         print(f'iteration------{k}--finished--')
 
     # Output the best-found expert (global best)
-    torch.save(weights, f"./particles/mmlu_swarm_weights_final_pro.pt")
+    torch.save(weights, f"./particles/personal_swarm_weights_final_pro.pt")
     # print("Best-found weights (global best):", global_best)
     torch.save(global_best, f"./particles/mmlu_swarm_global_best_top_1_pro.pt")
     print("Utility of best-found weights:", utility_function(global_best.unsqueeze(0), layers))
