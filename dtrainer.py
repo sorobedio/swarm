@@ -225,11 +225,11 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
                 loss, logs = model.training_step(inputs, batch_idx)
             # loss, logs = model.training_step(inputs, batch_idx)
 
-            scaler.scale(loss).backward()
-            scaler.step(optimizer)
-            scaler.update()
-            # loss.backward()
-            # optimizer.step()
+            # scaler.scale(loss).backward()
+            # scaler.step(optimizer)
+            # scaler.update()
+            loss.backward()
+            optimizer.step()
             # scheduler.step()
             train_loss += loss.item()
 
@@ -238,7 +238,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             progress_bar(batch_idx, len(traindataloader), 'Loss: %.6f |'
                          % (train_loss / (batch_idx + 1)))
             idx = batch_idx + 1
-            # schedulers.step()
+            schedulers.step()
 
         tloss = (train_loss / idx)
         # scheduler.step()
