@@ -238,7 +238,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             progress_bar(batch_idx, len(traindataloader), 'Loss: %.6f |'
                          % (train_loss / (batch_idx + 1)))
             idx = batch_idx + 1
-            schedulers.step()
+            # schedulers.step()
 
         tloss = (train_loss / idx)
         # scheduler.step()
