@@ -228,7 +228,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             # schedulers.step()
 
         tloss = (train_loss / idx)
-        scheduler.step()
+        # scheduler.step()
         # Log loss and accuracy to TensorBoard
         writer.add_scalar("Loss/train", tloss, epoch)
         # scheduler.step()
@@ -244,6 +244,10 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             torch.save(model, os.path.join(args.save_path,f'full_llama_model_chunk_full_linear.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
+
+        for name, param in model.named_parameters():
+            if param.grad is not None:
+                writer.add_histogram(f'track_linear_gradients/{name}', param.grad, global_step=epoch)
 
 # Llama-3.2-1B-Inst_top_2tf_.pth to test gpt2_full_.pth
 
