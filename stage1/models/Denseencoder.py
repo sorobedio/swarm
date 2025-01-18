@@ -146,7 +146,8 @@ class AutoencoderKL(nn.Module):
         opt_ae = torch.optim.Adam(list(self.encoder.parameters())+
                                   list(self.decoder.parameters())+
                                   list(self.quant_fc.parameters())+
-                                  list(self.post_quant_fc.parameters()),
+                                  list(self.post_quant_fc.parameters())+
+                                  list(self.loss.parameters()),
                                   lr=lr, betas=(0.5, 0.9))
         opt_disc = torch.optim.Adam(self.loss.discriminator.parameters(),
                                     lr=lr, betas=(0.5, 0.9))
@@ -198,8 +199,9 @@ class VAENoDiscModel(AutoencoderKL):
         optimizer = torch.optim.Adam(list(self.encoder.parameters())+
                                   list(self.decoder.parameters())+
                                   list(self.quant_fc.parameters())+
-                                  list(self.post_quant_fc.parameters()),
-                                  lr=self.learning_rate, betas=(0.5, 0.9))
+                                  list(self.post_quant_fc.parameters())+
+                                  list(self.loss.parameters()),
+                                  lr=self.learning_rate, betas=(0.85, 0.99))
         return optimizer
 
 
