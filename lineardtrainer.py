@@ -212,11 +212,12 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             #     loss, logs = model.training_step(inputs, batch_idx)
             loss, logs = model.training_step(inputs, batch_idx)
 
-            # scaler.scale(loss).backward()
-            # scaler.step(optimizer)
-            # scaler.update()
-            loss.backward()
-            optimizer.step()
+            scaler.scale(loss).backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # Clip
+            scaler.step(optimizer)
+            scaler.update()
+            # loss.backward()
+            # optimizer.step()
             # schedulers.step()
             train_loss += loss.item()
 
