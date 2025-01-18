@@ -213,7 +213,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             loss, logs = model.training_step(inputs, batch_idx)
 
             # scaler.scale(loss).backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # Clip
+            # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # Clip
             # scaler.step(optimizer)
             # scaler.update()
             loss.backward()
@@ -229,7 +229,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             # schedulers.step()
 
         tloss = (train_loss / idx)
-        scheduler.step()
+        # scheduler.step()
         # Log loss and accuracy to TensorBoard
         writer.add_scalar("Loss/train", tloss, epoch)
         # scheduler.step()
