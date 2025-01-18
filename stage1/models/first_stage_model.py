@@ -193,7 +193,7 @@ class VAENoDiscModel(AutoencoderKL):
                                   list(self.decoder.parameters())+
                                   list(self.quant_conv.parameters())+
                                   list(self.post_quant_conv.parameters()),
-                                  lr=self.learning_rate, betas=(0.5, 0.9))
+                                  lr=self.learning_rate, betas=(0.8, 0.95), weight_decay=1e-4)
         return optimizer
 
 
