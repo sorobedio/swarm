@@ -43,6 +43,23 @@ class AutoencoderKL(nn.Module):
         if ckpt_path is not None:
             self.init_from_ckpt(ckpt_path, ignore_keys=ignore_keys)
 
+
+
+    def xavier_initialize(self, model):
+        """
+        Applies Xavier initialization to all layers in the given model.
+        Args:
+            model (nn.Module): The neural network model to initialize.
+        """
+        for name, param in model.named_parameters():
+            if "weight" in name:
+                if param.dim() > 1:  # Only apply to layers with at least 2 dimensions
+                    nn.init.xavier_uniform_(param)
+                    print(f"Xavier initialized: {name}")
+            elif "bias" in name:
+                nn.init.zeros_(param)
+                print(f"Bias initialized to zero: {name}")
+
     def init_from_ckpt(self, path, ignore_keys=list()):
         sd = torch.load(path, map_location="cpu")
         if "state_dict" in sd:
@@ -192,8 +209,9 @@ class VAENoDiscModel(AutoencoderKL):
         optimizer = torch.optim.AdamW(list(self.encoder.parameters())+
                                   list(self.decoder.parameters())+
                                   list(self.quant_conv.parameters())+
-                                  list(self.post_quant_conv.parameters()),
-                                  lr=self.learning_rate, betas=(0.8, 0.95), weight_decay=1e-4)
+                                  list(self.post_quant_conv.parameters())+
+                                  list(self.loss.parameters()),
+                                  lr=self.learning_rate, betas=(0.5, 0.95), weight_decay=1e-4)
         return optimizer
 
 
