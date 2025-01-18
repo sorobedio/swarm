@@ -35,7 +35,7 @@ class DiagonalGaussianDistribution(object):
     def sample(self,n=1):
         if n>1:
             shapes = self.mean.shape[1:]
-            x = self.mean + self.std * torch.randn((n,shapes[0])).to(device=self.parameters.device)
+            x = self.mean + self.std * torch.randn((n,shapes[0],shapes[1])).to(device=self.parameters.device)
         else:
             x = self.mean + self.std * torch.randn(self.mean.shape).to(device=self.parameters.device)
         return x
@@ -47,14 +47,14 @@ class DiagonalGaussianDistribution(object):
             if other is None:
                 return 0.5 * torch.sum(torch.pow(self.mean, 2)
                                        + self.var - 1.0 - self.logvar,
-                                       dim=[1])
+                                       dim=[1,2])
             else:
                 return 0.5 * torch.sum(
                     torch.pow(self.mean - other.mean, 2) / other.var
                     + self.var / other.var - 1.0 - self.logvar + other.logvar,
-                    dim=[1])
+                    dim=[1,2])
 
-    def nll(self, sample, dims=[1]):
+    def nll(self, sample, dims=[1,2]):
         if self.deterministic:
             return torch.Tensor([0.])
         logtwopi = np.log(2.0 * np.pi)

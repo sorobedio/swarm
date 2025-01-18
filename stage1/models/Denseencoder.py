@@ -8,6 +8,21 @@ from stage1.modules.reparameterization import DiagonalGaussianDistribution
 from utils.util import instantiate_from_config
 from stage1.modules.losses.CustomLosses import ChunkWiseReconLoss
 
+def reparameterize(mu, logvar):
+    """
+    Implements the reparameterization trick.
+    Args:
+        mu (torch.Tensor): The mean of the latent space distribution.
+        logvar (torch.Tensor): The log-variance of the latent space distribution.
+    Returns:
+        torch.Tensor: A sample from the latent space distribution.
+    """
+    std = torch.exp(0.5 * logvar)  # Convert log-variance to standard deviation
+    eps = torch.randn_like(std)   # Sample from standard normal distribution
+    z = mu + eps * std            # Reparameterization trick
+    return z
+
+
 class AutoencoderKL(nn.Module):
     def __init__(self,
                  ddconfig,
@@ -63,6 +78,8 @@ class AutoencoderKL(nn.Module):
         # print(h.size())
         # h = h.reshape(h.size(0), -1)
         moments = self.quant_fc(h)
+
+        # reparameterize(mu, logvar)
         # print(moments.size())
         # exit()
         posterior = DiagonalGaussianDistribution(moments)

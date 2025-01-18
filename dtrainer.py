@@ -257,11 +257,15 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             torch.save(model, os.path.join(args.save_path,f'llama_model_chunk_full_block_7first.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
-        print('---------------gradient----------------------------')
+
         for name, param in model.named_parameters():
             if param.grad is not None:
-                print(f"{name}: Min={param.grad.min()}, Max={param.grad.max()}, Mean={param.grad.mean()}")
-        print('---------------gradient----------------------------')
+                writer.add_histogram(f'track_gradients/{name}', param.grad, global_step=epoch)
+        # print('---------------gradient----------------------------')
+        # for name, param in model.named_parameters():
+        #     if param.grad is not None:
+        #         print(f"{name}: Min={param.grad.min()}, Max={param.grad.max()}, Mean={param.grad.mean()}")
+        # print('---------------gradient----------------------------')
 
 
 # Llama-3.2-1B-Inst_top_2tf_.pth to test gpt2_full_.pth
