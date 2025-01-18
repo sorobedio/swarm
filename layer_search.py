@@ -397,7 +397,7 @@ if __name__ == "__main__":
         seed_message.append(f"Setting torch manual seed to {torch_random_seed}")
         torch.manual_seed(int(torch_random_seed))
 
-    device = torch.device('cuda:2' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print('=============loading model================')
 
     # configs = [OmegaConf.load(opt.base)]
@@ -422,8 +422,7 @@ if __name__ == "__main__":
 
     # model_id = "google/gemma-7b-it"
     model_id = "meta-llama/Meta-Llama-3.1-8B-Instruct"
-    weights = torch.load(f'../Datasets/llmdata/llama-3-1-8b_layer_full.pt')
-    print(list(weights))
+
     x_max = 2.9375
     x_min = -0.9140625
     # exit()
@@ -439,26 +438,31 @@ if __name__ == "__main__":
 
 
     print("============================================================")
-    layers = list(weights)
-    print(layers)
+
     # scale = 0.125
     # scale =1.0
     lw ={}
 ##############################ffn###################################
     # autoencoder = torch.load('./autocheckpoints/Llama-3.2-1B-Inst_top_2tf_.pth', map_location=device)
     # autoencoder = torch.load('./autocheckpoints/llama-3_2-1B_tf-top4_.pth', map_location=device)
-    autoencoder = torch.load('./autocheckpoints/llama_full_.pth', map_location='cpu')
-    # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/gemmina_llama_norm_.ckpt')
+    autoencoder = torch.load('./autocheckpoints/full_llama_model_chunk_full_linear_withlearn.pth', map_location='cpu')
+    torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_small_chunk_llama_.ckpt')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/pythia_160m_ffn_44step.ckpt')
+
+    exit()
 
 
     autoencoder.to(device)
     autoencoder.eval()
+    weights = torch.load(f'../Datasets/llmdata/llama-3-1-8b_layer_full.pt')
+    print(list(weights))
+    layers = list(weights)
+    print(layers)
     wd ={}
 
     num_samples = 3
     # latent_shape = (num_samples, 4, 16, 16)
-    latent_shape = (num_samples, 4, 16, 16)
+    latent_shape = (num_samples, 4, 256)
     zweights = {}
 
     for layer in layers:
