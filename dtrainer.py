@@ -260,7 +260,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
 
         for name, param in model.named_parameters():
             if param.grad is not None:
-                writer.add_histogram(f'track_gradients/{name}', param.grad, global_step=epoch)
+                writer.add_histogram(f'first_stag_chunk_track_gradients/{name}', param.grad, global_step=epoch)
         # print('---------------gradient----------------------------')
         # for name, param in model.named_parameters():
         #     if param.grad is not None:
@@ -328,7 +328,7 @@ if __name__ == "__main__":
     #     "learning_rate": 0.001,
     # })_chunk
     # seed_everything(seed=1234)
-    writer = SummaryWriter(log_dir="test_1full_llama/tensorboard_encod")
+    writer = SummaryWriter(log_dir="first_stagefull_llama/tensorboard_encod")
     now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     # sys.path.append(os.getcwd())
     parser = get_parser()
