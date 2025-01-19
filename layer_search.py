@@ -432,7 +432,7 @@ if __name__ == "__main__":
     chunk_size=1048576
     # 8030261248
     # chunk_size = 16384
-    scale = 1.0
+    scale = 0.1
     # chunk_size = 58720256
     # chunk_size = 1048576
 
@@ -494,7 +494,7 @@ if __name__ == "__main__":
             wl = []
             zp =[]
             for w in tqdm(weight):
-                w = (w-mu)/std
+                # w = (w-mu)/std
                 w = w / scale
                 w = w.to(device)
                 _, x_rec, prior = autoencoder(w)
@@ -514,7 +514,7 @@ if __name__ == "__main__":
 
         ws = torch.cat(wl, dim=-1) * scale
         print(ws.shape)
-        ws = ws * std + mu
+        # ws = ws * std + mu
         # ws = 0.5*(ws +1)* (x_max-x_min) + x_min
         wd[layer]=ws
         # # wd[layer] = slerp(0.5, weights[layer], ws)
