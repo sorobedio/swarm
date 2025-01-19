@@ -490,7 +490,7 @@ if __name__ == "__main__":
 
         use_amp = True
 
-        with torch.autocast(device_type="cuda", dtype=torch.float32, enabled=use_amp):
+        with torch.autocast(device_type="cuda", dtype=torch.bfloat16, enabled=use_amp):
             wl = []
             zp =[]
             for w in tqdm(weight):
