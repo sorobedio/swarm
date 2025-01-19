@@ -498,7 +498,7 @@ if __name__ == "__main__":
                 w = w / scale
                 w = w.to(device)
                 _, x_rec, prior = autoencoder(w)
-                print(prior.mean.shape, prior.std.shape)
+                # print(prior.mean.shape, prior.std.shape)
                 # print(w.shape, x_rec.shape)
                 # exit()
 
