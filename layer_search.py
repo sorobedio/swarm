@@ -449,7 +449,7 @@ if __name__ == "__main__":
     torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_chunk_llama_.ckpt')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/pythia_160m_ffn_44step.ckpt')
 
-    # exit()
+    exit()
 
 
     autoencoder.to(device)
