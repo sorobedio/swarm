@@ -444,9 +444,9 @@ if __name__ == "__main__":
     lw ={}
 ##############################ffn###################################
     # autoencoder = torch.load('./autocheckpoints/Llama-3.2-1B-Inst_top_2tf_.pth', map_location=device)
-    autoencoder = torch.load('./autocheckpoints/llama_model_chunk_full_block_first.pth', map_location=device)
+    autoencoder = torch.load('./autocheckpoints/llama_model_chunk_full_block_first.pth', map_location='cpu')
     # autoencoder = torch.load('./autocheckpoints/llama_model_chunk_full_block_7first.pth', map_location='cpu')
-    # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_small_chunk_llama_.ckpt')
+    torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_chunk_llama_.ckpt')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/pythia_160m_ffn_44step.ckpt')
 
     # exit()
