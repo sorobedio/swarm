@@ -456,7 +456,7 @@ if __name__ == "__main__":
     autoencoder.eval()
     weights = torch.load(f'../Datasets/llmdata/llama_3_1_8B_inst_full_block_and_ln_.pt')
     print(list(weights))
-    layers = list(weights)[:7]
+    layers = list(weights)[:14]
     print(layers)
     wd ={}
     std = 0.013931703753769398
