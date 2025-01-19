@@ -184,7 +184,7 @@ class VAENoDiscModel(AutoencoderKL):
         mse = F.mse_loss(inputs, reconstructions)
         # cmse = self.chunk_loss(inputs, reconstructions)
         aeloss, log_dict_ae = self.loss(inputs, reconstructions, posterior,  split="train")
-        loss = aeloss
+        loss = aeloss+mse*1000
         self.gl_step += 1
         # print(f"inputs: {inputs[0][:20]}")
         # print(f"reconstructions: {reconstructions[0][:20]}")
@@ -209,8 +209,8 @@ class VAENoDiscModel(AutoencoderKL):
         optimizer = torch.optim.AdamW(list(self.encoder.parameters())+
                                   list(self.decoder.parameters())+
                                   list(self.quant_conv.parameters())+
-                                  list(self.post_quant_conv.parameters())+
-                                  list(self.loss.parameters()),
+                                  list(self.post_quant_conv.parameters()),
+                                  # list(self.loss.parameters()),
                                   lr=self.learning_rate, betas=(0.5, 0.95), weight_decay=4e-5)
         return optimizer
 
