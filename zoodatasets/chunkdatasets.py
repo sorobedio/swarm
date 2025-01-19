@@ -128,9 +128,9 @@ class ZooDataset(Dataset):
         wl = []
         if dataset=='joint':
             keys = list(data)
-            # keys.remove('layernorm.weight')
+            keys.remove('layernorm.weight')
             # keys = ['sharegpt_cot', 'gemini_alpaca_sharegpt']
-            keys =keys[:14]
+            # keys =keys[:14]
             # print(keys)
 
             for k in keys:
