@@ -203,6 +203,28 @@ def set_layers_state_dict(std, weights):
             # st = ed
     return std
 
+
+def set_layers_state_dict_ecp(std, weights, cond='norm', tgt='mlp'):
+    # std = model.state_dict()
+    layers = list(weights)
+    # st = 0
+    for params in layers:
+        if not params.endswith('num_batches_tracked'):
+            if cond in params:
+                continue
+            if tgt in params:
+                shape = std[params].shape
+                device = std[params].device
+                dtp = std[params].dtype
+                st =0
+                ed = st + np.prod(shape)
+                std[params] = weights[params][st:ed].reshape(shape).type(dtp).to(device)
+                # model.load_state_dict(std)
+                st = ed
+    return std
+
+
+
 def gets_weights(std):
     # std = model.state_dict()
     weights = []

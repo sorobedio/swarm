@@ -429,7 +429,7 @@ if __name__ == "__main__":
     #
     # chunk_size =2362368
     # chunk_size = 1100416
-    chunk_size=758144
+    chunk_size=1048576
     # 8030261248
     # chunk_size = 2156032
     scale = 1.0
@@ -445,24 +445,26 @@ if __name__ == "__main__":
 ##############################ffn###################################
     # autoencoder = torch.load('./autocheckpoints/Llama-3.2-1B-Inst_top_2tf_.pth', map_location=device)
     # autoencoder = torch.load('./autocheckpoints/llama-3_2-1B_tf-top4_.pth', map_location=device)
-    autoencoder = torch.load('./autocheckpoints/full_llama_model_chunk_full_linear_withlearn.pth', map_location='cpu')
-    torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_small_chunk_llama_.ckpt')
+    autoencoder = torch.load('./autocheckpoints/llama_model_chunk_full_block_first.pth', map_location='cpu')
+    # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_small_chunk_llama_.ckpt')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/pythia_160m_ffn_44step.ckpt')
 
-    exit()
+    # exit()
 
 
     autoencoder.to(device)
     autoencoder.eval()
-    weights = torch.load(f'../Datasets/llmdata/llama-3-1-8b_layer_full.pt')
+    weights = torch.load(f'../Datasets/llmdata/llama_3_1_8B_inst_full_block_and_ln_.pt')
     print(list(weights))
-    layers = list(weights)
+    layers = list(weights)[:14]
     print(layers)
     wd ={}
+    std = 0.013931703753769398
+    mu = 9.73654277913738e-06
 
-    num_samples = 3
-    # latent_shape = (num_samples, 4, 16, 16)
-    latent_shape = (num_samples, 4, 256)
+    num_samples = 1
+    latent_shape = (num_samples, 4, 16, 16)
+    # latent_shape = (num_samples, 4, 256)
     zweights = {}
 
     for layer in layers:
@@ -478,8 +480,8 @@ if __name__ == "__main__":
         # scale=0.0125
         weight = pad_to_chunk_multiple(weight, chunk_size=chunk_size)
         print(weight.shape)
-        weight = 2 * (weight - x_min) / (x_max - x_min) - 1
-        print(weight.shape)
+        # weight = 2 * (weight - x_min) / (x_max - x_min) - 1
+        # print(weight.shape)
         # n =weight.shape[-1]
 
         weight = torch.split(weight, split_size_or_sections=chunk_size, dim=-1)
@@ -488,30 +490,32 @@ if __name__ == "__main__":
 
         use_amp = True
 
-        with torch.autocast(device_type="cuda", dtype=torch.float32, enabled=use_amp):
+        with torch.autocast(device_type="cuda", dtype=torch.bfloat16, enabled=use_amp):
             wl = []
             zp =[]
             for w in tqdm(weight):
+                w = (w-mu)/std
                 w = w / scale
                 w = w.to(device)
                 _, x_rec, prior = autoencoder(w)
                 # print(prior.mean.shape, prior.std.shape)
-                # print(w.shape, x_rec.shape)
-                # exit()
+                print(w.shape, x_rec.shape)
+                exit()
 
-                ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
-                zs = ze.detach().cpu().float()
+                # ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
+                # zs = ze.detach().cpu().float()
                 # zp.append(zs)
-                x_rec =  autoencoder.decode(ze)
+                # x_rec =  autoencoder.decode(ze)
                 #
+                # x_rec=(x_rec*std)+mu
                 wl.append(x_rec.detach().cpu())
         # zweights[layer] = torch.cat(zp, dim=1).reshape(num_samples, -1)
         # print(len(wl))
 
         ws = torch.cat(wl, dim=-1) * scale
         print(ws.shape)
-        # # ws = ws * v[:, None] + u[:, None]
-        ws = 0.5*(ws +1)* (x_max-x_min) + x_min
+        ws = ws * std + mu
+        # ws = 0.5*(ws +1)* (x_max-x_min) + x_min
         wd[layer]=ws
         # # wd[layer] = slerp(0.5, weights[layer], ws)
         # # lw[layer]=ws
@@ -538,23 +542,25 @@ if __name__ == "__main__":
     wd = torch.load('wdata/sampled_weights_vae_norm.pt')
 
     wacc =[]
-    layer = list(wd)[0]
+    layers = list(wd)
     # n = ws.shape[0]
     n=3
     for i in range(n):
         # l='gemma-7b-it'
         wr = {}
         #['gemma-7b-it', 'Llama-3.2-3B-Instruct']
-        # for l in layers:
-        #     print(f'layer;--{l}---')
-        #     # wr[l] = slerp(0.90, weights[l], wd[l][i])
-        wr = wd[layer][i].reshape(-1)
+        for l in layers:
+            print(f'layer;--{l}---')
+            wr[l] = wd[l].reshape(-1)
+            # wr[l] = slerp(0.90, weights[l], wd[l][i])
+        # wr = wd[layer][i].reshape(-1)
         # w = ws[i].reshape(-1)
 
         std = model.state_dict()
-        model=set_model_weights(model, wr)
+        # model=set_model_weights(model, wr)
         # for w in ws:ws[i
         # std =   set_layer_state_dict(std, wr, layer='norm')
+        std=set_layers_state_dict_ecp(std, wr, cond='norm', tgt='layer')
         model.load_state_dict(std)
 
 
