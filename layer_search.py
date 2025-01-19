@@ -463,8 +463,8 @@ if __name__ == "__main__":
     mu = 9.73654277913738e-06
 
     num_samples = 1
-    latent_shape = (num_samples, 4, 16, 16)
-    # latent_shape = (num_samples, 4, 256)
+    # latent_shape = (num_samples, 4, 16, 16)
+    latent_shape = (num_samples, 4, 256)
     zweights = {}
 
     for layer in layers:
@@ -490,7 +490,7 @@ if __name__ == "__main__":
 
         use_amp = True
 
-        with torch.autocast(device_type="cuda", dtype=torch.bfloat16, enabled=use_amp):
+        with torch.autocast(device_type="cuda", dtype=torch.float32, enabled=use_amp):
             wl = []
             zp =[]
             for w in tqdm(weight):
@@ -498,9 +498,9 @@ if __name__ == "__main__":
                 w = w / scale
                 w = w.to(device)
                 _, x_rec, prior = autoencoder(w)
-                # print(prior.mean.shape, prior.std.shape)
-                print(w.shape, x_rec.shape)
-                exit()
+                print(prior.mean.shape, prior.std.shape)
+                # print(w.shape, x_rec.shape)
+                # exit()
 
                 # ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
                 # zs = ze.detach().cpu().float()
