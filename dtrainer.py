@@ -207,7 +207,7 @@ def nondefault_trainer_args(opt):
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 10000.0
+    bloss = 100000.0
     btest = 2.0
     cr =[]
     # schedulers = lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 5, 5)
@@ -254,7 +254,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         if bloss > tloss:
             bloss = tloss
             print(f'saving best training loss is:{bloss}')
-            torch.save(model, os.path.join(args.save_path,f'llama_model_chunk_full_block_first.pth'))
+            torch.save(model, os.path.join(args.save_path,f'llama_model_chunk_full_block_first_full.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
 
