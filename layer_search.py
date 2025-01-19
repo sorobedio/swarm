@@ -539,7 +539,7 @@ if __name__ == "__main__":
                                                  device_map=device,
                                                  )
     # torch.save(wd, 'wdata/sampled_weights_vae_norm.pt')
-    wd = torch.load('wdata/sampled_weights_vae_norm.pt')
+    # wd = torch.load('wdata/sampled_weights_vae_norm.pt')
 
     wacc =[]
     layers = list(wd)
