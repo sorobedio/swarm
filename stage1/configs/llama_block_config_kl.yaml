@@ -5,7 +5,7 @@ model:
     embed_dim: 4
     input_key: 'weight'
     learning_rate: 5.1234e-5
-#    ckpt_path: './autocheckpoints/llama_transformer_base_ckpt_block_.pt'
+    ckpt_path: 'checkpoints/stage1/base_chunk_llama_.ckpt'
     lossconfig:
       target: stage1.modules.losses.CustomLosses.Myloss
       params:

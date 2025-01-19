@@ -244,7 +244,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         # scheduler.step()
         # Log loss and accuracy to TensorBoard
         writer.add_scalar("Loss/train", tloss, epoch)
-        scheduler.step()
+        # scheduler.step()
         # btst = evaluate(model, traindataloader)
         # print(f'current best test avg  loss: {btest}')
         # if btest > btst:
