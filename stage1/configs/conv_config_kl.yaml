@@ -6,6 +6,7 @@ model:
     embed_dim: 4 #128 #64
     input_key: 'weight'
     learning_rate: 1.113e-3
+    ckpt_path: 'checkpoints/stage1/img_base_chunk_llama_.ckpt'
     lossconfig:
       target: stage1.modules.losses.CustomLosses.Myloss
       params:
