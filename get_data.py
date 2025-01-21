@@ -412,14 +412,14 @@ if __name__=='__main__':
                 trust_remote_code=True,
             # revision="step143000",
             )
-        print(model)
+        # print(model)
         # exit()
         std = model.state_dict()
         # for p, w in std.items():
         #     print(f'---param--{p}---{w.shape}--{w.min()}---{w.max()}--')
         #     print("=====================================================")
         #
-        exit()
+        # exit()
 
 
 
@@ -433,6 +433,9 @@ if __name__=='__main__':
         weights.update(w)  # 67584
         we = get_layer_weights(std, tgt='head')
         weights.update(we)
+        we = get_layer_weights(std, tgt='embed_tokens')
+        weights.update(we)
+        #
         we = get_layer_weights(std, tgt='layernorm.weight')
 
         # we = gets_weights(std)
@@ -441,7 +444,7 @@ if __name__=='__main__':
         # weights[k] = we
         weights.update(w) #67584
         weights['layernorm.weight'] = we
-    torch.save(weights, '../Datasets/llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')  # 1498482688
+    torch.save(weights, '../Datasets/llmdata/llama_3_2_1B_inst_full_block_and_ln_group.pt')  # 1498482688
     print(len(weights))
     exit()
     # 1498482688
