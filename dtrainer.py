@@ -207,7 +207,7 @@ def nondefault_trainer_args(opt):
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 1.0
+    bloss = 1000.0
     btest = 2.0
     cr =[]
     # schedulers = lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 5, 5)
