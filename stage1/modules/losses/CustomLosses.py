@@ -78,7 +78,7 @@ class Myloss(nn.Module):
         kl_loss = posteriors.kl()
         kl_loss = torch.sum(kl_loss) / kl_loss.shape[0]
         # loss = weighted_nll_loss + self.kl_weight * kl_loss
-        loss = F.mse_loss(inputs.contiguous(), reconstructions.contiguous()) +self.kl_weight * kl_loss.mean()
+        loss = 100*F.mse_loss(inputs.contiguous(), reconstructions.contiguous()) +self.kl_weight * kl_loss.mean()
 
         log = {"{}/total_loss".format(split): loss.clone().detach(),"{}/logvar".format(split): self.logvar.detach(),
                "{}/kl_loss".format(split): kl_loss.detach().mean(), "{}/nll_loss".format(split): nll_loss.detach().mean(),
