@@ -429,19 +429,20 @@ if __name__=='__main__':
         # w, we = extract_layer_weights_withexc(std, tgt='layer', pref=None)
 
 
-        # w, we = get_blocks_weights(std, tgt='norm', cond='layer')
-        # weights.update(w)  # 67584
-        # we = get_layer_weights(std, tgt='layernorm.weight')
+        w, we = get_blocks_weights(std, tgt='norm', cond='layer')
+        weights.update(w)  # 67584
+        we = get_layer_weights(std, tgt='layernorm.weight')
 
-        we = gets_weights(std)
-        print(we.shape, we.min(), we.max(), we.dtype)
+        # we = gets_weights(std)
+        # print(we.shape, we.min(), we.max(), we.dtype)
         # exit()
-        weights[k] = we
-        # weights.update(w) #67584
-        # weights['layernorm.weight'] = we
-    torch.save(weights, '../Datasets/llmdata/llama_3_2_1B_inst_full_.pt')  # 1498482688
+        # weights[k] = we
+        weights.update(w) #67584
+        weights['layernorm.weight'] = we
+    torch.save(weights, '../Datasets/llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')  # 1498482688
     print(len(weights))
     exit()
+    # 1498482688
     #HuggingFaceTB/SmolLM2-135M-Instruct
     #'../Datasets/llmdata/llama_3_2_1b_3b_inst_selft_atten__.pt'
     # '../Datasets/llmdata/llama_3_2_1b_3b_inst_mlp_.pt'
