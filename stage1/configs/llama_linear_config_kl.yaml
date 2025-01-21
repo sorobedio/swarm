@@ -2,7 +2,7 @@ model:
   base_learning_rate: 4.5e-4
   target: stage1.models.Denseencoder.VAENoDiscModel
   params:
-    embed_dim: 1024
+    embed_dim: 256
     input_key: 'weight'
     learning_rate: 1.123e-4
 #    ckpt_path: 'checkpoints/stage1/base_small_chunk_llama_.ckpt'
@@ -13,7 +13,7 @@ model:
         kl_weight: 0.00001
     ddconfig:
       double_z: True
-      z_features: 1024
+      z_features: 256
       in_channels: 1
       my_channels: 1
       mult: [ 1,1,2]  #num_down = len(ch_mult)-1
