@@ -19,7 +19,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
 # from pytorch_lightning.utilities import rank_zero_info
 # from zoodatasets.weightsdatasets import ZooDataset
-from zoodatasets.chunkdatasets import ZooDataset
+from zoodatasets.schunkdatasets import ZooDataset
 # from zoodatasets.FFNdatasets import ZooDataset
 # from zoodatasets.layerdatasets import ZooDataset
 # from zoodatasets.basedatasets import ZooDataset
@@ -37,7 +37,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 
 def get_parser(**parser_kwargs):
