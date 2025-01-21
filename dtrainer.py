@@ -37,7 +37,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 
 def get_parser(**parser_kwargs):
@@ -95,10 +95,10 @@ def get_parser(**parser_kwargs):
         # default="stage1/configs/llama_block_config_kl.yaml",
         # default="stage1/configs/short_chunk_llama_config_kl.yaml",
         #mini_llama_norm_config.yaml
-        default="stage1/configs/llama_attn_base_config_kl.yaml",
+        # default="stage1/configs/llama_attn_base_config_kl.yaml",
 
 
-        # default="stage1/configs/geminia_atten_config.yaml",#was used
+        default="stage1/configs/layer_wise_llama_8b_models.yaml",#was used
         #
         # default="stage1/configs/full_model_base_config_kl.yaml",
         #   default="stage1/configs/norm_layer_config_kl.yaml",
@@ -255,7 +255,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             bloss = tloss
             print(f'saving best training loss is:{bloss}')
             # torch.save(model, os.path.join(args.save_path,f'llama_model_chunk_full_block_first_att.pth'))
-            torch.save(model, os.path.join(args.save_path, f'llama_model_chunk_full_1b_block.pth'))
+            torch.save(model, os.path.join(args.save_path, f'llama_model_layer_wise.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
 
@@ -343,7 +343,7 @@ if __name__ == "__main__":
                           scale=0.1, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
-    traindataloader = DataLoader(trainset, shuffle=True, batch_size=32, num_workers=8,
+    traindataloader = DataLoader(trainset, shuffle=True, batch_size=256, num_workers=8,
                                  # collate_fn=m_collate,
                                  )
     # testdataloader = DataLoader(valset, shuffle=False, batch_size=4, num_workers=4)
