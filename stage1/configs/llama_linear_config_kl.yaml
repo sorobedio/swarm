@@ -4,13 +4,13 @@ model:
   params:
     embed_dim: 256
     input_key: 'weight'
-    learning_rate: 1.123e-3
+    learning_rate: 1.123e-4
 #    ckpt_path: 'checkpoints/stage1/base_small_chunk_llama_.ckpt'
     lossconfig:
       target: stage1.modules.losses.CustomLosses.Myloss
       params:
 #        kl_weight: 0.01
-        kl_weight: 0.0001
+        kl_weight: 0.00001
     ddconfig:
       double_z: True
       z_features: 256
