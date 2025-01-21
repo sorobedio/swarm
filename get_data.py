@@ -198,6 +198,20 @@ def get_layer_weights(std, tgt='norm'):
                 w = std[params].reshape(-1)
                 weights.append(w)
     return torch.cat(weights, -1)
+
+
+def get_dict_layer_weights(std, tgt='norm'):
+    # std = model.state_dict()
+    weights = {}
+    for params in std:
+        if not params.endswith('num_batches_tracked'):
+            if 'mean' in params or 'var' in params:
+                continue
+            # print(params)
+            if tgt in params:
+                w = std[params].reshape(-1).detach().cpu()
+                weights[str(params)] = w
+    return weights
 # def get_
 #
 def extract_weights(std):
@@ -431,9 +445,9 @@ if __name__=='__main__':
 
         w, we = get_blocks_weights(std, tgt='norm', cond='layer')
         weights.update(w)  # 67584
-        we = get_layer_weights(std, tgt='head')
+        we = get_dict_layer_weights(std, tgt='head')
         weights.update(we)
-        we = get_layer_weights(std, tgt='embed_tokens')
+        we = get_dict_layer_weights(std, tgt='embed_tokens')
         weights.update(we)
         #
         we = get_layer_weights(std, tgt='layernorm.weight')
