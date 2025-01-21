@@ -92,13 +92,13 @@ def get_parser(**parser_kwargs):
         help="paths to base configs. Loaded from left-to-right. "
              "Parameters can be overwritten or added with command-line options of the form `--key value`.",
 
-        # default="stage1/configs/llama_block_config_kl.yaml",
+        default="stage1/configs/llama_block_config_kl.yaml",
         # default="stage1/configs/short_chunk_llama_config_kl.yaml",
         #mini_llama_norm_config.yaml
         # default="stage1/configs/llama_attn_base_config_kl.yaml",
 
 
-        default="stage1/configs/layer_wise_llama_8b_models.yaml",#was used
+        # default="stage1/configs/layer_wise_llama_8b_models.yaml",#was used
         #
         # default="stage1/configs/full_model_base_config_kl.yaml",
         #   default="stage1/configs/norm_layer_config_kl.yaml",
