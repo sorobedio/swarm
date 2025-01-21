@@ -419,7 +419,7 @@ if __name__=='__main__':
         #     print(f'---param--{p}---{w.shape}--{w.min()}---{w.max()}--')
         #     print("=====================================================")
         #
-        # exit()
+        exit()
 
 
 
@@ -431,6 +431,8 @@ if __name__=='__main__':
 
         w, we = get_blocks_weights(std, tgt='norm', cond='layer')
         weights.update(w)  # 67584
+        we = get_layer_weights(std, tgt='head')
+        weights.update(we)
         we = get_layer_weights(std, tgt='layernorm.weight')
 
         # we = gets_weights(std)
