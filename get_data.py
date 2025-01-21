@@ -396,8 +396,8 @@ if __name__=='__main__':
     #     revision="step143000",
     # )
     # modellist=["google/gemma-7b-it"]
-    modellist = ["meta-llama/Meta-Llama-3.1-8B-Instruct"]
-    # modellist = ["meta-llama/Llama-3.2-1B-Instruct"]
+    # modellist = ["meta-llama/Meta-Llama-3.1-8B-Instruct"]
+    modellist = ["meta-llama/Llama-3.2-1B-Instruct"]
 
 
     #
@@ -443,25 +443,25 @@ if __name__=='__main__':
         # w, we = extract_layer_weights_withexc(std, tgt='layer', pref=None)
 
         #
-        # w, we = get_blocks_weights(std, tgt='norm', cond='layer')
-        # weights.update(w)  # 67584
-        # we = get_dict_layer_weights(std, tgt='head')
-        # weights.update(we)
-        # we = get_dict_layer_weights(std, tgt='embed_tokens')
-        # weights.update(we)
-        # #
-        # we = get_layer_weights(std, tgt='layernorm.weight')
+        w, we = get_blocks_weights(std, tgt='norm', cond='layer')
+        weights.update(w)  # 67584
+        we = get_dict_layer_weights(std, tgt='head')
+        weights.update(we)
+        we = get_dict_layer_weights(std, tgt='embed_tokens')
+        weights.update(we)
         #
-        # # we = gets_weights(std)
-        # print(we.shape, we.min(), we.max(), we.dtype)
-        # # exit()
-        # # weights[k] = we
-        # weights.update(w) #67584
-        # weights['layernorm.weight'] = we
+        we = get_layer_weights(std, tgt='layernorm.weight')
 
-        w, we =  extract_layers_weights(std)
+        # we = gets_weights(std)
+        print(we.shape, we.min(), we.max(), we.dtype)
+        # exit()
+        # weights[k] = we
+        weights.update(w) #67584
+        weights['layernorm.weight'] = we
+
+        # w, we =  extract_layers_weights(std)
         weights.update(w)
-    torch.save(weights, '../Datasets/llmdata/llama_3_-1-8b-layer_wise.pt')  # 1498482688
+    torch.save(weights, '../Datasets/llmdata/llama_3_-1-1b_group_all_.pt')  # 1498482688
     print(len(weights))
     exit()
     # 1498482688
