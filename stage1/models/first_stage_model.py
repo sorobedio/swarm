@@ -184,7 +184,7 @@ class VAENoDiscModel(AutoencoderKL):
         mse = F.mse_loss(inputs, reconstructions)
         # cmse = self.chunk_loss(inputs, reconstructions)
         aeloss, log_dict_ae = self.loss(inputs, reconstructions, posterior,  split="train")
-        loss = aeloss+mse*1000
+        loss = aeloss# +mse*1000
         self.gl_step += 1
         # print(f"inputs: {inputs[0][:20]}")
         # print(f"reconstructions: {reconstructions[0][:20]}")
