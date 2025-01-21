@@ -434,7 +434,7 @@ if __name__=='__main__':
         we = get_layer_weights(std, tgt='layernorm.weight')
 
         # we = gets_weights(std)
-        # print(we.shape, we.min(), we.max(), we.dtype)
+        print(we.shape, we.min(), we.max(), we.dtype)
         # exit()
         # weights[k] = we
         weights.update(w) #67584
