@@ -70,7 +70,9 @@ class ZooDataset(Dataset):
         #
         # datapath = os.path.join(root, f'llmdata/llama_3_-1-8b-layer_wise.pt')  # 262144
         # datapath = os.path.join(root, f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')  # 262144
-        datapath = os.path.join(root, f'llmdata/llama_3_-1-3b_group_all_.pt')  # 262144
+        # datapath = os.path.join(root, f'llmdata/llama_3_-1-3b_group_all_.pt')  # 262144
+        datapath = os.path.join(root, f'llmdata/hf_smollm_360M_group_all_.pt')  # 262144
+        #
 
         # '../Datasets/llmdata/llama_3_-1-3b_group_all_.pt'
 

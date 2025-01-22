@@ -9,7 +9,7 @@ model:
 #    ckpt_path: 'checkpoints/stage1/base_chunk_llama_v1.ckpt'
     #
     lossconfig:
-      target: stage1.modules.losses.CustomLosses.Myloss
+      target: stage1.modules.losses.CustomLosses.NopaddingLoss
       params:
 #        kl_weight: 0.01
         kl_weight: 0.0001

@@ -14,14 +14,15 @@ class NopaddingLoss(nn.Module):
         mask = (inputs != self.pad_value).float()
 
         # Basic reconstruction loss
-        rec_loss = torch.abs(inputs.contiguous() - reconstructions.contiguous())
+        rec_loss =(inputs.contiguous() - reconstructions.contiguous())**2
         masked_rec_loss = rec_loss * mask
 
         # Calculate number of valid elements per batch item
         num_valid = mask.sum(dim=list(range(1, len(mask.shape)))).clamp(min=1)
 
         # NLL loss with masking
-        nll_loss = masked_rec_loss / torch.exp(self.logvar) + self.logvar * mask
+        # nll_loss = masked_rec_loss / torch.exp(self.logvar) + self.logvar * mask
+        nll_loss = masked_rec_loss
 
         # Proper reduction over non-padded elements
         if weights is not None:
