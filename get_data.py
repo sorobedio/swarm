@@ -423,7 +423,7 @@ if __name__=='__main__':
         model = AutoModelForCausalLM.from_pretrained(
                 md,
                 device_map="cpu",
-                torch_dtype=torch.bfloat16,
+                # torch_dtype=torch.bfloat16,
                 trust_remote_code=True,
             # revision="step143000",
             )
