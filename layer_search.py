@@ -550,7 +550,7 @@ if __name__ == "__main__":
     wacc =[]
     layers = list(wd)
     n = ws.shape[0]
-    n=3
+    # n=num\
     for i in range(n):
         # l='gemma-7b-it'
         wr = {}
