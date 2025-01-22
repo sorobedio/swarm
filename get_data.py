@@ -397,7 +397,8 @@ if __name__=='__main__':
     # )
     # modellist=["google/gemma-7b-it"]
     # modellist = ["meta-llama/Meta-Llama-3.1-8B-Instruct"]
-    modellist = ["meta-llama/Llama-3.2-3B-Instruct"]
+    # modellist = ["meta-llama/Llama-3.2-3B-Instruct"]
+    modellist =["HuggingFaceTB/SmolLM2-360M-Instruct"]
 
 
     #
@@ -450,7 +451,7 @@ if __name__=='__main__':
         we = get_dict_layer_weights(std, tgt='embed_tokens')
         weights.update(we)
         #
-        we = get_layer_weights(std, tgt='layernorm.weight')
+        we = get_layer_weights(std, tgt='norm')
 
         # we = gets_weights(std)
         print(we.shape, we.min(), we.max(), we.dtype)
@@ -461,7 +462,7 @@ if __name__=='__main__':
 
         # w, we =  extract_layers_weights(std)
         weights.update(w)
-    torch.save(weights, '../Datasets/llmdata/llama_3_-1-3b_group_all_.pt')  # 1498482688
+    torch.save(weights, '../Datasets/llmdata/hf_smollm_360M_group_all_.pt')  # 1498482688
     print(len(weights))
     exit()
     # 1498482688
