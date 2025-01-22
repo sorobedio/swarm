@@ -37,7 +37,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 
 def get_parser(**parser_kwargs):
