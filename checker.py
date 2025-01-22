@@ -8,9 +8,9 @@ import random
 
 
 if __name__ == "__main__":
-    wds = torch.load('wdata/utilities_vae_lora_mmlu.pt')
-    print(len(wds))
-    exit()
+    # wds = torch.load('wdata/utilities_vae_lora_mmlu.pt')
+    # print(len(wds))
+    # exit()
     model_names = ["code_alpaca", "cot", "flan_v2", "gemini_alpaca", "lima", "oasst1", "open_orca", "science", "sharegpt", "wizardlm"]
     vect_weights={}
     weights ={}
@@ -37,8 +37,8 @@ if __name__ == "__main__":
         print(f'---params:{model_name}---{ws.shape}--{ws.min()}-{ws.max()}-')
         weights[model_name]=ws
     exit()
-    neweights ={}
-    weights= torch.load('wdata/reconstruct_lora_weights.pt')
+    # neweights ={}
+    # weights= torch.load('wdata/reconstruct_lora_weights.pt')
     model_names = list(weights)
     particles_now=len(model_names)
     initial_experts_num=40 ##51380224
@@ -53,12 +53,11 @@ if __name__ == "__main__":
         p1 = weights[parent_1]
         p2 = weights[parent_2]
         pm = w_1 * p1 + w_2 * p2
-        k= parent_1+'_t_'+parent_2
+        k= parent_1 +'_and_'+ parent_2
         weights[k]=pm
-        neweights[k]=pm
-    torch.save(neweights, "../Datasets/llmdata/gemina7b_it_lora_weights_recon_ext.pt")
+        # neweights[k]=pm
+    torch.save(weights, "../Datasets/llmdata/gemina7b_it_lora_weights_recon_ext.pt")
     print(len(neweights))
-
     exit(0)
 
 
