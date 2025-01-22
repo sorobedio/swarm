@@ -468,9 +468,9 @@ if __name__ == "__main__":
     std = 0.013931703753769398
     mu = 9.73654277913738e-06
 
-    num_samples = 1
-    # latent_shape = (num_samples, 4, 16, 16)
-    latent_shape = (num_samples, 4, 256)
+    num_samples = 3
+    latent_shape = (num_samples, 4, 16, 16)
+    # latent_shape = (num_samples, 4, 256)
     zweights = {}
 
     for layer in layers:
@@ -508,10 +508,10 @@ if __name__ == "__main__":
                 # print(w.shape, x_rec.shape)
                 # exit()
 
-                # ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
+                ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
                 # zs = ze.detach().cpu().float()
                 # zp.append(zs)
-                # x_rec =  autoencoder.decode(ze)
+                x_rec =  autoencoder.decode(ze)
                 #
                 # x_rec=(x_rec*std)+mu
                 wl.append(x_rec.detach().cpu())
