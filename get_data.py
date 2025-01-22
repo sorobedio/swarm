@@ -397,7 +397,7 @@ if __name__=='__main__':
     # )
     # modellist=["google/gemma-7b-it"]
     # modellist = ["meta-llama/Meta-Llama-3.1-8B-Instruct"]
-    modellist = ["meta-llama/Llama-3.2-1B-Instruct"]
+    modellist = ["meta-llama/Llama-3.2-3B-Instruct"]
 
 
     #
@@ -461,7 +461,7 @@ if __name__=='__main__':
 
         # w, we =  extract_layers_weights(std)
         weights.update(w)
-    torch.save(weights, '../Datasets/llmdata/llama_3_-1-1b_group_all_.pt')  # 1498482688
+    torch.save(weights, '../Datasets/llmdata/llama_3_-1-3b_group_all_.pt')  # 1498482688
     print(len(weights))
     exit()
     # 1498482688
