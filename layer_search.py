@@ -468,7 +468,7 @@ if __name__ == "__main__":
     std = 0.013931703753769398
     mu = 9.73654277913738e-06
 
-    num_samples = 3
+    num_samples = 5
     latent_shape = (num_samples, 4, 16, 16)
     # latent_shape = (num_samples, 4, 256)
     zweights = {}
@@ -556,7 +556,7 @@ if __name__ == "__main__":
         wr = {}
         #['gemma-7b-it', 'Llama-3.2-3B-Instruct']
         for l in layers:
-            print(f'layer;--{l}---')
+            # print(f'layer;--{l}---')
             wr[l] = wd[l][i].reshape(-1)
             # wr[l] = slerp(0.90, weights[l], wd[l][i])
         # wr = wd[layer][i].reshape(-1)
