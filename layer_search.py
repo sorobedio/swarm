@@ -430,12 +430,13 @@ if __name__ == "__main__":
     #
     # chunk_size =2362368
     # chunk_size = 1100416
-    chunk_size=65536
+
     # 8030261248
     # chunk_size = 16384
     scale = 0.1
     # chunk_size = 58720256
-    # chunk_size = 1048576
+    chunk_size = 1048576
+    # chunk_size = 65536
 
 
     print("============================================================")
@@ -448,7 +449,8 @@ if __name__ == "__main__":
     # autoencoder = torch.load('./autocheckpoints/llama_model_chunk_full_block_first_full_v2.pth', map_location='cpu')
     # autoencoder = torch.load('./autocheckpoints/llama_model_chunk_full_block_7first.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_chunk_llama_v1.ckpt')
-    autoencoder = torch.load('./autocheckpoints/llama_model_1b_tf_block_full.pth', map_location='cpu')
+    # autoencoder = torch.load('./autocheckpoints/llama_model_1b_tf_block_full.pth', map_location='cpu')
+    autoencoder = torch.load('./autocheckpoints/llama_model_1b_tf_block.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/pythia_160m_ffn_44step.ckpt')
 
     # exit()
@@ -461,7 +463,7 @@ if __name__ == "__main__":
     #
     print(list(weights))
     layers = list(weights)[:8]
-    print(layers)
+    # print(layers)
     wd ={}
     std = 0.013931703753769398
     mu = 9.73654277913738e-06
@@ -565,6 +567,7 @@ if __name__ == "__main__":
         # for w in ws:ws[i
         # std =   set_layer_state_dict(std, wr, layer='norm')
         std=set_layers_state_dict_ecp(std, wr, cond='norm', tgt='layer')
+
         model.load_state_dict(std)
 
 
