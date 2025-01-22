@@ -462,13 +462,13 @@ if __name__ == "__main__":
     weights = torch.load(f'../Datasets/llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
     #
     print(list(weights))
-    layers = list(weights)[:56]
+    layers = list(weights)
     # print(layers)
     wd ={}
     std = 0.013931703753769398
     mu = 9.73654277913738e-06
 
-    num_samples = 5
+    num_samples = 3
     latent_shape = (num_samples, 4, 16, 16)
     # latent_shape = (num_samples, 4, 256)
     zweights = {}
