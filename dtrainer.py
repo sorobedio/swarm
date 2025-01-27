@@ -221,15 +221,15 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         for batch_idx, inputs in enumerate(traindataloader):
             # input()
             optimizer.zero_grad()
-            # with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
-            #     loss, logs = model.training_step(inputs, batch_idx)
-            loss, logs = model.training_step(inputs, batch_idx)
+            with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
+                loss, logs = model.training_step(inputs, batch_idx)
+            # loss, logs = model.training_step(inputs, batch_idx)
 
-            scaler.scale(loss).backward()
-            scaler.step(optimizer)
-            scaler.update()
-            # loss.backward()
-            # optimizer.step()
+            # scaler.scale(loss).backward()
+            # scaler.step(optimizer)
+            # scaler.update()
+            loss.backward()
+            optimizer.step()
             # scheduler.step()
             train_loss += loss.item()
 
@@ -256,7 +256,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             print(f'saving best training loss is:{bloss}')
             # torch.save(model, os.path.join(args.save_path,f'llama_model_chunk_full_block_first_att.pth'))
             # torch.save(model, os.path.join(args.save_path, f'llama_model_1b_tf_block_only.pth'))
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama8b_1048_.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama8b_256_.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
 
