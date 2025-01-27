@@ -94,7 +94,7 @@ def get_parser(**parser_kwargs):
 
         # default="stage1/configs/llama_block_config_kl.yaml",
         default="stage1/configs/llama_small_config_kl.yaml",
-        #mini_llama_norm_config.yaml
+        #mini_llama_norm_config.yaml  small_llama_config_kl.yaml
         # default="stage1/configs/llama_attn_base_config_kl.yaml",
 
 
@@ -256,7 +256,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             print(f'saving best training loss is:{bloss}')
             # torch.save(model, os.path.join(args.save_path,f'llama_model_chunk_full_block_first_att.pth'))
             # torch.save(model, os.path.join(args.save_path, f'llama_model_1b_tf_block_only.pth'))
-            torch.save(model, os.path.join(args.save_path, f'hf_model_360_all.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama8b_1048_.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
 
