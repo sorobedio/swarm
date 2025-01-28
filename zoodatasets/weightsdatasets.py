@@ -76,7 +76,7 @@ class ZooDataset(Dataset):
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
-        weight = self.data[idx]
+        weight = self.data[idx].float()
         if self.transform:
             weight = self.transform(weight)
 

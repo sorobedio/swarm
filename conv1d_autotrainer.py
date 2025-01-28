@@ -214,8 +214,9 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
 
         for batch_idx, inputs in progress_bar:
             optimizer.zero_grad()
-            with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
-                loss = model.training_step(inputs, batch_idx)
+            # with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
+            #     loss = model.training_step(inputs, batch_idx)
+            loss = model.training_step(inputs, batch_idx)
 
             # Backward pass and optimization step
             scaler.scale(loss).backward()
