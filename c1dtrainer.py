@@ -252,10 +252,12 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
         if (epoch+1) % 100 == 0:
-            inputr, dec, _ = model(inputs)
-            print(f'input:{inputr[0][:10]}, dec:{dec[0][:10]}')
-            recon_error = F.mse_loss(dec, inputs)
-            print(f'recon_error:{recon_error}')
+            with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
+                model.eval()
+                inputr, dec, _ = model(inputs)
+                print(f'input:{inputr[0][:10]}, dec:{dec[0][:10]}')
+                recon_error = F.mse_loss(dec, inputs)
+                print(f'recon_error:{recon_error}')
 
         # Llama-3.2-1B-Inst_top_2tf_.pth to test gpt2_full_.pth
 
