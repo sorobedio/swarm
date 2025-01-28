@@ -13,7 +13,7 @@ class MixtureGaussianDistribution:
             deterministic (bool): Whether to ignore stochasticity (used in mode computation).
         """
         self.means = means  # Shape: (batch_size, num_mixtures, C, H, W)
-        self.logvars = torch.clamp(logvars, -30.0, 20.0)  # Numerical stability
+        self.logvars = torch.clamp(logvars, -30.0, 30.0)  # Numerical stability
         self.log_weights = log_weights  # Shape: (batch_size, num_mixtures, 1)
         self.weights = torch.softmax(log_weights, dim=1)  # Convert to probabilities
         self.deterministic = deterministic
@@ -26,22 +26,31 @@ class MixtureGaussianDistribution:
 
     def sample(self, n=1):
         """
-        Sample from the mixture of Gaussians as a weighted sum.
+        Sample from the mixture of Gaussians using the exact variance.
 
         Args:
-            n (int): Number of samples per batch element.
+            n (int): Number of samples to generate per input in the batch. Default is 1.
 
         Returns:
             torch.Tensor: Samples from the mixture, shape (batch_size * n, C, H, W).
         """
         batch_size, num_mixtures, C, H, W = self.means.shape
 
-        # Expand weights, means, and stds for n samples per batch
-        expanded_weights = self.weights.unsqueeze(1).expand(batch_size, n, num_mixtures, 1).reshape(-1, num_mixtures, 1)
-        expanded_means = self.means.unsqueeze(1).expand(batch_size, n, num_mixtures, C, H, W).reshape(-1, num_mixtures,
-                                                                                                      C, H, W)
-        expanded_stds = self.stds.unsqueeze(1).expand(batch_size, n, num_mixtures, C, H, W).reshape(-1, num_mixtures, C,
-                                                                                                    H, W)
+        # Repeat weights for n samples
+        expanded_weights = self.weights.unsqueeze(1).expand(batch_size, n, num_mixtures,
+                                                            1)  # Shape: (batch_size, n, num_mixtures, 1)
+        expanded_weights = expanded_weights.reshape(-1, num_mixtures, 1)  # Shape: (batch_size * n, num_mixtures, 1)
+
+        # Repeat means and stds for n samples
+        expanded_means = self.means.unsqueeze(1).expand(batch_size, n, num_mixtures, C, H,
+                                                        W)  # Shape: (batch_size, n, num_mixtures, C, H, W)
+        expanded_means = expanded_means.reshape(-1, num_mixtures, C, H,
+                                                W)  # Shape: (batch_size * n, num_mixtures, C, H, W)
+
+        expanded_stds = self.stds.unsqueeze(1).expand(batch_size, n, num_mixtures, C, H,
+                                                      W)  # Shape: (batch_size, n, num_mixtures, C, H, W)
+        expanded_stds = expanded_stds.reshape(-1, num_mixtures, C, H,
+                                              W)  # Shape: (batch_size * n, num_mixtures, C, H, W)
 
         # Compute weighted mean
         weighted_mean = torch.sum(expanded_weights * expanded_means, dim=1)  # Shape: (batch_size * n, C, H, W)
