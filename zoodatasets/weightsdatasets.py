@@ -87,7 +87,7 @@ class ZooDataset(Dataset):
         wl = []
         if dataset=='joint':
             keys = list(data)
-            keys = keys[:7]
+            keys = keys[:-1]
 
             for k in keys:
                 w = data[k]
