@@ -211,7 +211,7 @@ import os
 import torch
 
 
-def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=args):
+def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
     bloss = 1000.0
