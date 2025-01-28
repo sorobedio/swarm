@@ -25,7 +25,7 @@ class DiagonalGaussianDistribution(object):
     def __init__(self, parameters, deterministic=False):
         self.parameters = parameters
         self.mean, self.logvar = torch.chunk(parameters, 2, dim=1)
-        self.logvar = torch.clamp(self.logvar, -30.0, 20.0)
+        self.logvar = torch.clamp(self.logvar, -30.0, 30.0)
         self.deterministic = deterministic
         self.std = torch.exp(0.5 * self.logvar)
         self.var = torch.exp(self.logvar)
@@ -52,7 +52,7 @@ class DiagonalGaussianDistribution(object):
                 return 0.5 * torch.sum(
                     torch.pow(self.mean - other.mean, 2) / other.var
                     + self.var / other.var - 1.0 - self.logvar + other.logvar,
-                    dim=[1, 2, 3])
+                    dim=[1, 2])
 
     def nll(self, sample, dims=[1,2]):
         if self.deterministic:

@@ -67,7 +67,7 @@ class Myloss(nn.Module):
         # mask = (inputs != self.pad_value).float()
         # rec_loss = torch.abs(inputs.contiguous() -/ reconstructions.contiguous())
         rec_loss = (inputs.contiguous() - reconstructions.contiguous())**2
-        self.logvar.data.clamp_(min=-2, max=2)
+        # self.logvar.data.clamp_(min=-2, max=2)
 
         # nll_loss = rec_loss / (torch.exp(self.logvar)*2) + self.logvar*0.5
         nll_loss = rec_loss
@@ -81,8 +81,10 @@ class Myloss(nn.Module):
         loss = weighted_nll_loss + self.kl_weight * kl_loss
         # loss = 100*F.mse_loss(inputs.contiguous(), reconstructions.contiguous()) +self.kl_weight * kl_loss.mean()
 
-        log = {"{}/total_loss".format(split): loss.clone().detach().mean(),"{}/logvar".format(split): self.logvar.detach(),
-               "{}/kl_loss".format(split): kl_loss.detach().mean(), "{}/nll_loss".format(split): nll_loss.detach().mean(),
+        log = {"{}/total_loss".format(split): loss.clone().detach().mean(),
+               "{}/logvar".format(split): self.logvar.detach(),
+               "{}/kl_loss".format(split): kl_loss.detach().mean(),
+               "{}/nll_loss".format(split): nll_loss.detach().mean(),
                "{}/rec_loss".format(split): rec_loss.detach().mean(),
                }
         #
