@@ -62,13 +62,13 @@ class ZooDataset(Dataset):
         print('===============dataset size=========================')
         # print(self.data.shape, x_min, x_max)
 
-        print(f'============{std}==============={mu}=============')
+        print(f'============{std}==============={mu}===={data.dtype}=========')
         data = (data-mu)/std
 
         # exit()
         self.data = data.detach().cpu()
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
-        # exit()
+        exit()
 
     def __len__(self):
         return len(self.data)
