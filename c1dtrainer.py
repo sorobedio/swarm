@@ -37,7 +37,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from torch.optim import lr_scheduler
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 def get_parser(**parser_kwargs):
     def str2bool(v):
         if isinstance(v, bool):
@@ -201,7 +201,7 @@ def nondefault_trainer_args(opt):
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 10000.0
+    bloss = 3.0
     btest = 2.0
     cr =[]
     # schedulers = lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 5, 5)
