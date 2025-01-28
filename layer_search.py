@@ -459,8 +459,8 @@ if __name__ == "__main__":
     autoencoder.to(device)
     autoencoder.eval()
     # weights = torch.load(f'../Datasets/llmdata/llama_3_1_8B_inst_full_block_and_ln_.pt')
-    # weights = torch.load(f'../Datasets/llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
-    datapath = os.path.join(root, f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')  # 262144
+    weights = torch.load(f'../Datasets/llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
+    # datapath = os.path.join(root, f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')  # 262144
     #
     print(list(weights))
     layers = list(weights)[:56]
