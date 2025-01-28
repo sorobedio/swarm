@@ -83,8 +83,8 @@ class Myloss(nn.Module):
 
         log = {"{}/total_loss".format(split): loss.clone().detach().mean(),
                "{}/logvar".format(split): self.logvar.detach(),
-               "{}/kl_loss".format(split): kl_loss.detach().mean(),
-               "{}/nll_loss".format(split): nll_loss.detach().mean(),
+               "{}/kl_loss".format(split): kl_loss.detach().mean()*self.kl_weight,
+               "{}/nll_loss".format(split): nll_loss.detach().mean()*1000.0,
                "{}/rec_loss".format(split): rec_loss.detach().mean()*1000.0,
                }
 
