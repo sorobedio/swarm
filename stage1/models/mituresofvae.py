@@ -156,6 +156,7 @@ class VAENoDiscModel(AutoencoderMoG):
 
                  embed_dim,
                  learning_rate,
+                 num_mixtures,
                  beta_scheduler_config=None,
                  ckpt_path=None,
                  ignore_keys=[],
@@ -166,6 +167,7 @@ class VAENoDiscModel(AutoencoderMoG):
                  ):
         super().__init__(ddconfig=ddconfig, lossconfig=lossconfig, embed_dim=embed_dim,
                          ckpt_path=ckpt_path, ignore_keys=ignore_keys, input_key=input_key,
+                         num_mixtures=num_mixtures,
                          cond_key= cond_key, learning_rate=learning_rate)
         self.devices = device
         self.is_kl_beta = False
