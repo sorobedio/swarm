@@ -247,7 +247,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if (epoch + 1) % 100 == 0:
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
                 model.eval()
-                inputr, dec, _ = model(inputs)
+                inputr, dec = model(inputs)
                 print(f'Input: {inputr[0][:10]}, Dec: {dec[0][:10]}')
                 recon_error = torch.nn.functional.mse_loss(dec, inputr)
                 print(f'Recon Error: {recon_error}')
