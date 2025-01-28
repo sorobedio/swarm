@@ -24,6 +24,60 @@ class MixtureGaussianDistribution:
             self.stds = torch.zeros_like(self.means).to(device=self.means.device)
             self.vars = torch.zeros_like(self.means).to(device=self.means.device)
 
+    # def sample(self, n=1):
+    #     """
+    #     Sample from the mixture of Gaussians using the exact variance.
+    #
+    #     Args:
+    #         n (int): Number of samples to generate per input in the batch.
+    #
+    #     Returns:
+    #         torch.Tensor: Samples from the mixture, shape (batch_size * n, latent channels, H, W).
+    #     """
+    #     batch_size, num_mixtures, latent_channels, H, W = self.means.shape
+    #
+    #     # Ensure mixture dimensions are consistent
+    #     assert self.weights.shape == (batch_size, num_mixtures,
+    #                                   1), f"Expected weights shape: {(batch_size, num_mixtures, 1)}, got {self.weights.shape}"
+    #     assert self.stds.shape == self.means.shape, f"Means and stds shapes must match: {self.means.shape} vs {self.stds.shape}"
+    #
+    #     # Expand weights for n samples per batch
+    #     expanded_weights = self.weights.unsqueeze(1).expand(batch_size, n, num_mixtures,
+    #                                                         1)  # Shape: (batch_size, n, num_mixtures, 1)
+    #     expanded_weights = expanded_weights.reshape(-1, num_mixtures, 1)  # Shape: (batch_size * n, num_mixtures, 1)
+    #
+    #     # Expand means and stds for n samples per batch
+    #     expanded_means = self.means.unsqueeze(1).expand(batch_size, n, num_mixtures, latent_channels, H,
+    #                                                     W)  # Shape: (batch_size, n, num_mixtures, latent_channels, H, W)
+    #     expanded_means = expanded_means.reshape(-1, num_mixtures, latent_channels, H,
+    #                                             W)  # Shape: (batch_size * n, num_mixtures, latent_channels, H, W)
+    #
+    #     expanded_stds = self.stds.unsqueeze(1).expand(batch_size, n, num_mixtures, latent_channels, H,
+    #                                                   W)  # Shape: (batch_size, n, num_mixtures, latent_channels, H, W)
+    #     expanded_stds = expanded_stds.reshape(-1, num_mixtures, latent_channels, H,
+    #                                           W)  # Shape: (batch_size * n, num_mixtures, latent_channels, H, W)
+    #
+    #     # Compute the weighted mean
+    #     weighted_mean = torch.sum(expanded_weights * expanded_means,
+    #                               dim=1)  # Shape: (batch_size * n, latent_channels, H, W)
+    #
+    #     # Compute within-component variance
+    #     within_component_variance = torch.sum(expanded_weights * (expanded_stds ** 2),
+    #                                           dim=1)  # Shape: (batch_size * n, latent_channels, H, W)
+    #
+    #     # Compute between-component variance
+    #     between_component_variance = torch.sum(
+    #         expanded_weights * (expanded_means - weighted_mean.unsqueeze(1)) ** 2, dim=1
+    #     )  # Shape: (batch_size * n, latent_channels, H, W)
+    #
+    #     # Total variance
+    #     total_variance = within_component_variance + between_component_variance  # Shape: (batch_size * n, latent_channels, H, W)
+    #
+    #     # Sample from the resulting Gaussian
+    #     z = weighted_mean + torch.sqrt(total_variance) * torch.randn_like(
+    #         weighted_mean)  # Shape: (batch_size * n, latent_channels, H, W)
+    #     return z
+
     def sample(self, n=1):
         """
         Sample from the mixture of Gaussians using the exact variance.
@@ -34,19 +88,21 @@ class MixtureGaussianDistribution:
         Returns:
             torch.Tensor: Samples from the mixture, shape (batch_size * n, latent channels, H, W).
         """
-        batch_size, num_mixtures, latent_channels, H, W = self.means.shape
+        batch_size, num_mixtures, _, H, W = self.weights.shape
+        _, _, latent_channels, _, _ = self.means.shape
 
         # Ensure mixture dimensions are consistent
-        assert self.weights.shape == (batch_size, num_mixtures,
-                                      1), f"Expected weights shape: {(batch_size, num_mixtures, 1)}, got {self.weights.shape}"
-        assert self.stds.shape == self.means.shape, f"Means and stds shapes must match: {self.means.shape} vs {self.stds.shape}"
+        assert self.means.shape == (batch_size, num_mixtures, latent_channels, H, W), \
+            f"Expected means shape: {(batch_size, num_mixtures, latent_channels, H, W)}, got {self.means.shape}"
+        assert self.stds.shape == self.means.shape, \
+            f"Means and stds shapes must match: {self.means.shape} vs {self.stds.shape}"
 
-        # Expand weights for n samples per batch
-        expanded_weights = self.weights.unsqueeze(1).expand(batch_size, n, num_mixtures,
-                                                            1)  # Shape: (batch_size, n, num_mixtures, 1)
-        expanded_weights = expanded_weights.reshape(-1, num_mixtures, 1)  # Shape: (batch_size * n, num_mixtures, 1)
+        # Expand weights, means, and stds for n samples
+        expanded_weights = self.weights.unsqueeze(1).expand(batch_size, n, num_mixtures, 1, H,
+                                                            W)  # Shape: (batch_size, n, num_mixtures, 1, H, W)
+        expanded_weights = expanded_weights.reshape(-1, num_mixtures, 1, H,
+                                                    W)  # Shape: (batch_size * n, num_mixtures, 1, H, W)
 
-        # Expand means and stds for n samples per batch
         expanded_means = self.means.unsqueeze(1).expand(batch_size, n, num_mixtures, latent_channels, H,
                                                         W)  # Shape: (batch_size, n, num_mixtures, latent_channels, H, W)
         expanded_means = expanded_means.reshape(-1, num_mixtures, latent_channels, H,
