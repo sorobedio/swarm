@@ -147,16 +147,16 @@ class AENoDiscModel(Autoencoder):
 
         inputs, reconstructions= self(batch)
         # reconstructions
-        loss = log_cosh_loss(reconstructions, inputs)*1000.0
-        # loss = F.mse_loss(inputs, reconstructions)
+        # loss = log_cosh_loss(reconstructions, inputs)*1000.0
+        loss = F.mse_loss(inputs, reconstructions)*1000
 
         return loss
 
     def validation_step(self, batch, batch_idx):
 
         inputs, reconstructions = self(batch)
-        loss = log_cosh_loss(reconstructions, inputs) * 1000.0
-        # loss = F.mse_loss(inputs, reconstructions)
+        # loss = log_cosh_loss(reconstructions, inputs) * 1000.0
+        loss = F.mse_loss(inputs, reconstructions)*1000.0
 
         return loss
 
