@@ -78,8 +78,12 @@ class AutoencoderMoG(nn.Module):
         params = params.view(params.shape[0], self.num_mixtures, -1, *params.shape[2:])
         means, log_vars, log_weights = torch.split(params, [self.embed_dim, self.embed_dim, 1], dim=2)
 
+        print(means.shape, log_vars.shape, log_weights.shape)
+        print('*************************************************************')
+
         # Normalize log weights to obtain valid probabilities
         log_weights = log_weights - torch.logsumexp(log_weights, dim=1, keepdim=True)
+        print(log_weights.shape)
         posterior = MixtureGaussianDistribution(means, log_vars, log_weights)  # Custom class
         return posterior
 
