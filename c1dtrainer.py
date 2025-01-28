@@ -237,7 +237,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         tloss = (train_loss / idx)
         scheduler.step()
         # Log loss and accuracy to TensorBoard
-        writer.add_scalar("Loss/train", tloss, epoch)
+        # writer.add_scalar("Loss/train", tloss, epoch)
         # schedulers.step()
         # btst = evaluate(model, traindataloader)
         # print(f'current best test avg  loss: {btest}')
@@ -251,8 +251,13 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             torch.save(model, os.path.join(args.save_path,f'llama_tf_block_chunk_c1d.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
+        if (epoch+1) % 100 == 0:
+            inputr, dec, _ = model(inputs)
+            print(f'input:{inputr[0][:10]}, dec:{dec[0][:10]}')
+            recon_error = F.mse_loss(dec, inputs)
+            print(f'recon_error:{recon_error}')
 
-# Llama-3.2-1B-Inst_top_2tf_.pth to test gpt2_full_.pth
+        # Llama-3.2-1B-Inst_top_2tf_.pth to test gpt2_full_.pth
 
 
 def evaluate(model , testdataloader):
@@ -322,10 +327,10 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=10, normalize=None)
+                          scale=1, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
-    traindataloader = DataLoader(trainset, shuffle=True, batch_size=20, num_workers=4,
+    traindataloader = DataLoader(trainset, shuffle=True, batch_size=32, num_workers=4,
                                  # collate_fn=m_collate,
                                  )
     # testdataloader = DataLoader(valset, shuffle=False, batch_size=4, num_workers=4)

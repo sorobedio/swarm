@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from stage1.modules.conv1_encoding import Encoder, Decoder
-from stage1.modules.distribution_v2 import DiagonalGaussianDistribution
+from stage1.modules.conv1d_distributions import DiagonalGaussianDistribution
 from utils.util import instantiate_from_config
 from stage1.modules.losses.CustomLosses import ChunkWiseReconLoss
 
