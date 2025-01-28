@@ -10,7 +10,7 @@ model:
       target: stage1.modules.losses.CustomLosses.Myloss
       params:
 #        kl_weight: 0.01
-        kl_weight: 0.001
+        kl_weight: 0.01
     ddconfig:
       double_z: True
       z_channels: 4
