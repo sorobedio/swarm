@@ -219,7 +219,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         train_loss = 0
         total = 0
         idx = 0
-        progress_bar = tqdm(traindataloader, desc=f"Epoch {epoch + 1}/{num_epochs}")
+        progress_bar = tqdm(traindataloader, desc=f"Epoch {epoch + 1}/{n_epochs}")
         for batch_idx, inputs in enumerate(progress_bar):
             # input()
             optimizer.zero_grad()
@@ -246,7 +246,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         tloss = (train_loss / idx)
         # scheduler.step()
         # Log loss and accuracy to TensorBoard
-        writer.add_scalar("Loss/train", tloss, epoch)
+        # writer.add_scalar("Loss/train", tloss, epoch)
         # scheduler.step()
         # btst = evaluate(model, traindataloader)
         # print(f'current best test avg  loss: {btest}')
