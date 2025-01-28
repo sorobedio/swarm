@@ -37,7 +37,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from torch.optim import lr_scheduler
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "5"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 def get_parser(**parser_kwargs):
     def str2bool(v):
         if isinstance(v, bool):
@@ -201,7 +201,7 @@ def nondefault_trainer_args(opt):
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 100000.0
+    bloss = 10000.0
     btest = 2.0
     cr =[]
     # schedulers = lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 5, 5)
@@ -215,15 +215,15 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         for batch_idx, inputs in enumerate(traindataloader):
             # input()
             optimizer.zero_grad()
-            # with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
-            #     loss, logs = model.training_step(inputs, batch_idx)
-            loss, logs = model.training_step(inputs, batch_idx)
+            with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
+                loss, logs = model.training_step(inputs, batch_idx)
+            # loss, logs = model.training_step(inputs, batch_idx)
 
-            # scaler.scale(loss).backward()
-            # scaler.step(optimizer)
-            # scaler.update()
-            loss.backward()
-            optimizer.step()
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
+            # loss.backward()
+            # optimizer.step()
             # schedulers.step()
             train_loss += loss.item()
 
@@ -232,7 +232,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             progress_bar(batch_idx, len(traindataloader), 'Loss: %.6f |'
                          % (train_loss / (batch_idx + 1)))
             idx = batch_idx + 1
-            scheduler.step()
+            # scheduler.step()
 
         tloss = (train_loss / idx)
         scheduler.step()
@@ -248,7 +248,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         if bloss > tloss:
             bloss = tloss
             print(f'saving best training loss is:{bloss}')
-            torch.save(model, os.path.join(args.save_path,f'llama_full_chunk_c1d.pth'))
+            torch.save(model, os.path.join(args.save_path,f'llama_tf_block_chunk_c1d.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         print(f'best training loss is:{bloss}  lr={curr_lr}')
 
