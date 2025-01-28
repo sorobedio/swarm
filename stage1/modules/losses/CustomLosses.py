@@ -67,10 +67,10 @@ class Myloss(nn.Module):
         # mask = (inputs != self.pad_value).float()
         # rec_loss = torch.abs(inputs.contiguous() -/ reconstructions.contiguous())
         rec_loss = (inputs.contiguous() - reconstructions.contiguous())**2
-        # self.logvar.data.clamp_(min=-2, max=2)
+        self.logvar.data.clamp_(min=-30, max=30)
 
-        # nll_loss = rec_loss / (torch.exp(self.logvar)*2) + self.logvar*0.5
-        nll_loss = rec_loss
+        nll_loss = rec_loss / (torch.exp(self.logvar)*2) + self.logvar*0.5
+        # nll_loss = rec_loss
         weighted_nll_loss = nll_loss
         if weights is not None:
             weighted_nll_loss = weights*nll_loss

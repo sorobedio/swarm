@@ -261,7 +261,8 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         # print(f'best training loss is:{bloss}  lr={curr_lr}')
         rec_loss = logs['train/rec_loss']
         kld_loss = logs['train/kl_loss']
-        print(f'best training loss is:{bloss}  lr={curr_lr}  rec_loss={rec_loss} kld_loss={kld_loss}')
+        nnl_loss = logs['train/nnl_loss']
+        print(f'best training loss is:{bloss}  lr={curr_lr}  rec_loss={rec_loss} kld_loss={kld_loss} nnl_loss={nnl_loss}')
         if (epoch+1) % 100 == 0:
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
                 model.eval()
