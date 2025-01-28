@@ -37,19 +37,20 @@ class MixtureGaussianDistribution:
         batch_size, num_mixtures, C, H, W = self.means.shape
 
         # Repeat weights for n samples
-        expanded_weights = self.weights.unsqueeze(1).expand(batch_size, n, num_mixtures,
-                                                            1)  # Shape: (batch_size, n, num_mixtures, 1)
-        expanded_weights = expanded_weights.reshape(-1, num_mixtures, 1)  # Shape: (batch_size * n, num_mixtures, 1)
+        # expanded_weights = self.weights.unsqueeze(1).expand(batch_size, n, num_mixtures,
+        #                                                     1)  # Shape: (batch_size, n, num_mixtures, 1)
+        print(f'===={self.weights.shape}')
+        expanded_weights = self.weights.reshape(-1, num_mixtures, 1)  # Shape: (batch_size * n, num_mixtures, 1)
 
         # Repeat means and stds for n samples
-        expanded_means = self.means.unsqueeze(1).expand(batch_size, n, num_mixtures, C, H,
-                                                        W)  # Shape: (batch_size, n, num_mixtures, C, H, W)
-        expanded_means = expanded_means.reshape(-1, num_mixtures, C, H,
+        # expanded_means = self.means.unsqueeze(1).expand(batch_size, n, num_mixtures, C, H,
+        #                                                 W)  # Shape: (batch_size, n, num_mixtures, C, H, W)
+        expanded_means = self.means.reshape(-1, num_mixtures, C, H,
                                                 W)  # Shape: (batch_size * n, num_mixtures, C, H, W)
 
-        expanded_stds = self.stds.unsqueeze(1).expand(batch_size, n, num_mixtures, C, H,
-                                                      W)  # Shape: (batch_size, n, num_mixtures, C, H, W)
-        expanded_stds = expanded_stds.reshape(-1, num_mixtures, C, H,
+        # expanded_stds = self.stds.unsqueeze(1).expand(batch_size, n, num_mixtures, C, H,
+        #                                               W)  # Shape: (batch_size, n, num_mixtures, C, H, W)
+        expanded_stds = self.stds.reshape(-1, num_mixtures, C, H,
                                               W)  # Shape: (batch_size * n, num_mixtures, C, H, W)
 
         # Compute weighted mean
