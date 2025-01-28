@@ -205,74 +205,70 @@ def nondefault_trainer_args(opt):
     args = parser.parse_args([])
     return sorted(k for k in vars(args) if getattr(opt, k) != getattr(args, k))
 
-def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
+
+from tqdm import tqdm
+import os
+import torch
+
+
+def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
     bloss = 1000.0
     btest = 2.0
-    cr =[]
-    # schedulers = lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 5, 5)
     scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
+
     for epoch in range(n_epochs):
-        print('\nEpoch: %d' % epoch)
+        print(f'\nEpoch: {epoch + 1}/{n_epochs}')
         model.train()
         train_loss = 0
         total = 0
-        idx = 0
-        progress_bar = tqdm(traindataloader, desc=f"Epoch {epoch + 1}/{n_epochs}")
-        for batch_idx, inputs in enumerate(progress_bar):
-            # input()
+
+        # Initialize tqdm progress bar for the training loop
+        progress_bar = tqdm(enumerate(traindataloader), total=len(traindataloader), desc=f"Epoch {epoch + 1}")
+
+        for batch_idx, inputs in progress_bar:
             optimizer.zero_grad()
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
                 loss, logs = model.training_step(inputs, batch_idx)
-            # loss, logs = model.training_step(inputs, batch_idx)
 
-            # scaler.scale(loss).backward()
-            # scaler.step(optimizer)
-            # scaler.update()
-            loss.backward()
-            optimizer.step()
-            # scheduler.step()
+            # Backward pass and optimization step
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
+
             train_loss += loss.item()
-
-            curr_lr = optimizer.param_groups[-1]['lr']
             total += inputs['weight'].size(0)
-            progress_bar.set_postfix(f"train Loss: {train_loss / (batch_idx + 1)} ")
-            # progress_bar(batch_idx, len(traindataloader), 'Loss: %.6f |'
-            #              % (train_loss / (batch_idx + 1)))
-            idx = batch_idx + 1
-            # schedulers.step()
 
-        tloss = (train_loss / idx)
-        # scheduler.step()
-        # Log loss and accuracy to TensorBoard
-        # writer.add_scalar("Loss/train", tloss, epoch)
-        # scheduler.step()
-        # btst = evaluate(model, traindataloader)
-        # print(f'current best test avg  loss: {btest}')
-        # if btest > btst:
-        #     btest = btst
-        #     print(f'new best valid avg loss: {btst}')
-        #     torch.save(model,  os.path.join(args.save_path,f'best_valid_loss_llama3-8b_uns.pth'))
+            # Update tqdm progress bar
+            progress_bar.set_postfix({
+                'Loss': f"{train_loss / (batch_idx + 1):.4f}",
+                'LR': f"{optimizer.param_groups[-1]['lr']:.6f}"
+            })
+
+        tloss = train_loss / len(traindataloader)
+
+        # Save model with the best training loss
         if bloss > tloss:
             bloss = tloss
-            print(f'saving best training loss is:{bloss}')
-            # torch.save(model, os.path.join(args.save_path,f'llama_model_chunk_full_block_first_att.pth'))
-            # torch.save(model, os.path.join(args.save_path, f'llama_model_1b_tf_block_only.pth'))
+            print(f'Saving model with best training loss: {bloss:.4f}')
             torch.save(model, os.path.join(args.save_path, f'hf_model_llama1b_128_.pth'))
-            # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
-        # print(f'best training loss is:{bloss}  lr={curr_lr}')
+
+        # Print additional loss details
         rec_loss = logs['train/rec_loss']
         kld_loss = logs['train/kl_loss']
         nnl_loss = logs['train/nnl_loss']
-        print(f'best training loss is:{bloss}  lr={curr_lr}  rec_loss={rec_loss} kld_loss={kld_loss} nnl_loss={nnl_loss}')
-        if (epoch+1) % 100 == 0:
+        print(f'Best Training Loss: {bloss:.4f}, LR: {optimizer.param_groups[-1]["lr"]:.6f}')
+        print(f'Rec Loss: {rec_loss}, KLD Loss: {kld_loss}, NNL Loss: {nnl_loss}')
+
+        # Perform model evaluation every 100 epochs
+        if (epoch + 1) % 100 == 0:
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
                 model.eval()
                 inputr, dec, _ = model(inputs)
-                print(f'input:{inputr[0][:10]}, dec:{dec[0][:10]}')
-                recon_error = F.mse_loss(dec, inputr)
-                print(f'recon_error:{recon_error}')
+                print(f'Input: {inputr[0][:10]}, Dec: {dec[0][:10]}')
+                recon_error = torch.nn.functional.mse_loss(dec, inputr)
+                print(f'Recon Error: {recon_error}')
 
         # for name, param in model.named_parameters():
         #     if param.grad is not None:
