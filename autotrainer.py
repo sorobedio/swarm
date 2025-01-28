@@ -373,7 +373,7 @@ if __name__ == "__main__":
     #                                  cycle_mult=1, gamma=1.0, warmup_steps=0,
     #                                  last_epoch=-1)
     # scheduler = WarmUpAndDecayLR(optimizer, warmup_steps=200, cosine_steps=200, gamma=0.1, T_mult=1)
-    criterion = model.loss
+    # criterion = model.loss
     # train(model, optimizer, args.n_epochs, traindataloader, testdataloader)
     train(model, optimizer, args.n_epochs, traindataloader, args=args)
 
