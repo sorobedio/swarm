@@ -26,13 +26,13 @@ class MixtureGaussianDistribution:
 
     def sample(self, n=1):
         """
-        Sample from the mixture of Gaussians using the exact variance.
+        Sample from the mixture of Gaussians as a weighted sum.
 
         Args:
-            n (int): Number of samples to generate per input in the batch. Default is 1.
+            n (int): Number of samples per batch element.
 
         Returns:
-            torch.Tensor: Samples from the mixture, shape (n * batch_size, C, H, W).
+            torch.Tensor: Samples from the mixture, shape (batch_size * n, C, H, W).
         """
         batch_size, num_mixtures, C, H, W = self.means.shape
 
@@ -43,22 +43,22 @@ class MixtureGaussianDistribution:
         expanded_stds = self.stds.unsqueeze(1).expand(batch_size, n, num_mixtures, C, H, W).reshape(-1, num_mixtures, C,
                                                                                                     H, W)
 
-        # Compute the exact weighted mean
-        weighted_mean = torch.sum(expanded_weights * expanded_means, dim=1)  # Shape: (n * batch_size, C, H, W)
+        # Compute weighted mean
+        weighted_mean = torch.sum(expanded_weights * expanded_means, dim=1)  # Shape: (batch_size * n, C, H, W)
 
-        # Compute the within-component variance
-        within_component_variance = torch.sum(expanded_weights * expanded_stds ** 2,
-                                              dim=1)  # Shape: (n * batch_size, C, H, W)
+        # Compute within-component variance
+        within_component_variance = torch.sum(expanded_weights * (expanded_stds ** 2),
+                                              dim=1)  # Shape: (batch_size * n, C, H, W)
 
-        # Compute the between-component variance
+        # Compute between-component variance
         between_component_variance = torch.sum(
             expanded_weights * (expanded_means - weighted_mean.unsqueeze(1)) ** 2, dim=1
-        )  # Shape: (n * batch_size, C, H, W)
+        )  # Shape: (batch_size * n, C, H, W)
 
         # Total variance
-        total_variance = within_component_variance + between_component_variance  # Shape: (n * batch_size, C, H, W)
+        total_variance = within_component_variance + between_component_variance  # Shape: (batch_size * n, C, H, W)
 
-        # Sample from the combined Gaussian
+        # Sample from the resulting Gaussian
         z = weighted_mean + torch.sqrt(total_variance) * torch.randn_like(weighted_mean)
         return z
 
