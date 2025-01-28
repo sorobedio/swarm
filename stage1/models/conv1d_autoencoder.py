@@ -81,35 +81,21 @@ class Autoencoder(nn.Module):
         return x
 
     def training_step(self, batch, batch_idx, optimizer_idx):
-        inputs = self.get_input(batch, self.input_key)
-        reconstructions, posterior = self(inputs)
+        inputs, reconstructions = self(batch)
+        # reconstructions
+        # loss = log_cosh_loss(reconstructions, inputs)*1000.0
+        loss = F.mse_loss(inputs, reconstructions) * 1000
 
-        if optimizer_idx == 0:
-            # train encoder+decoder+logvar
-            aeloss, log_dict_ae = self.loss(inputs, reconstructions, posterior, optimizer_idx, self.global_step,
-                                            last_layer=self.get_last_layer(), split="train")
-            return aeloss
-
-        if optimizer_idx == 1:
-            # train the discriminator
-            discloss, log_dict_disc = self.loss(inputs, reconstructions, posterior, optimizer_idx, self.global_step,
-                                                last_layer=self.get_last_layer(), split="train")
-
-            return discloss
+        return loss
 
     def validation_step(self, batch, batch_idx):
         inputs = self.get_input(batch, self.input_key)
-        reconstructions, posterior = self(inputs)
-        aeloss, log_dict_ae = self.loss(inputs, reconstructions, posterior, 0, self.global_step,
-                                        last_layer=self.get_last_layer(), split="val")
+        inputs, reconstructions = self(batch)
+        # reconstructions
+        # loss = log_cosh_loss(reconstructions, inputs)*1000.0
+        loss = F.mse_loss(inputs, reconstructions) * 1000
 
-        discloss, log_dict_disc = self.loss(inputs, reconstructions, posterior, 1, self.global_step,
-                                            last_layer=self.get_last_layer(), split="val")
-
-        self.log("val/rec_loss", log_dict_ae["val/rec_loss"])
-        self.log_dict(log_dict_ae)
-        self.log_dict(log_dict_disc)
-        return self.log_dict
+        return loss
 
     def configure_optimizers(self):
         lr = self.learning_rate
