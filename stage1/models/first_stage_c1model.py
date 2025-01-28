@@ -54,7 +54,7 @@ class AutoencoderKL(nn.Module):
         print(f"Restored from {path}")
 
     def encode(self, x):
-        print(s.dtype)
+        print(x.dtype)
         exit()
         h = self.encoder(x)
         moments = self.quant_conv(h)
