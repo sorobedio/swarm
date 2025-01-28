@@ -29,47 +29,53 @@ class MixtureGaussianDistribution:
         Sample from the mixture of Gaussians using the exact variance.
 
         Args:
-            n (int): Number of samples to generate per input in the batch. Default is 1.
+            n (int): Number of samples to generate per input in the batch.
 
         Returns:
-            torch.Tensor: Samples from the mixture, shape (batch_size * n, C, H, W).
+            torch.Tensor: Samples from the mixture, shape (batch_size * n, latent channels, H, W).
         """
-        batch_size, num_mixtures, C, H, W = self.means.shape
+        batch_size, num_mixtures, latent_channels, H, W = self.means.shape
 
-        # Repeat weights for n samples
-        # expanded_weights = self.weights.unsqueeze(1).expand(batch_size, n, num_mixtures,
-        #                                                     1)  # Shape: (batch_size, n, num_mixtures, 1)
-        print(f'===={self.weights.shape}')
-        expanded_weights = self.weights.reshape(-1, num_mixtures, 1)  # Shape: (batch_size * n, num_mixtures, 1)
+        # Ensure mixture dimensions are consistent
+        assert self.weights.shape == (batch_size, num_mixtures,
+                                      1), f"Expected weights shape: {(batch_size, num_mixtures, 1)}, got {self.weights.shape}"
+        assert self.stds.shape == self.means.shape, f"Means and stds shapes must match: {self.means.shape} vs {self.stds.shape}"
 
-        # Repeat means and stds for n samples
-        # expanded_means = self.means.unsqueeze(1).expand(batch_size, n, num_mixtures, C, H,
-        #                                                 W)  # Shape: (batch_size, n, num_mixtures, C, H, W)
-        expanded_means = self.means.reshape(-1, num_mixtures, C, H,
-                                                W)  # Shape: (batch_size * n, num_mixtures, C, H, W)
+        # Expand weights for n samples per batch
+        expanded_weights = self.weights.unsqueeze(1).expand(batch_size, n, num_mixtures,
+                                                            1)  # Shape: (batch_size, n, num_mixtures, 1)
+        expanded_weights = expanded_weights.reshape(-1, num_mixtures, 1)  # Shape: (batch_size * n, num_mixtures, 1)
 
-        # expanded_stds = self.stds.unsqueeze(1).expand(batch_size, n, num_mixtures, C, H,
-        #                                               W)  # Shape: (batch_size, n, num_mixtures, C, H, W)
-        expanded_stds = self.stds.reshape(-1, num_mixtures, C, H,
-                                              W)  # Shape: (batch_size * n, num_mixtures, C, H, W)
+        # Expand means and stds for n samples per batch
+        expanded_means = self.means.unsqueeze(1).expand(batch_size, n, num_mixtures, latent_channels, H,
+                                                        W)  # Shape: (batch_size, n, num_mixtures, latent_channels, H, W)
+        expanded_means = expanded_means.reshape(-1, num_mixtures, latent_channels, H,
+                                                W)  # Shape: (batch_size * n, num_mixtures, latent_channels, H, W)
 
-        # Compute weighted mean
-        weighted_mean = torch.sum(expanded_weights * expanded_means, dim=1)  # Shape: (batch_size * n, C, H, W)
+        expanded_stds = self.stds.unsqueeze(1).expand(batch_size, n, num_mixtures, latent_channels, H,
+                                                      W)  # Shape: (batch_size, n, num_mixtures, latent_channels, H, W)
+        expanded_stds = expanded_stds.reshape(-1, num_mixtures, latent_channels, H,
+                                              W)  # Shape: (batch_size * n, num_mixtures, latent_channels, H, W)
+
+        # Compute the weighted mean
+        weighted_mean = torch.sum(expanded_weights * expanded_means,
+                                  dim=1)  # Shape: (batch_size * n, latent_channels, H, W)
 
         # Compute within-component variance
         within_component_variance = torch.sum(expanded_weights * (expanded_stds ** 2),
-                                              dim=1)  # Shape: (batch_size * n, C, H, W)
+                                              dim=1)  # Shape: (batch_size * n, latent_channels, H, W)
 
         # Compute between-component variance
         between_component_variance = torch.sum(
             expanded_weights * (expanded_means - weighted_mean.unsqueeze(1)) ** 2, dim=1
-        )  # Shape: (batch_size * n, C, H, W)
+        )  # Shape: (batch_size * n, latent_channels, H, W)
 
         # Total variance
-        total_variance = within_component_variance + between_component_variance  # Shape: (batch_size * n, C, H, W)
+        total_variance = within_component_variance + between_component_variance  # Shape: (batch_size * n, latent_channels, H, W)
 
         # Sample from the resulting Gaussian
-        z = weighted_mean + torch.sqrt(total_variance) * torch.randn_like(weighted_mean)
+        z = weighted_mean + torch.sqrt(total_variance) * torch.randn_like(
+            weighted_mean)  # Shape: (batch_size * n, latent_channels, H, W)
         return z
 
     def mode(self):
