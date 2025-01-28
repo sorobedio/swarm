@@ -218,7 +218,8 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         train_loss = 0
         total = 0
         idx = 0
-        for batch_idx, inputs in enumerate(traindataloader):
+        progress_bar = tqdm(traindataloader, desc=f"Epoch {epoch + 1}/{num_epochs}")
+        for batch_idx, inputs in enumerate(progress_bar):
             # input()
             optimizer.zero_grad()
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
@@ -235,8 +236,9 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
 
             curr_lr = optimizer.param_groups[-1]['lr']
             total += inputs['weight'].size(0)
-            progress_bar(batch_idx, len(traindataloader), 'Loss: %.6f |'
-                         % (train_loss / (batch_idx + 1)))
+            progress_bar.set_postfix(f"train Loss: {train_loss / (batch_idx + 1)} ")
+            # progress_bar(batch_idx, len(traindataloader), 'Loss: %.6f |'
+            #              % (train_loss / (batch_idx + 1)))
             idx = batch_idx + 1
             # schedulers.step()
 
