@@ -150,7 +150,7 @@ class AutoencoderMoG(nn.Module):
 
 
 
-class VAENoDiscModel(AutoencoderKL):
+class VAENoDiscModel(AutoencoderMoG):
     def __init__(self,ddconfig,
                  lossconfig,
 

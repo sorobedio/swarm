@@ -3,6 +3,7 @@ model:
   target: stage1.models.mituresofvae.VAENoDiscModel
   params:
     embed_dim: 4
+    num_mixtures: 10
     input_key: 'weight'
     learning_rate: 1.1234e-4
 #    ckpt_path: 'checkpoints/stage1/llama_model_1b_tf_block_1024_1024_.pth'
