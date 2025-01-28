@@ -17,17 +17,17 @@ model:
       double_z: True
       tanh_out: False
       z_channels: 4
-      resolution: 64
-      in_channels: 4
-      my_channels: 4
-      out_ch: 4
+      resolution: 128
+      in_channels: 64
+      my_channels: 64
+      out_ch: 64
       ch: 128
       ch_mult: [ 1,1, 1, 2]  #num_down = len(ch_mult)-1
       num_res_blocks: 2
-      attn_resolutions: [ ]
+      attn_resolutions: [ 8]
       dropout: 0.0
-      in_dim: 4096
-      fdim: 4096
+      in_dim: 16384
+      fdim: 16384
 
 
 data:
