@@ -211,7 +211,7 @@ import os
 import torch
 
 
-def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=None):
+def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=args):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
     bloss = 1000.0
@@ -393,5 +393,6 @@ if __name__ == "__main__":
     # scheduler = WarmUpAndDecayLR(optimizer, warmup_steps=200, cosine_steps=200, gamma=0.1, T_mult=1)
     criterion = model.loss
     # train(model, optimizer, args.n_epochs, traindataloader, testdataloader)
-    train(model, optimizer, args.n_epochs, traindataloader)
+    train(model, optimizer, args.n_epochs, traindataloader, args=args)
+
 
