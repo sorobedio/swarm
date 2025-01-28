@@ -1,6 +1,28 @@
 import torch
 import numpy as np
 
+def compute_scalar_weights(log_weights):
+    """
+    Convert spatial probabilistic weights into scalar weights.
+
+    Args:
+        log_weights (torch.Tensor): Log-space weights with shape (batch_size, num_mixtures, 1, H, W).
+
+    Returns:
+        torch.Tensor: Normalized scalar weights with shape (batch_size, num_mixtures, 1).
+    """
+    # Aggregate spatial weights by summing over spatial dimensions (H, W)
+    scalar_log_weights = torch.sum(log_weights, dim=[3, 4], keepdim=False)  # Shape: (batch_size, num_mixtures, 1)
+
+    # Normalize in log-space to ensure the weights sum to 1 across mixtures
+    scalar_log_weights = scalar_log_weights - torch.logsumexp(scalar_log_weights, dim=1, keepdim=True)  # Shape: (batch_size, num_mixtures, 1)
+
+    # Convert from log-space to probability space
+    scalar_weights = torch.exp(scalar_log_weights)  # Shape: (batch_size, num_mixtures, 1)
+
+    return scalar_weights
+
+
 class MixtureGaussianDistribution:
     def __init__(self, means, logvars, log_weights, deterministic=False):
         """
