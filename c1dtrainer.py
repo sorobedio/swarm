@@ -262,7 +262,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
                 model.eval()
                 inputr, dec, _ = model(inputs)
-                print(f'input:{inputr[0][:10].detach().cpu()}, dec:{dec[0][:10]detach().cpu()}')
+                print(f'input:{inputr[0][:10].detach().cpu()}, dec:{dec[0][:10].detach().cpu()}')
                 recon_error = F.mse_loss(dec, inputr)
                 print(f'recon_error:{recon_error}')
 
