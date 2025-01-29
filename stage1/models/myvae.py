@@ -43,10 +43,20 @@ class AutoencoderKL(nn.Module):
 
     def adaptive_mesh(self, sigma):
         """
-        Moving Mesh Adaptation: Adjust latent sampling dynamically based on local feature variations.
+        Moving Mesh Adaptation: Adjusts latent sampling dynamically per sample
+        without batch-wide dependencies.
         """
-        monitor_func = torch.abs(torch.autograd.grad(sigma.sum(), sigma, retain_graph=True)[0]) + 1e-4
-        adaptive_factor = monitor_func / monitor_func.mean()
+        batch_size = sigma.shape[0]
+        monitor_func = torch.zeros_like(sigma)  # Ensure same shape as sigma
+
+        # Compute per-sample gradient correctly
+        for i in range(batch_size):
+            grad_i = torch.autograd.grad(sigma[i].sum(), sigma[i], retain_graph=True, create_graph=True)[0]
+            monitor_func[i] = torch.abs(grad_i) + 1e-4  # Store per-sample gradients
+
+        # Normalize per sample
+        adaptive_factor = monitor_func / (monitor_func.mean(dim=(1, 2, 3), keepdim=True) + 1e-6)
+
         return sigma * adaptive_factor  # Warps latent distribution
 
     def encode(self, x):
