@@ -117,7 +117,7 @@ class ZooDataset(Dataset):
         # data = (data-mu)/std
 
         # exit()
-        self.data = data.detach().cpu()
+        self.data = data.cpu()
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
 
 
