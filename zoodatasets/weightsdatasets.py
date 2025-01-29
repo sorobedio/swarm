@@ -96,7 +96,7 @@ class ZooDataset(Dataset):
                 w=pad_to_chunk_multiple(w, chunk_size=self.chunk_size)
                 w = torch.split(w, split_size_or_sections=self.chunk_size, dim=-1)
                 w = torch.cat(w, dim=0)
-                w = w.reshape(-1, 1024,1024)
+                w = w.reshape(-1, 128,8192)
                 if self.normalize == "z_score":
                     u = torch.mean(w, dim=1)
                     v = torch.std(w, dim=1)

@@ -230,7 +230,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=20.0)
 
             # Option 2: Using value clipping
-            torch.nn.utils.clip_grad_value_(model.parameters(), clip_value=20.0)
+            # torch.nn.utils.clip_grad_value_(model.parameters(), clip_value=20.0)
 
             curr_lr = optimizer.param_groups[-1]['lr']
             total += inputs['weight'].size(0)
