@@ -234,7 +234,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             # Option 2: Using value clipping
             # torch.nn.utils.clip_grad_value_(model.parameters(), clip_value=20.0)
 
-    
+
 
             # Update tqdm progress bar
             progress_bar.set_postfix({
@@ -267,8 +267,8 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
                 model.eval()
                 inputr, dec, prior = model(inputs)
-                print(f'input:{inputr[0][:10].detach().cpu()}, dec:{dec[0][:10].detach().cpu()}')
-                print(f'input:{inputr.mean(dim=0)[0][:10].cpu()}, std: {prior.std[0][0][:10]}')
+                print(f'input:{inputr[0][0][:10].detach().cpu()}, dec:{dec[0][:10].detach().cpu()}')
+                print(f'mean:{inputr.mean(dim=0)[0][:10].cpu()}, std: {prior.std[0][0][:10]}')
                 # recon_error = F.mse_loss(dec, inputr)
                 # print(f'recon_error:{recon_error}')
 
