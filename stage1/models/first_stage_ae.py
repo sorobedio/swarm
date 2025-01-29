@@ -8,6 +8,10 @@ from stage1.modules.distributions import DiagonalGaussianDistribution
 from utils.util import instantiate_from_config
 from stage1.modules.losses.CustomLosses import ChunkWiseReconLoss
 
+ # Define Log-Cosh Loss
+def log_cosh_loss(y_pred, y_true):
+    return torch.mean(torch.log(torch.cosh(y_pred - y_true)))
+
 class Autoencoder(nn.Module):
     def __init__(self,
                  ddconfig,
@@ -161,14 +165,16 @@ class AENoDiscModel(Autoencoder):
         # inputs, reconstructions, posterior = self(batch)
         inputs = self.get_input(batch, self.input_key)
         inputs, reconstructions = self(inputs)
-        loss = F.mse_loss(reconstructions, inputs, reduction="mean")*1000.0
+        # loss = F.mse_loss(reconstructions, inputs, reduction="mean")*1000.0
+        loss = log_cosh_loss(reconstructions, inputs)*1000
 
         return loss
 
     def validation_step(self, batch, batch_idx):
         inputs = self.get_input(batch, self.input_key)
         inputs, reconstructions = self(inputs)
-        loss = F.mse_loss(reconstructions, inputs, reduction="mean")*1000.0
+        # loss = F.mse_loss(reconstructions, inputs, reduction="mean")*1000.0
+        loss = log_cosh_loss(reconstructions, inputs) * 1000
 
         return loss
 
