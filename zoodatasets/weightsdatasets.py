@@ -57,8 +57,8 @@ class ZooDataset(Dataset):
         x_min = -0.9140625
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
         # data = 2 * (data - x_min) / (x_max - x_min) - 1
-        mu = data.mean()
-        std = data.std()
+        mu = -1.4901161193847656e-05
+        std = 0.019409179687
         print('===============dataset size=========================')
         # print(self.data.shape, x_min, x_max)
 
@@ -66,7 +66,7 @@ class ZooDataset(Dataset):
         data = (data-mu)/std
 
         # exit()
-        self.data = data.detach().cpu()
+        self.data = data.cpu()
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
         # exit()
 
@@ -88,7 +88,7 @@ class ZooDataset(Dataset):
         wl = []
         if dataset=='joint':
             keys = list(data)
-            keys = keys[:-1]
+            keys = keys[:7]
 
             for k in keys:
                 w = data[k]
