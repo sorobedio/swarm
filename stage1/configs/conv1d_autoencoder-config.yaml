@@ -3,20 +3,20 @@ model:
   target: stage1.models.conv1d_autoencoder.AENoDiscModel
   params:
 #    monitor: "val/rec_loss"
-    embed_dim: 16 #128 #64
+    embed_dim: 4 #128 #64
     input_key: 'weight'
     learning_rate: 1.115e-4
     ddconfig:
       double_z: True
-      z_channels: 16
-      resolution: 1024
-      in_channels: 1024
-      in_ch: 1024
-      out_ch: 1024
+      z_channels: 4
+      resolution: 8192
+      in_channels: 128
+      in_ch: 128
+      out_ch: 128
       ch: 128
-      ch_mult: [ 1,2,2]  # num_down = len(ch_mult)-1
+      ch_mult: [ 1,1, 2, 2]  # num_down = len(ch_mult)-1
       num_res_blocks: 2
-      attn_resolutions: [256]
+      attn_resolutions: [4, 8]
       dropout: 0.0
-      in_dim: 1024
-      fdim: 1024
+      in_dim: 8192
+      fdim: 8192
