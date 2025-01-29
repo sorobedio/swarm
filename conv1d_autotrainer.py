@@ -249,9 +249,9 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
                 model.eval()
                 inputr, dec = model(inputs)
-                print(f'Input: {inputr[0][:10]}, Dec: {dec[0][:10]}')
-                recon_error = torch.nn.functional.mse_loss(dec, inputr)
-                print(f'Recon Error: {recon_error}')
+                print(f'Input: {inputr[0].reshape(-1)[:10]}, Dec: {dec[0].reshape(-1)[:10]}')
+                # recon_error = torch.nn.functional.mse_loss(dec, inputr)
+                # print(f'Recon Error: {recon_error}')
 
         # for name, param in model.named_parameters():
         #     if param.grad is not None:
