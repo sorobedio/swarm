@@ -263,7 +263,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
         rec_loss =logs['train/rec_loss']
         kld_loss =logs['train/kl_loss']
-        print(f'best training loss is:{bloss}  lr={curr_lr}  rec_loss={rec_loss} kld_loss={kld_loss}')
+        print(f'best training loss is:{bloss}    rec_loss={rec_loss} kld_loss={kld_loss}')
         if (epoch+1) % 10 == 0:
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
                 model.eval()
