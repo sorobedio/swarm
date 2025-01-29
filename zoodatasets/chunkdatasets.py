@@ -99,6 +99,8 @@ class ZooDataset(Dataset):
         mu=9.73654277913738e-06
         # x_max = 0.9140625
         # x_min = 1.4140625
+        # mu = data.mean()
+
 
         x_min = -0.9140625
         x_max =1.4140625
@@ -139,7 +141,7 @@ class ZooDataset(Dataset):
             keys = list(data)
             # keys.remove('layernorm.weight')
             # keys = ['sharegpt_cot', 'gemini_alpaca_sharegpt']
-            keys =keys[:-1]
+            keys =keys[:7]
             # print(keys)
 
             for k in keys:
