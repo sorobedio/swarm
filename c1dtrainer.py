@@ -258,13 +258,14 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         rec_loss =logs['train/rec_loss']
         kld_loss =logs['train/kl_loss']
         print(f'best training loss is:{bloss}  lr={curr_lr}  rec_loss={rec_loss} kld_loss={kld_loss}')
-        if (epoch+1) % 100 == 0:
+        if (epoch+1) % 10 == 0:
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
                 model.eval()
-                inputr, dec, _ = model(inputs)
+                inputr, dec, prior = model(inputs)
                 print(f'input:{inputr[0][:10].detach().cpu()}, dec:{dec[0][:10].detach().cpu()}')
-                recon_error = F.mse_loss(dec, inputr)
-                print(f'recon_error:{recon_error}')
+                print(f'input:{inputr.mean(dim=0)[0][:10].cpu()}, std: {prior.std[0][0][:10]}')
+                # recon_error = F.mse_loss(dec, inputr)
+                # print(f'recon_error:{recon_error}')
 
         # Llama-3.2-1B-Inst_top_2tf_.pth to test gpt2_full_.pth
 
@@ -336,7 +337,7 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=1, normalize=None)
+                          scale=1, normalize='z_score')
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
     traindataloader = DataLoader(trainset, shuffle=True, batch_size=32, num_workers=4,

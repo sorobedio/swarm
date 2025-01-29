@@ -54,7 +54,7 @@ class AutoencoderKL(nn.Module):
         print(f"Restored from {path}")
 
     def encode(self, x):
-        x = x+ 0.01 * torch.randn_like(x)
+        # x = x+ 0.01 * torch.randn_like(x)
         # print(x.dtype)
         # exit()
         h = self.encoder(x)

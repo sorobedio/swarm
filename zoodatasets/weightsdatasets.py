@@ -57,7 +57,7 @@ class ZooDataset(Dataset):
         x_min = -1.1953125
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
         # exit()
-        data = 2 * (data - x_min) / (x_max - x_min) - 1
+        # data = 2 * (data - x_min) / (x_max - x_min) - 1
         mu = -1.4901161193847656e-05
         std = 0.019409179687
         print('===============dataset size=========================')
@@ -95,9 +95,7 @@ class ZooDataset(Dataset):
                 w = data[k]
                 print(w.shape)
                 w=pad_to_chunk_multiple(w, chunk_size=self.chunk_size)
-                w = torch.split(w, split_size_or_sections=self.chunk_size, dim=-1)
-                w = torch.cat(w, dim=0)
-                w = w.reshape(-1, 128,8192)
+
                 if self.normalize == "z_score":
                     u = torch.mean(w, dim=1)
                     v = torch.std(w, dim=1)
@@ -107,6 +105,9 @@ class ZooDataset(Dataset):
                     x_min, _ = torch.min(w, dim=-1)
                     xdiff = x_max - x_min
                     w = 2*(w - x_min[:, None]) / xdiff[:, None]-1
+                w = torch.split(w, split_size_or_sections=self.chunk_size, dim=-1)
+                w = torch.cat(w, dim=0)
+                w = w.reshape(-1, 128, 8192)
                 if self.topk is not None:
                     if self.topk > 0:
                         w = w[:self.topk]

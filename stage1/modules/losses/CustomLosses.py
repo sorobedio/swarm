@@ -68,7 +68,7 @@ class Myloss(nn.Module):
 
         super().__init__()
         self.kl_weight = kl_weight
-        self.logvar = nn.Parameter(torch.ones(size=()) * logvar_init)
+        # self.logvar = nn.Parameter(torch.ones(size=()) * logvar_init)
 
     def forward(self, inputs, reconstructions, posteriors, split="train",weights=1000.0):
         inputs = inputs.reshape(reconstructions.shape)
@@ -76,7 +76,7 @@ class Myloss(nn.Module):
         # rec_loss = torch.abs(inputs.contiguous() -/ reconstructions.contiguous())
         rec_loss = (inputs.contiguous() - reconstructions.contiguous())**2
         # rec_loss =  log_cosh_loss(predicted_output, target_output)
-        self.logvar.data.clamp_(min=-30, max=30)
+        # self.logvar.data.clamp_(min=-30, max=30)
 
         # nll_loss = rec_loss / (torch.exp(self.logvar)*2) + self.logvar*0.5
         nll_loss = rec_loss
@@ -91,7 +91,7 @@ class Myloss(nn.Module):
         # loss = 100*F.mse_loss(inputs.contiguous(), reconstructions.contiguous()) +self.kl_weight * kl_loss.mean()
 
         log = {"{}/total_loss".format(split): loss.clone().detach().mean(),
-               "{}/logvar".format(split): self.logvar.detach(),
+               # "{}/logvar".format(split): self.logvar.detach(),
                "{}/kl_loss".format(split): kl_loss.detach().mean()*self.kl_weight,
                "{}/nll_loss".format(split): nll_loss.detach().mean()*1000.0,
                "{}/rec_loss".format(split): rec_loss.detach().mean()*1000.0,
