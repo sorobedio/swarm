@@ -22,9 +22,9 @@ model:
       my_channels: 64
       out_ch: 64
       ch: 128
-      ch_mult: [ 1,1, 1, 2]  #num_down = len(ch_mult)-1
-      num_res_blocks: 2
-      attn_resolutions: [ 8]
+      ch_mult: [ 1,2,  2]  #num_down = len(ch_mult)-1
+      num_res_blocks: 3
+      attn_resolutions: [ 2, 4]
       dropout: 0.0
       in_dim: 16384
       fdim: 16384
