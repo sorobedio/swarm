@@ -10,7 +10,7 @@ model:
       target: stage1.modules.losses.CustomLosses.Myloss
       params:
 #        kl_weight: 0.01
-        kl_weight: 1.0
+        kl_weight: 0.0001
     ddconfig:
       double_z: True
       tanh_out: True
