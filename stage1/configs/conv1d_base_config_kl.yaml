@@ -13,6 +13,7 @@ model:
         kl_weight: 1.0
     ddconfig:
       double_z: True
+      tanh_out: True
       z_channels: 4
       resolution: 8192
       in_channels: 128
@@ -20,8 +21,8 @@ model:
       out_ch: 128
       ch: 128
       ch_mult: [ 1,1,2, 2]  # num_down = len(ch_mult)-1
-      num_res_blocks: 2
-      attn_resolutions: [2, 4, 8]
+      num_res_blocks: 1
+      attn_resolutions: [4, 8]
       dropout: 0.0
       in_dim: 8192
       fdim: 8192

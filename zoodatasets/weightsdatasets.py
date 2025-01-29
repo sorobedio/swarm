@@ -53,18 +53,18 @@ class ZooDataset(Dataset):
         self.transform = transform
         data= self.load_data(datapath, dataset=dataset)
         # x_min, x_max = data.min(), data.max()
-        x_max = 2.9375
-        x_min = -0.9140625
+        x_max =1.0546875
+        x_min = -1.1953125
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
-        exit()
-        # data = 2 * (data - x_min) / (x_max - x_min) - 1
+        # exit()
+        data = 2 * (data - x_min) / (x_max - x_min) - 1
         mu = -1.4901161193847656e-05
         std = 0.019409179687
         print('===============dataset size=========================')
         # print(self.data.shape, x_min, x_max)
 
         print(f'============{std}==============={mu}===={data.dtype}=========')
-        data = (data-mu)/std
+        # data = (data-mu)/std
 
         # exit()
         self.data = data.cpu()
