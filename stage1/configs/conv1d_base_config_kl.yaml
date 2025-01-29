@@ -3,7 +3,7 @@ model:
   target: stage1.models.first_stage_c1model.VAENoDiscModel
   params:
 #    monitor: "val/rec_loss"
-    embed_dim: 32 #128 #64
+    embed_dim: 4 #128 #64
     input_key: 'weight'
     learning_rate: 1.115e-5
     lossconfig:
@@ -13,7 +13,7 @@ model:
         kl_weight: 1e-6
     ddconfig:
       double_z: True
-      z_channels: 32
+      z_channels: 4
       resolution: 8192
       in_channels: 128
       in_ch: 128
