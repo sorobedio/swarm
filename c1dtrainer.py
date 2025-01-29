@@ -222,11 +222,11 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
                 loss, logs = model.training_step(inputs, batch_idx)
             # loss, logs = model.training_step(inputs, batch_idx)
 
-            scaler.scale(loss).backward()
-            scaler.step(optimizer)
-            scaler.update()
-            # loss.backward()
-            # optimizer.step()
+            # scaler.scale(loss).backward()
+            # scaler.step(optimizer)
+            # scaler.update()
+            loss.backward()
+            optimizer.step()
             # schedulers.step()
             train_loss += loss.item()
             # Option 1: Using norm clipping
@@ -244,6 +244,8 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             })
             idx = batch_idx + 1
             # scheduler.step()
+            #0.3620,  0.2764, -0.0719, -0.1970,  0.2611, -0.3565, -0.1923, -0.3042,
+
 
         tloss = (train_loss / idx)
         # scheduler.step()

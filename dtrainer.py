@@ -93,8 +93,8 @@ def get_parser(**parser_kwargs):
         help="paths to base configs. Loaded from left-to-right. "
              "Parameters can be overwritten or added with command-line options of the form `--key value`.",
 
-        # default="stage1/configs/llama_block_config_kl.yaml",
-        default="stage1/configs/vae_base_config_kl.yaml",
+        default="stage1/configs/llama_block_config_kl.yaml",
+        # default="stage1/configs/vae_base_config_kl.yaml",
         #mini_llama_norm_config.yaml  small_llama_config_kl.yaml
         # default="stage1/configs/llama_attn_base_config_kl.yaml",
 
@@ -252,24 +252,24 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if bloss > tloss:
             bloss = tloss
             print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama1b_mmm_.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama1b_mmm_testing_.pth'))
 
         # Print additional loss details
         rec_loss = logs['train/rec_loss']
         kld_loss = logs['train/kl_loss']
         nnl_loss = logs['train/nll_loss']
-        log_var = logs['train/logvar']
+        # log_var = logs['train/logvar']
         print(f'Best Training Loss: {bloss:.4f}, LR: {optimizer.param_groups[-1]["lr"]:.6f}')
-        print(f'Rec Loss: {rec_loss}, KLD Loss: {kld_loss}, NLL Loss: {nnl_loss} log_var: {log_var}')
+        print(f'Rec Loss: {rec_loss}, KLD Loss: {kld_loss}, NLL Loss: {nnl_loss}')
 
         # Perform model evaluation every 100 epochs
-        if (epoch + 1) % 100 == 0:
+        if (epoch + 1) % 10 == 0:
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
                 model.eval()
                 inputr, dec, _ = model(inputs)
                 print(f'Input: {inputr[0][:10]}, Dec: {dec[0][:10]}')
-                recon_error = torch.nn.functional.mse_loss(dec, inputr)
-                print(f'Recon Error: {recon_error}')
+                # recon_error = torch.nn.functional.mse_loss(dec, inputr)
+                # print(f'Recon Error: {recon_error}')
 
         # for name, param in model.named_parameters():
         #     if param.grad is not None:
@@ -352,7 +352,7 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=0.1, normalize=None)
+                          scale=1, normalize='z_score')
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
     traindataloader = DataLoader(trainset, shuffle=True, batch_size=16, num_workers=4,
