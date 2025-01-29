@@ -32,6 +32,7 @@ from utils.util import instantiate_from_config
 import wandb
 import random  # for demo script
 from torch.utils.tensorboard import SummaryWriter
+from tqdm import tqdm
 
 # wandb.login()
 
