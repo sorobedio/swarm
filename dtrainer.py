@@ -355,7 +355,7 @@ if __name__ == "__main__":
                           scale=0.1, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
-    traindataloader = DataLoader(trainset, shuffle=True, batch_size=64, num_workers=8,
+    traindataloader = DataLoader(trainset, shuffle=True, batch_size=32, num_workers=8,
                                  # collate_fn=m_collate,
                                  )
     # testdataloader = DataLoader(valset, shuffle=False, batch_size=4, num_workers=4)
