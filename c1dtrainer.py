@@ -212,7 +212,9 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         train_loss = 0
         total = 0
         idx = 0
-        for batch_idx, inputs in enumerate(traindataloader):
+        # Initialize tqdm progress bar for the training loop
+        progress_bar = tqdm(enumerate(traindataloader), total=len(traindataloader), desc=f"Epoch {epoch + 1}")
+        for batch_idx, inputs in progress_bar:
             # input()
             optimizer.zero_grad()
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
@@ -232,10 +234,13 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             # Option 2: Using value clipping
             # torch.nn.utils.clip_grad_value_(model.parameters(), clip_value=20.0)
 
-            curr_lr = optimizer.param_groups[-1]['lr']
-            total += inputs['weight'].size(0)
-            progress_bar(batch_idx, len(traindataloader), 'Loss: %.6f |'
-                         % (train_loss / (batch_idx + 1)))
+    
+
+            # Update tqdm progress bar
+            progress_bar.set_postfix({
+                'Loss': f"{train_loss / (batch_idx + 1):.4f}",
+                'LR': f"{optimizer.param_groups[-1]['lr']:.6f}"
+            })
             idx = batch_idx + 1
             # scheduler.step()
 
