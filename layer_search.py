@@ -453,7 +453,7 @@ if __name__ == "__main__":
     autoencoder = torch.load('./autocheckpoints/hf_model_llama1b_1048_auto_.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/llama_model_1b_tf_auto_.pth')
 
-    exit()
+    # exit()
 
     autoencoder.to(device)
     autoencoder.eval()
