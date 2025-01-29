@@ -1,0 +1,27 @@
+model:
+  base_learning_rate: 4.5e-6
+  target: stage1.models.conv1dvae.VAENoDiscModel
+  params:
+#    monitor: "val/rec_loss"
+    embed_dim: 8 #128 #64
+    input_key: 'weight'
+    learning_rate: 1.115e-4
+    lossconfig:
+      target: stage1.modules.losses.CustomLosses.Myloss
+      params:
+#        kl_weight: 0.01
+        kl_weight: 1e-6
+    ddconfig:
+      double_z: True
+      z_channels: 8
+      resolution: 1024
+      in_channels: 1024
+      in_ch: 1024
+      out_ch: 1024
+      ch: 128
+      ch_mult: [ 1,1, 2, 2]  # num_down = len(ch_mult)-1
+      num_res_blocks: 2
+      attn_resolutions: [256]
+      dropout: 0.0
+      in_dim: 1024
+      fdim: 1024
