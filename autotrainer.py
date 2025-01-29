@@ -38,7 +38,7 @@ from tqdm import tqdm
 
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 
 def get_parser(**parser_kwargs):
@@ -237,7 +237,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if bloss > tloss:
             bloss = tloss
             print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama1b_1048_auto_.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama1b_1048_auto_mse.pth'))
 
 
         print(f' Rec_LOSS: {tloss}  Best Training Loss: {bloss:.4f}, LR: {optimizer.param_groups[-1]["lr"]:.6f}')
