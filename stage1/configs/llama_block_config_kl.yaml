@@ -4,7 +4,7 @@ model:
   params:
     embed_dim: 4
     input_key: 'weight'
-    learning_rate: 1.1234e-4
+    learning_rate: 1.1234e-3
 #    ckpt_path: 'checkpoints/stage1/llama_model_1b_tf_block_1024_1024_.pth'
 #    ckpt_path: 'checkpoints/stage1/base_chunk_llama_v1.ckpt'
     #
@@ -18,10 +18,10 @@ model:
       tanh_out: False
       z_channels: 4
       resolution: 128
-      in_channels: 4
-      my_channels: 4
-      out_ch: 4
-      ch: 128
+      in_channels: 64
+      my_channels: 64
+      out_ch: 64
+      ch: 256
       ch_mult: [ 1,2,  2]  #num_down = len(ch_mult)-1
       num_res_blocks: 3
       attn_resolutions: [ 2, 4]

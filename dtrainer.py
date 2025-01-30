@@ -214,7 +214,7 @@ import torch
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 0.001
+    bloss = 10.0
     btest = 2.0
     scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
 
@@ -252,7 +252,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if bloss > tloss:
             bloss = tloss
             print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama1b_256_.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama1b_1048_.pth'))
 
         # Print additional loss details
         rec_loss = logs['train/rec_loss']
