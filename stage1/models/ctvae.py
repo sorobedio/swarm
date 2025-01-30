@@ -21,15 +21,20 @@ def student_t_kl_loss(mu, logvar, df):
     df = torch.clamp(df, min=2.1 + eps, max=50.0)
     var = torch.exp(logvar)
 
-    # Calculate components separately for stability
-    log_det = 0.5 * torch.sum(logvar, dim=1)
-    trace_term = 0.5 * torch.sum((mu ** 2 + var) / (df.unsqueeze(1)), dim=1)
-    df_term = 0.5 * (df + 1) * torch.sum(
-        torch.log1p(mu ** 2 / (df.unsqueeze(1) * var + eps)),
-        dim=1
-    )
+    # Ensure df has the right shape for broadcasting
+    df = df.view(-1, 1)  # Reshape to [batch_size, 1]
 
-    return torch.mean(log_det + trace_term + df_term)
+    # Calculate components with proper broadcasting
+    log_det = 0.5 * torch.sum(logvar, dim=1)  # [batch_size]
+    trace_term = 0.5 * torch.sum((mu ** 2 + var) / df, dim=1)  # [batch_size]
+    df_term = 0.5 * (df.squeeze(1)) * torch.sum(
+        torch.log1p(mu ** 2 / (df * var + eps)),
+        dim=1
+    )  # [batch_size]
+
+    # Sum all terms (they should all be [batch_size] now)
+    total = log_det + trace_term + df_term
+    return torch.mean(total)
 
 
 class TVAE(nn.Module):
