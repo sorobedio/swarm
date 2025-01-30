@@ -77,6 +77,7 @@ class Autoencoder(nn.Module):
         print(f"Restored from {path}")
 
     def encode(self, x):
+        x = x +0.01*torch.randn_like(x).to(self.device)
         h = self.encoder(x)
         z = self.quant_conv(h)
         # posterior = DiagonalGaussianDistribution(moments)
@@ -165,7 +166,8 @@ class AENoDiscModel(Autoencoder):
         # inputs, reconstructions, posterior = self(batch)
         inputs = self.get_input(batch, self.input_key)
         inputs, reconstructions = self(inputs)
-        loss = F.mse_loss(reconstructions, inputs, reduction="mean")*1000.0
+        loss = F.smooth_l1_loss(reconstructed, x, reduction='mean') * 1000.0
+        # loss = F.mse_loss(reconstructions, inputs, reduction="mean")*1000.0
         # loss = log_cosh_loss(reconstructions, inputs)*1000
 
         return loss

@@ -74,27 +74,28 @@ class Myloss(nn.Module):
         inputs = inputs.reshape(reconstructions.shape)
         # mask = (inputs != self.pad_value).float()
         # rec_loss = torch.abs(inputs.contiguous() -/ reconstructions.contiguous())
-        rec_loss = (inputs.contiguous() - reconstructions.contiguous())**2
+        # rec_loss = (inputs.contiguous() - reconstructions.contiguous())**2
+        rec_loss=  F.smooth_l1_loss(reconstructions, inputs, reduction='mean')*1000.0
         # rec_loss =  log_cosh_loss(predicted_output, target_output)
         # self.logvar.data.clamp_(min=-30, max=30)
 
         # nll_loss = rec_loss / (torch.exp(self.logvar)*2) + self.logvar*0.5
         nll_loss = rec_loss
         weighted_nll_loss = nll_loss
-        if weights is not None:
-            weighted_nll_loss = weights*nll_loss
+        # if weights is not None:
+        #     weighted_nll_loss = weights*nll_loss
         # weighted_nll_loss = torch.sum(weighted_nll_loss) / weighted_nll_loss.shape[0]
         # nll_loss = torch.sum(nll_loss) / nll_loss.shape[0]
         kl_loss = posteriors.kl()
         # kl_loss = torch.sum(kl_loss) / kl_loss.shape[0]
-        loss = weighted_nll_loss.mean() + self.kl_weight * kl_loss.mean()
+        loss = weighted_nll_loss + self.kl_weight * kl_loss.mean()
         # loss = 100*F.mse_loss(inputs.contiguous(), reconstructions.contiguous()) +self.kl_weight * kl_loss.mean()
 
-        log = {"{}/total_loss".format(split): loss.clone().detach().mean(),
+        log = {"{}/total_loss".format(split): loss.clone().detach(),
                # "{}/logvar".format(split): self.logvar.detach(),
                "{}/kl_loss".format(split): kl_loss.detach().mean()*self.kl_weight,
-               "{}/nll_loss".format(split): nll_loss.detach().mean()*1000.0,
-               "{}/rec_loss".format(split): rec_loss.detach().mean()*1000.0,
+               "{}/nll_loss".format(split): nll_loss.detach(),
+               "{}/rec_loss".format(split): rec_loss.detach(),
                }
 
         return loss, log
