@@ -219,45 +219,54 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         train_loss = 0
         total = 0
         idx = 0
-        for batch_idx, inputs in enumerate(traindataloader):
+        # Initialize tqdm progress bar for the training loop
+        progress_bar = tqdm(enumerate(traindataloader), total=len(traindataloader), desc=f"Epoch {epoch + 1}")
+
+        for batch_idx, inputs in progress_bar:
             # input()
             optimizer.zero_grad()
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
                 loss, logs = model.training_step(inputs, batch_idx)
             # loss, logs = model.training_step(inputs, batch_idx)
 
-            scaler.scale(loss).backward()
-            scaler.step(optimizer)
-            scaler.update()
-            # loss.backward()
-            # optimizer.step()
+            # scaler.scale(loss).backward()
+            # scaler.step(optimizer)
+            # scaler.update()
+            loss.backward()
+            optimizer.step()
             # scheduler.step()
             train_loss += loss.item()
 
             curr_lr = optimizer.param_groups[-1]['lr']
             total += inputs['weight'].size(0)
-            progress_bar(batch_idx, len(traindataloader), 'Loss: %.6f |'
-                         % (train_loss / (batch_idx + 1)))
-            idx = batch_idx + 1
-            # schedulers.step()
+            # Update tqdm progress bar
+            progress_bar.set_postfix({
+                'Loss': f"{train_loss / (batch_idx + 1):.4f}",
+                'LR': f"{optimizer.param_groups[-1]['lr']:.6f}"
+            })
 
-        tloss = (train_loss / idx)
-        # scheduler.step()
-        # Log loss and accuracy to TensorBoard
-        writer.add_scalar("Loss/train", tloss, epoch)
-        # scheduler.step()
-        # btst = evaluate(model, traindataloader)
-        # print(f'current best test avg  loss: {btest}')
-        # if btest > btst:
-        #     btest = btst
-        #     print(f'new best valid avg loss: {btst}')
-        #     torch.save(model,  os.path.join(args.save_path,f'best_valid_loss_llama3-8b_uns.pth'))
+        tloss = train_loss / len(traindataloader)
+
+        # Save model with the best training loss
         if bloss > tloss:
             bloss = tloss
-            print(f'saving best training loss is:{bloss}')
-            torch.save(model, os.path.join(args.save_path,f'llama_model_img_chunk_.pth'))
-            # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
-        print(f'best training loss is:{bloss}  lr={curr_lr}')
+            print(f'Saving model with best training loss: {bloss:.4f}')
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama1b_cnn_256_.pth'))
+
+        # Print additional loss details
+        rec_loss = logs['train/rec_loss']
+        kld_loss = logs['train/kl_loss']
+        nnl_loss = logs['train/nll_loss']
+        # log_var = logs['train/logvar']
+        print(f'Best Training Loss: {bloss:.4f}, LR: {optimizer.param_groups[-1]["lr"]:.6f}')
+        print(f'Rec Loss: {rec_loss}, KLD Loss: {kld_loss}, NLL Loss: {nnl_loss}')
+
+        # Perform model evaluation every 100 epochs
+        if (epoch + 1) % 10 == 0:
+            with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
+                model.eval()
+                inputr, dec, _ = model(inputs)
+                print(f'Input: {inputr[0][:10]}, Dec: {dec[0][:10]}')
 
         # for name, param in model.named_parameters():
         #     if param.grad is not None:
@@ -340,7 +349,7 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=0.1, normalize=None)
+                          scale=1, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
     traindataloader = DataLoader(trainset, shuffle=True, batch_size=16, num_workers=8,
