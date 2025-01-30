@@ -49,7 +49,7 @@ class TVAE(nn.Module):
                  device='cuda',
                  latent_shape=None,
                  monitor=None,
-                 lambda_recon=1.0,
+                 lambda_recon=1000.0,
                  lambda_kl=0.1):
         super().__init__()
         self.devices = device
