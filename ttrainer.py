@@ -258,7 +258,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
             torch.save(model, os.path.join(args.save_path, f'hf_model_llama1b_1048_tvae_.pth'))
 
         # Print additional loss details
-        rec_loss = logs['rec_loss']
+        rec_loss = logs['recon_loss']
         kld_loss = logs['kl_loss']
         nnl_loss = logs['loss']
         # log_var = logs['train/logvar']
