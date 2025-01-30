@@ -245,7 +245,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         nnl_loss = logs['train/nll_loss']
         # log_var = logs['train/logvar']
         print(f'Best Training Loss: {bloss:.4f}, LR: {optimizer.param_groups[-1]["lr"]:.6f}')
-        print(f'Rec Loss: {rec_loss}, KLD Loss: {kld_loss}, NLL Loss: {nnl_loss} log_var: {log_var}')
+        print(f'Rec Loss: {rec_loss}, KLD Loss: {kld_loss}, NLL Loss: {nnl_loss} ')
 
         # Perform model evaluation every 100 epochs
         if (epoch + 1) % 100 == 0:
