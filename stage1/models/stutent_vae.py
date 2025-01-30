@@ -8,19 +8,54 @@ from utils.util import instantiate_from_config
 from stage1.modules.losses.CustomLosses import ChunkWiseReconLoss
 import torch.distributions as dist
 
-
-# Define Log-Cosh Loss
+# ------------------------------------------------------
+# 1) Log-Cosh Reconstruction Loss
+# ------------------------------------------------------
 def log_cosh_loss(y_pred, y_true):
     return torch.mean(torch.log(torch.cosh(y_pred - y_true)))
 
+# ------------------------------------------------------
+# 2) Monte Carlo KL for StudentT
+#    KL[q||p] = E_q[ log q(z) - log p(z) ]
+# ------------------------------------------------------
+def student_t_kl_loss(mu, logvar, df, n_samples=5):
+    """
+    Approximate KL[ StudentT(df, mu, scale_q) || StudentT(df, 0, 1) ]
+    via Monte Carlo sampling.
 
-# Define Student's T KL Divergence Loss
-def student_t_kl_loss(mu, logvar, df):
-    prior = dist.StudentT(df, torch.zeros_like(mu), torch.ones_like(mu))
-    posterior = dist.StudentT(df, mu, torch.exp(0.5 * logvar))
-    return torch.mean(torch.distributions.kl_divergence(posterior, prior))
+    Args:
+        mu:        Mean of the posterior StudentT ([B, C, H, W] or [B, latent_dim])
+        logvar:    Log-variance of the posterior StudentT
+        df:        Degrees of freedom of the posterior StudentT
+        n_samples: How many samples to draw for MC approximation
 
+    Returns:
+        A scalar (float) approximate KL divergence
+    """
+    # Posterior distribution q(z)
+    scale_q = torch.exp(0.5 * logvar)
+    q = dist.StudentT(df, loc=mu, scale=scale_q)
 
+    # Prior distribution p(z): same df, zero mean, unit scale
+    scale_p = torch.ones_like(mu)
+    p = dist.StudentT(df, loc=torch.zeros_like(mu), scale=scale_p)
+
+    # Draw samples from q: shape => [n_samples, B, ...]
+    z_samples = q.rsample((n_samples,))
+
+    # Compute log probabilities under q and p
+    log_qz = q.log_prob(z_samples)  # shape [n_samples, B, ...]
+    log_pz = p.log_prob(z_samples)  # same shape
+
+    # KL = E_q[log q(z) - log p(z)]
+    kl_per_sample = log_qz - log_pz  # [n_samples, B, ...]
+    kl_mean_over_samples = kl_per_sample.mean(dim=0)  # [B, ...]
+    kl = kl_mean_over_samples.mean()  # scalar
+    return kl
+
+# ------------------------------------------------------
+# 3) TVAE Model
+# ------------------------------------------------------
 class TVAE(nn.Module):
     def __init__(self,
                  ddconfig,
@@ -33,7 +68,7 @@ class TVAE(nn.Module):
                  device='cuda',
                  latent_shape=None,
                  monitor=None,
-                 lambda_recon=1000.0,
+                 lambda_recon=1.0,
                  lambda_kl=0.1):
         super().__init__()
         self.devices = device
@@ -45,6 +80,8 @@ class TVAE(nn.Module):
         self.encoder = Encoder(**ddconfig)
         self.decoder = Decoder(**ddconfig)
 
+        # ddconfig["double_z"] typically means we produce mu+logvar in channels
+        # Here we produce mu, logvar, and log-df in channels => 3 * embed_dim
         assert ddconfig["double_z"]
         self.quant_conv = torch.nn.Conv2d(2 * ddconfig["z_channels"], 3 * embed_dim, 1)
         self.post_quant_conv = torch.nn.Conv2d(embed_dim, ddconfig["z_channels"], 1)
@@ -65,12 +102,19 @@ class TVAE(nn.Module):
         self.load_state_dict(sd, strict=False)
 
     def encode(self, x):
+        # 1) Encode input to latent feature map
         h = self.encoder(x)
+        # 2) Project to (mu, logvar, logdf)
         z_params = self.quant_conv(h)
         mu, logvar, logdf = torch.chunk(z_params, 3, dim=1)
-        df = torch.clamp(torch.exp(logdf) + 2.1, min=2.1, max=50.0)  # Ensure df is stable
-        eps = dist.StudentT(df).rsample(mu.shape)  # Sample from Student's T
-        z = mu + torch.exp(0.5 * logvar) * eps  # Reparameterization trick
+
+        # 3) Degrees of freedom: clamp to [2.1, 50]
+        df = torch.clamp(torch.exp(logdf) + 2.1, min=2.1, max=50.0)
+
+        # 4) Sample from Student's T using reparameterization
+        #    z = mu + scale * eps, where eps ~ StudentT(df, 0, 1).
+        eps = dist.StudentT(df).rsample(mu.shape)
+        z = mu + torch.exp(0.5 * logvar) * eps
         return z, mu, logvar, df
 
     def decode(self, z):
@@ -78,11 +122,14 @@ class TVAE(nn.Module):
         return self.decoder(z)
 
     def forward(self, input):
+        # If we get a dict, we fetch the relevant key
         if isinstance(input, dict):
             input = input.get(self.input_key, None)
             if input is None:
                 raise ValueError(f"Missing key {self.input_key} in input dictionary.")
             input = input.to(self.devices)
+
+        # Encode -> sample -> decode
         z, mu, logvar, df = self.encode(input)
         dec = self.decode(z)
         return input, dec, mu, logvar, df
@@ -93,16 +140,23 @@ class TVAE(nn.Module):
     def training_step(self, batch, batch_idx, optimizer_idx):
         inputs = self.get_input(batch, self.input_key)
         inputs, reconstructions, mu, logvar, df = self(inputs)
+
+        # 1) Reconstruction loss
         recon_loss = log_cosh_loss(reconstructions, inputs)
-        kl_loss = student_t_kl_loss(mu, logvar, df)
+
+        # 2) KL divergence (Monte Carlo)
+        kl_loss = student_t_kl_loss(mu, logvar, df, n_samples=5)
+
+        # Weighted sum
         loss = self.lambda_recon * recon_loss + self.lambda_kl * kl_loss
         return loss
 
     def validation_step(self, batch, batch_idx):
         inputs = self.get_input(batch, self.input_key)
         inputs, reconstructions, mu, logvar, df = self(inputs)
+
         recon_loss = log_cosh_loss(reconstructions, inputs)
-        kl_loss = student_t_kl_loss(mu, logvar, df)
+        kl_loss = student_t_kl_loss(mu, logvar, df, n_samples=5)
         loss = self.lambda_recon * recon_loss + self.lambda_kl * kl_loss
         return loss
 
@@ -113,11 +167,13 @@ class TVAE(nn.Module):
             list(self.decoder.parameters()) +
             list(self.quant_conv.parameters()) +
             list(self.post_quant_conv.parameters()),
-            lr=lr, betas=(0.5, 0.9))
+            lr=lr, betas=(0.5, 0.9)
+        )
         return [opt_vae], []
 
     def get_last_layer(self):
         return self.decoder.conv_out.weight
+
 
 
 class AENoDiscModel(TVAE):
@@ -151,7 +207,10 @@ class AENoDiscModel(TVAE):
         inputs, reconstructions, mu, logvar, df = self(inputs)
         # recon_loss = log_cosh_loss(reconstructions, inputs)
         recon_loss = F.mse_loss(reconstructions, inputs, reduction="mean")
-        kl_loss = student_t_kl_loss(mu, logvar, df)
+        # kl_loss = student_t_kl_loss(mu, logvar, df)
+        # 2) KL divergence (Monte Carlo)
+        kl_loss = student_t_kl_loss(mu, logvar, df, n_samples=5)
+
         loss = self.lambda_recon * recon_loss + self.lambda_kl * kl_loss
         logs['recon_loss'] = recon_loss
         logs['kl_loss'] = kl_loss
@@ -165,7 +224,10 @@ class AENoDiscModel(TVAE):
         inputs, reconstructions, mu, logvar, df = self(inputs)
         # recon_loss = log_cosh_loss(reconstructions, inputs)
         recon_loss = F.mse_loss(reconstructions, inputs, reduction="mean")
-        kl_loss = student_t_kl_loss(mu, logvar, df)
+        # kl_loss = student_t_kl_loss(mu, logvar, df)
+        # 2) KL divergence (Monte Carlo)
+        kl_loss = student_t_kl_loss(mu, logvar, df, n_samples=5)
+
         loss = self.lambda_recon * recon_loss + self.lambda_kl * kl_loss
         logs['recon_loss'] = recon_loss
         logs['kl_loss'] = kl_loss
