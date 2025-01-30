@@ -216,8 +216,8 @@ class AENoDiscModel(TVAE):
         kl_loss = student_t_kl_loss(mu, logvar, df)
 
         loss = self.lambda_recon * recon_loss + self.lambda_kl * kl_loss
-        logs['recon_loss'] = recon_loss
-        logs['kl_loss'] = kl_loss
+        logs['recon_loss'] = self.lambda_recon *recon_loss
+        logs['kl_loss'] = self.lambda_kl * kl_loss
         logs['loss'] = loss
 
         return loss, logs
