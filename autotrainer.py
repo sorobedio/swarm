@@ -93,7 +93,10 @@ def get_parser(**parser_kwargs):
         help="paths to base configs. Loaded from left-to-right. "
              "Parameters can be overwritten or added with command-line options of the form `--key value`.",
 
-        default="stage1/configs/llama_autoencoder_config.yaml",
+        # default="stage1/configs/llama_autoencoder_config.yaml",
+
+        default="stage1/configs/autoencoder-config_kl.yaml",
+        #
 
     )
     parser.add_argument(
@@ -237,7 +240,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if bloss > tloss:
             bloss = tloss
             print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama1b_1048_auto_mse.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama1b_1048_auto_mse_large.pth'))
 
 
         print(f' Rec_LOSS: {tloss}  Best Training Loss: {bloss:.4f}, LR: {optimizer.param_groups[-1]["lr"]:.6f}')
