@@ -2,6 +2,7 @@ import argparse, os, sys, datetime, glob
 import numpy as np
 import time
 import torch
+from tqdm import tqdm
 import torchvision
 import pytorch_lightning as pl
 from torch.linalg import multi_dot
