@@ -15,24 +15,24 @@ def log_cosh_loss(y_pred, y_true):
     return torch.mean(torch.log(torch.cosh(diff + 1e-12)))
 
 
-# Define Student's T KL Divergence Loss - Fixed stability issues
 def student_t_kl_loss(mu, logvar, df):
     eps = 1e-6
     df = torch.clamp(df, min=2.1 + eps, max=50.0)
     var = torch.exp(logvar)
 
-    # All tensors are already [batch_size, channels, height, width]
-    # Just calculate components directly
-    log_det = 0.5 * torch.sum(logvar, dim=[1, 2, 3])
-    trace_term = 0.5 * torch.sum((mu ** 2 + var) / df, dim=[1, 2, 3])
-    df_term = 0.5 * torch.sum(
-        (df + 1) * torch.log1p(mu ** 2 / (df * var + eps)),
-        dim=[1, 2, 3]
-    )
+    # KL divergence between Student-t distributions
+    # The correct formula should include:
+    # 1. The ratio of gamma functions
+    # 2. The log determinant term
+    # 3. The quadratic term
 
-    # Sum over spatial dimensions, mean over batch
-    total = log_det + trace_term + df_term
-    return torch.mean(total)
+    digamma_term = torch.special.digamma((df + 1) / 2) - torch.special.digamma(df / 2)
+    log_det = torch.sum(logvar, dim=[1, 2, 3])
+    trace_term = torch.sum((mu ** 2 + var) / (df * var + eps), dim=[1, 2, 3])
+    df_term = df * torch.sum(torch.log1p(mu ** 2 / (df * var + eps)), dim=[1, 2, 3])
+
+    kl = 0.5 * (log_det + trace_term + df_term + digamma_term)
+    return torch.mean(torch.clamp(kl, min=0.0))  # Ensure non-negativity
 
 
 class TVAE(nn.Module):
