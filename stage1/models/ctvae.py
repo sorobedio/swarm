@@ -17,6 +17,7 @@ def log_cosh_loss(y_pred, y_true):
 
 def student_t_kl_loss(mu, logvar, df):
     eps = 1e-6
+    print(f'mu: {mu.shape}, logvar: {logvar.shape}, df: {df.shape}')
     df = torch.clamp(df, min=2.1 + eps, max=50.0)
     var = torch.exp(logvar)
 
