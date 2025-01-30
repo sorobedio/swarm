@@ -95,7 +95,6 @@ class TVAE(nn.Module):
 
         # Proper reparameterization for Student's T
         eps = torch.randn_like(mu)
-        # v = torch.full_like(df, df).exponential_()
         v = torch.empty_like(df).exponential_() * (1 / df)
         z = mu + scale * eps * torch.sqrt(df / v)
 
