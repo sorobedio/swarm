@@ -1,0 +1,37 @@
+model:
+  base_learning_rate: 4.5e-4
+  target: stage1.models.student_t_vae.AENoDiscModel
+  params:
+    embed_dim: 4
+    input_key: 'weight'
+    learning_rate: 4.1234e-4
+#    ckpt_path: 'checkpoints/stage1/llama_model_1b_tf_auto_.pth'
+#    ckpt_path: 'checkpoints/stage1/base_chunk_llama_v1.ckpt'
+    #
+
+    ddconfig:
+      double_z: True
+      tanh_out: False
+      z_channels: 4
+      resolution: 128
+      in_channels: 64
+      my_channels: 64
+      out_ch: 64
+      ch: 128
+      ch_mult: [ 1, 2, 2]  #num_down = len(ch_mult)-1 [ 1, 1, 2]
+      num_res_blocks: 2
+      attn_resolutions: [ 8]
+      dropout: 0.0
+      in_dim: 16384
+      fdim: 16384
+
+
+data:
+  target: zooloaders.autoloader.ZooDataModule
+  params:
+    data_dir: '../../Datasets/'
+    batch_size: 16
+    num_workers: 4
+    scale: 0.1
+    topk: null
+    normalize: False

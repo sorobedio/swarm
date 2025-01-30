@@ -59,7 +59,7 @@ class Autoencoder(nn.Module):
         # print(x.dtype)
         h = self.encoder(x)
         z= self.quant_conv(h)
-        # posterior = DiagonalGaussianDistribution(moments)
+
         return z
 
     def decode(self, z):

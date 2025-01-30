@@ -14,7 +14,14 @@ def log_cosh_loss(y_pred, y_true):
     return torch.mean(torch.log(torch.cosh(y_pred - y_true)))
 
 
-class TAutoencoder(nn.Module):
+# Define Student's T KL Divergence Loss
+def student_t_kl_loss(mu, logvar, df):
+    prior = dist.StudentT(df, torch.zeros_like(mu), torch.ones_like(mu))
+    posterior = dist.StudentT(df, mu, torch.exp(0.5 * logvar))
+    return torch.mean(torch.distributions.kl_divergence(posterior, prior))
+
+
+class TVAE(nn.Module):
     def __init__(self,
                  ddconfig,
                  embed_dim,
@@ -24,14 +31,17 @@ class TAutoencoder(nn.Module):
                  input_key="weight",
                  cond_key="dataset",
                  device='cuda',
+                 latent_shape=None,
                  monitor=None,
-                 lambda_recon=1.0):
+                 lambda_recon=1000.0,
+                 lambda_kl=0.1):
         super().__init__()
         self.devices = device
         self.cond_key = cond_key
         self.learning_rate = learning_rate
         self.input_key = input_key
         self.lambda_recon = lambda_recon
+        self.lambda_kl = lambda_kl
         self.encoder = Encoder(**ddconfig)
         self.decoder = Decoder(**ddconfig)
 
@@ -58,10 +68,10 @@ class TAutoencoder(nn.Module):
         h = self.encoder(x)
         z_params = self.quant_conv(h)
         mu, logvar, logdf = torch.chunk(z_params, 3, dim=1)
-        df = torch.clamp(torch.exp(logdf) + 2.0, min=2.1, max=50.0)  # Ensure df is stable
+        df = torch.clamp(torch.exp(logdf) + 2.1, min=2.1, max=50.0)  # Ensure df is stable
         eps = dist.StudentT(df).rsample(mu.shape)  # Sample from Student's T
         z = mu + torch.exp(0.5 * logvar) * eps  # Reparameterization trick
-        return z
+        return z, mu, logvar, df
 
     def decode(self, z):
         z = self.post_quant_conv(z)
@@ -73,42 +83,44 @@ class TAutoencoder(nn.Module):
             if input is None:
                 raise ValueError(f"Missing key {self.input_key} in input dictionary.")
             input = input.to(self.devices)
-        z = self.encode(input)
+        z, mu, logvar, df = self.encode(input)
         dec = self.decode(z)
-        return input, dec
+        return input, dec, mu, logvar, df
 
     def get_input(self, batch, k):
         return batch[k].to(self.devices)
 
     def training_step(self, batch, batch_idx, optimizer_idx):
         inputs = self.get_input(batch, self.input_key)
-        inputs, reconstructions = self(inputs)
+        inputs, reconstructions, mu, logvar, df = self(inputs)
         recon_loss = log_cosh_loss(reconstructions, inputs)
-        loss = self.lambda_recon * recon_loss
+        kl_loss = student_t_kl_loss(mu, logvar, df)
+        loss = self.lambda_recon * recon_loss + self.lambda_kl * kl_loss
         return loss
 
     def validation_step(self, batch, batch_idx):
         inputs = self.get_input(batch, self.input_key)
-        inputs, reconstructions = self(inputs)
+        inputs, reconstructions, mu, logvar, df = self(inputs)
         recon_loss = log_cosh_loss(reconstructions, inputs)
-        loss = self.lambda_recon * recon_loss
+        kl_loss = student_t_kl_loss(mu, logvar, df)
+        loss = self.lambda_recon * recon_loss + self.lambda_kl * kl_loss
         return loss
 
     def configure_optimizers(self):
         lr = self.learning_rate
-        opt_ae = torch.optim.Adam(
+        opt_vae = torch.optim.Adam(
             list(self.encoder.parameters()) +
             list(self.decoder.parameters()) +
             list(self.quant_conv.parameters()) +
             list(self.post_quant_conv.parameters()),
             lr=lr, betas=(0.5, 0.9))
-        return [opt_ae], []
+        return [opt_vae], []
 
     def get_last_layer(self):
         return self.decoder.conv_out.weight
 
 
-class AENoDiscModel(Autoencoder):
+class AENoDiscModel(TVAE):
     def __init__(self,ddconfig,
                  embed_dim,
                  learning_rate,
@@ -134,25 +146,32 @@ class AENoDiscModel(Autoencoder):
     #     self.loss.kl_weight = self.beta_scheduler.get_beta(global_step)
 
     def training_step(self, batch, batch_idx):
+        logs ={}
         inputs = self.get_input(batch, self.input_key)
-        inputs, reconstructions, z, df = self(inputs)
-        recon_loss  = F.mse_loss(reconstructions, inputs, reduction="mean") * 1000.0
+        inputs, reconstructions, mu, logvar, df = self(inputs)
         # recon_loss = log_cosh_loss(reconstructions, inputs)
-        latent_loss = student_t_kl_loss(z, df)
-        loss = self.lambda_recon * recon_loss + self.lambda_latent * latent_loss
+        recon_loss = F.mse_loss(reconstructions, inputs, reduction="mean")
+        kl_loss = student_t_kl_loss(mu, logvar, df)
+        loss = self.lambda_recon * recon_loss + self.lambda_kl * kl_loss
+        logs['recon_loss'] = recon_loss
+        logs['kl_loss'] = kl_loss
+        logs['loss'] = loss
 
-
-
-        return loss
+        return loss, logs
 
     def validation_step(self, batch, batch_idx):
+        logs = {}
         inputs = self.get_input(batch, self.input_key)
-        inputs, reconstructions, z, df = self(inputs)
-        recon_loss = F.mse_loss(reconstructions, inputs, reduction="mean") * 1000.0
+        inputs, reconstructions, mu, logvar, df = self(inputs)
         # recon_loss = log_cosh_loss(reconstructions, inputs)
-        latent_loss = student_t_kl_loss(z, df)
-        loss = self.lambda_recon * recon_loss + self.lambda_latent * latent_loss
-        return loss
+        recon_loss = F.mse_loss(reconstructions, inputs, reduction="mean")
+        kl_loss = student_t_kl_loss(mu, logvar, df)
+        loss = self.lambda_recon * recon_loss + self.lambda_kl * kl_loss
+        logs['recon_loss'] = recon_loss
+        logs['kl_loss'] = kl_loss
+        logs['loss'] = loss
+
+        return loss, logs
 
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(list(self.encoder.parameters())+
