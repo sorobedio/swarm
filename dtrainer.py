@@ -252,7 +252,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if bloss > tloss:
             bloss = tloss
             print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama1b_large_.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama1b_256_.pth'))
 
         # Print additional loss details
         rec_loss = logs['train/rec_loss']
@@ -352,7 +352,7 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=1, normalize='z_score')
+                          scale=0.01, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
     traindataloader = DataLoader(trainset, shuffle=True, batch_size=16, num_workers=4,
