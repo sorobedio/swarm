@@ -252,8 +252,8 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
                 model.eval()
                 inputr, dec = model(inputs)
                 print(f'Input: {inputr[0][:10]}, Dec: {dec[0][:10]}')
-                recon_error = torch.nn.functional.mse_loss(dec, inputr)
-                print(f'Recon Error: {recon_error}')
+                # recon_error = torch.nn.functional.mse_loss(dec, inputr)
+                # print(f'Recon Error: {recon_error}')
 
         # for name, param in model.named_parameters():
         #     if param.grad is not None:
