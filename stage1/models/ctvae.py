@@ -17,21 +17,24 @@ def log_cosh_loss(y_pred, y_true):
 
 def student_t_kl_loss(mu, logvar, df):
     eps = 1e-6
-    print(f'mu: {mu.shape}, logvar: {logvar.shape}, df: {df.shape}')
     df = torch.clamp(df, min=2.1 + eps, max=50.0)
     var = torch.exp(logvar)
 
-    # First calculate the sum, then multiply with df to maintain dimensions
-    digamma_term = torch.special.digamma((df + 1) / 2) - torch.special.digamma(df / 2)
-    log_det = torch.sum(logvar, dim=[1, 2, 3])
-    trace_term = torch.sum((mu ** 2 + var) / (df * var + eps), dim=[1, 2, 3])
+    # First reduce df to per-batch values by taking mean over other dimensions
+    df_mean = torch.mean(df, dim=[1, 2, 3])  # [16]
 
-    # Fix the df term by separating the multiplication
-    log_term = torch.sum(torch.log1p(mu ** 2 / (df * var + eps)), dim=[1, 2, 3])
-    df_term = df.view(df.size(0), -1)[:, 0] * log_term  # Match dimensions before multiplying
+    # Calculate digamma terms with reduced df
+    digamma_term = torch.special.digamma((df_mean + 1) / 2) - torch.special.digamma(df_mean / 2)  # [16]
 
-    kl = 0.5 * (log_det + trace_term + df_term + digamma_term)
-    return torch.mean(torch.clamp(kl, min=0.0))
+    # Calculate other terms
+    log_det = torch.sum(logvar, dim=[1, 2, 3])  # [16]
+    trace_term = torch.sum((mu ** 2 + var) / (df * var + eps), dim=[1, 2, 3])  # [16]
+    log_term = torch.sum(torch.log1p(mu ** 2 / (df * var + eps)), dim=[1, 2, 3])  # [16]
+    df_term = df_mean * log_term  # [16]
+
+    # All terms should now be [16] (batch dimension)
+    kl = 0.5 * (log_det + trace_term + df_term + digamma_term)  # [16]
+    return torch.mean(torch.clamp(kl, min=0.0))  # Single scalar
 
 
 class TVAE(nn.Module):
