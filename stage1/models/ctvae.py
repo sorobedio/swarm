@@ -18,26 +18,19 @@ def log_cosh_loss(y_pred, y_true):
 # Define Student's T KL Divergence Loss - Fixed stability issues
 def student_t_kl_loss(mu, logvar, df):
     eps = 1e-6
-    # Print shapes for debugging
-    print(f"mu shape: {mu.shape}")
-    print(f"logvar shape: {logvar.shape}")
-    print(f"df shape: {df.shape}")
-
     df = torch.clamp(df, min=2.1 + eps, max=50.0)
     var = torch.exp(logvar)
 
-    # Reshape df to match dimensions
-    batch_size = mu.shape[0]
-    df = df.view(batch_size, 1, 1, 1).expand_as(mu)
-
-    # Calculate components ensuring matching dimensions
-    log_det = 0.5 * torch.sum(logvar, dim=[1, 2, 3])  # Sum over all but batch dim
+    # All tensors are already [batch_size, channels, height, width]
+    # Just calculate components directly
+    log_det = 0.5 * torch.sum(logvar, dim=[1, 2, 3])
     trace_term = 0.5 * torch.sum((mu ** 2 + var) / df, dim=[1, 2, 3])
-    df_term = 0.5 * df[:, 0, 0, 0] * torch.sum(
-        torch.log1p(mu ** 2 / (df * var + eps)),
+    df_term = 0.5 * torch.sum(
+        (df + 1) * torch.log1p(mu ** 2 / (df * var + eps)),
         dim=[1, 2, 3]
     )
 
+    # Sum over spatial dimensions, mean over batch
     total = log_det + trace_term + df_term
     return torch.mean(total)
 
