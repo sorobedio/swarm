@@ -146,6 +146,12 @@ class TVAE(nn.Module):
         dec = self.decode(z)
         return input, dec, mu, logvar, df
 
+    def get_input(self, batch, k):
+        x = batch[k]
+        if len(x.shape) == 3:
+            x = x[..., None]
+        return x.to(self.devices)
+
     def training_step(self, batch, batch_idx, optimizer_idx):
         inputs = self.get_input(batch, self.input_key)
         inputs, reconstructions, mu, logvar, df = self(inputs)
