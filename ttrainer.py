@@ -230,7 +230,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
 
         for batch_idx, inputs in progress_bar:
             optimizer.zero_grad()
-            with torch.autocast(device_type='cuda', dtype=torch.float32, enabled=use_amp):
+            with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
                 # print('====tobloat16''')
                 loss, logs = model.training_step(inputs, batch_idx)
 
