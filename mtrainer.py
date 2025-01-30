@@ -199,7 +199,7 @@ import torch
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 10.0
+    bloss = 1.0
     btest = 2.0
     scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
 
@@ -243,7 +243,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         rec_loss = logs['train/rec_loss']
         kld_loss = logs['train/kl_loss']
         nnl_loss = logs['train/nll_loss']
-        log_var = logs['train/logvar']
+        # log_var = logs['train/logvar']
         print(f'Best Training Loss: {bloss:.4f}, LR: {optimizer.param_groups[-1]["lr"]:.6f}')
         print(f'Rec Loss: {rec_loss}, KLD Loss: {kld_loss}, NLL Loss: {nnl_loss} log_var: {log_var}')
 
