@@ -14,8 +14,8 @@ model:
       tanh_out: False
       z_channels: 4
       resolution: 128
-      in_channels: 64
-      my_channels: 64
+      in_channels: 4
+      my_channels: 4
       out_ch: 64
       ch: 128
       ch_mult: [ 1, 2, 2]  #num_down = len(ch_mult)-1 [ 1, 1, 2]
