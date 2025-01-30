@@ -58,7 +58,7 @@ class TVAE(nn.Module):
 
         assert ddconfig["double_z"]
         self.quant_conv = torch.nn.Conv2d(2 * ddconfig["z_channels"], 3 * embed_dim, 1)
-        self.post_quant_conv = torch.nn.Conv2d(3 * embed_dim, ddconfig["z_channels"], 1)
+        self.post_quant_conv = torch.nn.Conv2d(embed_dim, ddconfig["z_channels"], 1)
         self.embed_dim = embed_dim
 
         # Initialize weights for better convergence
@@ -97,6 +97,8 @@ class TVAE(nn.Module):
         eps = torch.randn_like(mu)
         v = torch.empty_like(df).exponential_() * (1 / df)
         z = mu + scale * eps * torch.sqrt(df / v)
+        # print(z.shape,mu.shape,df.shape, logdf.shape)
+        # exit()
 
         return z, mu, logvar, df
 
