@@ -115,11 +115,11 @@ class TVAE(nn.Module):
         #    z = mu + scale * eps, where eps ~ StudentT(df, 0, 1).
         eps = dist.StudentT(df).rsample(mu.shape)
         z = mu + torch.exp(0.5 * logvar) * eps
-        print('encode x')
+        # print('encode x')
         return z, mu, logvar, df
 
     def decode(self, z):
-        print('decoding z')
+        # print('decoding z')
         z = self.post_quant_conv(z)
         x =self.decoder(z)
         return x
@@ -212,7 +212,7 @@ class AENoDiscModel(TVAE):
         recon_loss = F.mse_loss(reconstructions, inputs, reduction="mean")
         # kl_loss = student_t_kl_loss(mu, logvar, df)
         # 2) KL divergence (Monte Carlo)
-        print('computing_kl')
+        # print('computing_kl')
         kl_loss = student_t_kl_loss(mu, logvar, df, n_samples=5)
 
         loss = self.lambda_recon * recon_loss + self.lambda_kl * kl_loss

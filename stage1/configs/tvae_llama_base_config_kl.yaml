@@ -1,6 +1,6 @@
 model:
   base_learning_rate: 4.5e-4
-  target: stage1.models.ctvae.AENoDiscModel
+  target: stage1.models.stutent_vae.AENoDiscModel
   params:
     embed_dim: 4
     input_key: 'weight'
