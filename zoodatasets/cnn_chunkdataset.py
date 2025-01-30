@@ -34,7 +34,7 @@ def pad_to_chunk_multiple(x, chunk_size):
 class ZooDataset(Dataset):
     """weights dataset."""
     def __init__(self, root='zoodata', dataset="joint", split='train', topk=None, scale=1.0, transform=None, normalize=False,
-                 max_len=262144):
+                 max_len=65536):
         super(ZooDataset, self).__init__()
         #1960513
         self.topk = topk
@@ -149,7 +149,7 @@ class ZooDataset(Dataset):
                     w = 2 * (w - x_min[:, None]) / xdiff[:, None] - 1
                 w = torch.split(w, split_size_or_sections=self.chunk_size, dim=-1)
                 w = torch.cat(w, dim=0).float()
-                w = w.reshape(-1, 4, 256, 256)
+                w = w.reshape(-1, 1, 256, 256)
 
                 if self.topk is not None:
                     if self.topk > 0:
