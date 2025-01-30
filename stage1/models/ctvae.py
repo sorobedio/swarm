@@ -20,19 +20,17 @@ def student_t_kl_loss(mu, logvar, df):
     df = torch.clamp(df, min=2.1 + eps, max=50.0)
     var = torch.exp(logvar)
 
-    # KL divergence between Student-t distributions
-    # The correct formula should include:
-    # 1. The ratio of gamma functions
-    # 2. The log determinant term
-    # 3. The quadratic term
-
+    # First calculate the sum, then multiply with df to maintain dimensions
     digamma_term = torch.special.digamma((df + 1) / 2) - torch.special.digamma(df / 2)
     log_det = torch.sum(logvar, dim=[1, 2, 3])
     trace_term = torch.sum((mu ** 2 + var) / (df * var + eps), dim=[1, 2, 3])
-    df_term = df * torch.sum(torch.log1p(mu ** 2 / (df * var + eps)), dim=[1, 2, 3])
+
+    # Fix the df term by separating the multiplication
+    log_term = torch.sum(torch.log1p(mu ** 2 / (df * var + eps)), dim=[1, 2, 3])
+    df_term = df.view(df.size(0), -1)[:, 0] * log_term  # Match dimensions before multiplying
 
     kl = 0.5 * (log_det + trace_term + df_term + digamma_term)
-    return torch.mean(torch.clamp(kl, min=0.0))  # Ensure non-negativity
+    return torch.mean(torch.clamp(kl, min=0.0))
 
 
 class TVAE(nn.Module):
