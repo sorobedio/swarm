@@ -122,7 +122,7 @@ class TAutoencoder(nn.Module):
         return self.decoder.conv_out.weight
 
 
-class AENoDiscModel(Autoencoder):
+class AENoDiscModel(TAutoencoder):
     def __init__(self,ddconfig,
                  embed_dim,
                  learning_rate,
