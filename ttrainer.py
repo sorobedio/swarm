@@ -226,13 +226,16 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
 
         # Initialize tqdm progress bar for the training loop
         progress_bar = tqdm(enumerate(traindataloader), total=len(traindataloader), desc=f"Epoch {epoch + 1}")
+        print('=======entering training--looo[')
 
         for batch_idx, inputs in progress_bar:
             optimizer.zero_grad()
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
+                print('====tobloat16''')
                 loss, logs = model.training_step(inputs, batch_idx)
 
             # Backward pass and optimization step
+            print('b======backpro====')
             scaler.scale(loss).backward()
             scaler.step(optimizer)
             scaler.update()
@@ -341,7 +344,7 @@ if __name__ == "__main__":
     #     "learning_rate": 0.001,
     # })_chunk
     # seed_everything(seed=1234)
-    writer = SummaryWriter(log_dir="first_stage_llama_noreg/tensorboard_encod")
+    # writer = SummaryWriter(log_dir="first_stage_llama_noreg/tensorboard_encod")
     now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     # sys.path.append(os.getcwd())
     parser = get_parser()
