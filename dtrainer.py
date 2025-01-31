@@ -234,8 +234,10 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
 
             # Backward pass and optimization step
             scaler.scale(loss).backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=20.0)
             scaler.step(optimizer)
             scaler.update()
+
 
             train_loss += loss.item()
             total += inputs['weight'].size(0)
