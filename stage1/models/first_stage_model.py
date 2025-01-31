@@ -1,12 +1,14 @@
 import numpy as np
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from stage1.modules.modules import Encoder, Decoder
+
 from stage1.modules.distributions import DiagonalGaussianDistribution
+
 from utils.util import instantiate_from_config
 from stage1.modules.losses.CustomLosses import ChunkWiseReconLoss
+
 # Logarithmic Transform (for heavy-tailed data)
 def log_transform(x):
     return torch.sign(x) * torch.log1p(torch.abs(x))

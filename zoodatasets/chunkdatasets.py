@@ -82,35 +82,26 @@ class ZooDataset(Dataset):
         # '../Datasets/llmdata/llama-3-1-8b_layer_full.pt'
 
         # datapath = os.path.join(root, f'gemina7b_it_lora_weights.pt')
-
-
         # datapath = os.path.join(root, f'llmdata/gemini_7b_int_top_25p_attn_.pt') #12582912
         #f'../Datasets/llmdata/gemini_7b_int_top_25p_attn_.pt'
-
         #'../Datasets/llmdata/llama_3_1_8B_inst_full_block_and_ln_.pt'
-        #
+
         # datapath = os.path.join(root, f'llmdata/llama_3_-1-8b-layer_wise.pt')  # 262144
-        datapath = os.path.join(root, f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')  # 262144
+        datapath = os.path.join(root, f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
+
         # datapath = os.path.join(root, f'llmdata/llama_3_-1-3b_group_all_.pt')  # 262144
         # datapath = os.path.join(root, f'llmdata/hf_smollm_360M_group_all_.pt')  # 262144
-        #
-
         # '../Datasets/llmdata/llama_3_-1-3b_group_all_.pt'
-
-
         # datapath = os.path.join(root, f'llmdata/llama_3_1_8B_inst_full_block_and_ln_.pt')#262144
-
         # datapath = os.path.join(root, f'llmdata/llama_3_2_3B_inst_full_block_and_ln_.pt')  # 262144
         #'../Datasets/llmdata/llama_3_2_3B_inst_full_block_and_ln_.pt'
-
-
-
         # '../Datasets/llmdata/gemina7b_it_lora_weights.pt'
         #pythia_160m_full_13000_by_143000_b16_.pt'
-
         # datapath = os.path.join(root, f'modelszoo/pythia_410m_full_100000_143000.pt')  # 4401664
         #'../Datasets/modelszoo/pythia_410m_full_100000_143000.pt'
         # datapath = os.path.join(root, f'llmdata/pythia-70m-100000_143000.pt')11004164
+
+
         self.transform =  transforms.Lambda(lambda x: torch.asinh(x))
         data= self.load_data(datapath, dataset=dataset)
         # x_min, x_max = data.min(), data.max()
@@ -162,7 +153,7 @@ class ZooDataset(Dataset):
             keys = list(data)
             # keys.remove('layernorm.weight')
             # keys = ['sharegpt_cot', 'gemini_alpaca_sharegpt']
-            keys =keys[:7]
+            keys =keys[:-1]
             # print(keys)
 
             for k in keys:
