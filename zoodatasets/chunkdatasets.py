@@ -2,6 +2,7 @@ import os
 
 import torch
 import torch.nn.functional as F
+import torchvision.transforms as transforms
 import yaml
 from torch.utils.data import Dataset
 from glob import glob
