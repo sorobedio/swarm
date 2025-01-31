@@ -81,7 +81,7 @@ class AutoencoderKL(nn.Module):
         print(f"Restored from {path}")
 
     def encode(self, x):
-        x =log_transform(x)
+        # x =log_transform(x)
         h = self.encoder(x)
         moments = self.quant_conv(h)
         posterior = DiagonalGaussianDistribution(moments)
@@ -90,7 +90,7 @@ class AutoencoderKL(nn.Module):
     def decode(self, z):
         z = self.post_quant_conv(z)
         dec = self.decoder(z)
-        dec = inverse_log_transform(dec)
+        # dec = inverse_log_transform(dec)
         return dec
 
     def forward(self, input, sample_posterior=True):

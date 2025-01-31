@@ -11,6 +11,26 @@ def load_config(file_path):
     with open(file_path, "r") as f:
         return yaml.safe_load(f)
 
+
+# Logarithmic Transform (for heavy-tailed data)
+def log_transform(x):
+    return torch.sign(x) * torch.log1p(torch.abs(x))
+
+# Inverse Logarithmic Transform (recover original values)
+def inverse_log_transform(x_transformed):
+    return torch.sign(x_transformed) * (torch.expm1(torch.abs(x_transformed)))
+
+def arsh_transform(x):
+    """Applies the ArcSinh (ArSh) transformation to expand small values smoothly."""
+    return torch.asinh(x)
+
+def inverse_arsh_transform(x_transformed):
+    """Inverse of the ArcSinh (ArSh) transformation."""
+    return torch.sinh(x_transformed)
+
+
+# arsh_transform = transforms.Lambda(lambda x: torch.asinh(x))
+
 def matpadder(x, max_in=512):
     shape = x.shape
     # delta1 = max_in - shape[0]
@@ -33,7 +53,7 @@ def pad_to_chunk_multiple(x, chunk_size):
     return x
 class ZooDataset(Dataset):
     """weights dataset."""
-    def __init__(self, root='zoodata', dataset="joint", split='train', topk=None, scale=1.0, transform=None, normalize=False,
+    def __init__(self, root='zoodata', dataset="joint", split='train', topk=None, scale=1.0, transform=True, normalize=False,
                  max_len=1048576):
         super(ZooDataset, self).__init__()
         #1960513
@@ -90,7 +110,7 @@ class ZooDataset(Dataset):
         # datapath = os.path.join(root, f'modelszoo/pythia_410m_full_100000_143000.pt')  # 4401664
         #'../Datasets/modelszoo/pythia_410m_full_100000_143000.pt'
         # datapath = os.path.join(root, f'llmdata/pythia-70m-100000_143000.pt')11004164
-        self.transform = transform
+        self.transform =  transforms.Lambda(lambda x: torch.asinh(x))
         data= self.load_data(datapath, dataset=dataset)
         # x_min, x_max = data.min(), data.max()
 
@@ -127,11 +147,11 @@ class ZooDataset(Dataset):
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
-        weight = self.data[idx]
+        weight = self.data[idx]/self.scale
         if self.transform:
             weight = self.transform(weight)
 
-        weight= weight/self.scale
+        # weight= weight/self.scale
         sample = {'weight': weight, 'dataset': []}
         return sample
     def load_data(self, file, dataset='joint'):
