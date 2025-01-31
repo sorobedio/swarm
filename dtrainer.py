@@ -214,7 +214,7 @@ import torch
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 0.1
+    bloss = 1.0
     btest = 2.0
     scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
 
@@ -352,7 +352,7 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=1, normalize=None)
+                          scale=0.01, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
     traindataloader = DataLoader(trainset, shuffle=True, batch_size=16, num_workers=4,

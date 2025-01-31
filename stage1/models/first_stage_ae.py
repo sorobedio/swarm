@@ -7,6 +7,14 @@ from stage1.modules.distributions import DiagonalGaussianDistribution
 from utils.util import instantiate_from_config
 from stage1.modules.losses.CustomLosses import ChunkWiseReconLoss
 
+# Logarithmic Transform (for heavy-tailed data)
+def log_transform(x):
+    return torch.sign(x) * torch.log1p(torch.abs(x))
+
+# Inverse Logarithmic Transform (recover original values)
+def inverse_log_transform(x_transformed):
+    return torch.sign(x_transformed) * (torch.expm1(torch.abs(x_transformed)))
+
  # Define Log-Cosh Loss
 def log_cosh_loss(y_pred, y_true):
     return torch.mean(torch.log(torch.cosh(y_pred - y_true)))
