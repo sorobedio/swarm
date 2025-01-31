@@ -104,7 +104,7 @@ class ZooDataset(Dataset):
 
         x_min = -0.9140625
         x_max =1.4140625
-        # data = (data - mu) / std
+        data = (data - mu) / std
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
         # print(data[0][:20])
         # data = 2 * (data - x_min) / (x_max - x_min) - 1
