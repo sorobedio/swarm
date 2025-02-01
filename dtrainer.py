@@ -39,7 +39,7 @@ import torchvision.transforms as transforms
 
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 
 def get_parser(**parser_kwargs):
@@ -215,7 +215,7 @@ import torch
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 10.0
+    bloss = 300.0
     btest = 2.0
     scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
 
