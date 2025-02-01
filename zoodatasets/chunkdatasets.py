@@ -140,8 +140,8 @@ class ZooDataset(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
         weight = self.data[idx]/self.scale
-        if self.transform:
-            weight = self.transform(weight)
+        # if self.transform:
+        weight = self.transform(weight)
 
         # weight= weight/self.scale
         sample = {'weight': weight, 'dataset': []}

@@ -199,7 +199,7 @@ import torch
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 1.0
+    bloss = 10.0
     btest = 2.0
     scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
 
@@ -237,7 +237,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if bloss > tloss:
             bloss = tloss
             print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'miture_hf_model_llama1b_128_.pth'))
+            torch.save(model, os.path.join(args.save_path, f'miture_hf_model_llama1b_arsh_full_.pth'))
 
         # Print additional loss details
         rec_loss = logs['train/rec_loss']
@@ -248,7 +248,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         print(f'Rec Loss: {rec_loss}, KLD Loss: {kld_loss}, NLL Loss: {nnl_loss} ')
 
         # Perform model evaluation every 100 epochs
-        if (epoch + 1) % 100 == 0:
+        if (epoch + 1) % 50 == 0:
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
                 model.eval()
                 inputr, dec, _ = model(inputs)
@@ -337,10 +337,10 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=0.1, normalize=None)
+                          scale=1.0, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
-    traindataloader = DataLoader(trainset, shuffle=True, batch_size=64, num_workers=8,
+    traindataloader = DataLoader(trainset, shuffle=True, batch_size=16, num_workers=8,
                                  # collate_fn=m_collate,
                                  )
     # testdataloader = DataLoader(valset, shuffle=False, batch_size=4, num_workers=4)
