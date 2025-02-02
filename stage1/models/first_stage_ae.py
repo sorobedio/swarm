@@ -174,7 +174,7 @@ class AENoDiscModel(Autoencoder):
         inputs = self.get_input(batch, self.input_key)
         inputs, reconstructions = self(inputs)
         # loss = F.smooth_l1_loss(reconstructions, inputs, reduction='mean') * 1000.0
-        loss = F.mse_loss(reconstructions, inputs, reduction="mean")*1000.0
+        loss = F.mse_loss(reconstructions, inputs, reduction="sum")*1000.0
         # loss = log_cosh_loss(reconstructions, inputs)*1000
 
         return loss
