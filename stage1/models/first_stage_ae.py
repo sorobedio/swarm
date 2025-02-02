@@ -183,25 +183,25 @@ class AENoDiscModel(Autoencoder):
         inputs = self.get_input(batch, self.input_key)
         inputs, reconstructions = self(inputs)
         # loss = F.mse_loss(reconstructions, inputs, reduction="mean")*1000.0
-        loss = log_cosh_loss(reconstructions, inputs) 
+        loss = log_cosh_loss(reconstructions, inputs)
 
         return loss
 
     def configure_optimizers(self):
-        # optimizer = torch.optim.AdamW(list(self.encoder.parameters())+
-        #                           list(self.decoder.parameters())+
-        #                           list(self.quant_conv.parameters())+
-        #                           list(self.post_quant_conv.parameters()),
-        #                           # list(self.loss.parameters()),
-        #                           lr=self.learning_rate, betas=(0.5, 0.95), weight_decay=4e-5)
+        optimizer = torch.optim.AdamW(list(self.encoder.parameters())+
+                                  list(self.decoder.parameters())+
+                                  list(self.quant_conv.parameters())+
+                                  list(self.post_quant_conv.parameters()),
+                                  # list(self.loss.parameters()),
+                                  lr=self.learning_rate, betas=(0.5, 0.95), weight_decay=4e-5)
 
-        optimizer = torch.optim.SGD(list(self.encoder.parameters()) +
-                                    list(self.decoder.parameters()) +
-                                    list(self.quant_conv.parameters()) +
-                                    list(self.post_quant_conv.parameters()),
-                                    lr=self.learning_rate,
-                                    momentum=0.9,  # Adjust as needed
-                                    weight_decay=4e-5)
+        # optimizer = torch.optim.SGD(list(self.encoder.parameters()) +
+        #                             list(self.decoder.parameters()) +
+        #                             list(self.quant_conv.parameters()) +
+        #                             list(self.post_quant_conv.parameters()),
+        #                             lr=self.learning_rate,
+        #                             momentum=0.9,  # Adjust as needed
+        #                             weight_decay=4e-5)
 
         return optimizer
 
