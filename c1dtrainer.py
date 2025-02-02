@@ -38,7 +38,7 @@ from tqdm import tqdm
 
 from torch.optim import lr_scheduler
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 def get_parser(**parser_kwargs):
     def str2bool(v):
         if isinstance(v, bool):
