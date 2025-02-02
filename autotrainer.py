@@ -38,7 +38,7 @@ from tqdm import tqdm
 
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 
 def get_parser(**parser_kwargs):
@@ -202,7 +202,7 @@ import torch
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 100.0
+    bloss = 100000.0
     btest = 2.0
     scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
 
@@ -220,10 +220,16 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
                 loss = model.training_step(inputs, batch_idx)
 
-            # Backward pass and optimization step
-            scaler.scale(loss).backward()
-            scaler.step(optimizer)
-            scaler.update()
+            # # Backward pass and optimization step
+            # scaler.scale(loss).backward()
+            # scaler.step(optimizer)
+            # scaler.update()
+
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            optimizer.step()
+
+
 
             train_loss += loss.item()
             total += inputs['weight'].size(0)
