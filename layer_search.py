@@ -478,7 +478,7 @@ if __name__ == "__main__":
     # datapath = os.path.join(root, f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')  # 262144
     #
     print(list(weights))
-    layers = list(weights)[:7]
+    layers = list(weights)[7:14]
     # print(layers)
     wd ={}
     std = 0.013931703753769398
