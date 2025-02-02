@@ -333,6 +333,22 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
+# Logarithmic Transform (for heavy-tailed data)
+def log_transform(x):
+    return torch.sign(x) * torch.log1p(torch.abs(x))
+
+# Inverse Logarithmic Transform (recover original values)
+def inverse_log_transform(x_transformed):
+    return torch.sign(x_transformed) * (torch.expm1(torch.abs(x_transformed)))
+
+def arsh_transform(x):
+    """Applies the ArcSinh (ArSh) transformation to expand small values smoothly."""
+    return torch.asinh(x)
+
+def inverse_arsh_transform(x_transformed):
+    """Inverse of the ArcSinh (ArSh) transformation."""
+    return torch.sinh(x_transformed)
+
 # from merge_eval import slerp
 
 
@@ -433,7 +449,7 @@ if __name__ == "__main__":
 
     # 8030261248
     # chunk_size = 16384
-    scale = 0.1
+    scale = 1/128
     # chunk_size = 58720256
     chunk_size = 1048576
     # chunk_size = 65536
@@ -450,7 +466,7 @@ if __name__ == "__main__":
     # autoencoder = torch.load('./autocheckpoints/llama_model_chunk_full_block_7first.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_chunk_llama_v1.ckpt')
     # autoencoder = torch.load('./autocheckpoints/llama_model_1b_tf_block_full.pth', map_location='cpu')
-    autoencoder = torch.load('./autocheckpoints/hf_model_llama1b_1048_auto_.pth', map_location='cpu')
+    autoencoder = torch.load('./autocheckpoints/miture_hf_model_llama1b_arsh_full_.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/llama_model_1b_tf_auto_.pth')
 
     # exit()
@@ -502,6 +518,7 @@ if __name__ == "__main__":
             for w in tqdm(weight):
                 # w = (w-mu)/std
                 w = w / scale
+                w = arsh_transform(w)
                 w = w.to(device)
                 # _, x_rec, _ = autoencoder(w)
                 _, x_rec = autoencoder(w)
@@ -515,7 +532,9 @@ if __name__ == "__main__":
                 # x_rec =  autoencoder.decode(ze)
                 #
                 # x_rec=(x_rec*std)+mu
-                wl.append(x_rec.detach().cpu())
+                x_rec = xrec.detach().cpu()
+                x_rec = inverse_log_transform(x_rec)
+                wl.append(x_rec)
         # zweights[layer] = torch.cat(zp, dim=1).reshape(num_samples, -1)
         # print(len(wl))
 
