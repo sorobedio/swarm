@@ -449,7 +449,7 @@ if __name__ == "__main__":
 
     # 8030261248
     # chunk_size = 16384
-    scale = 1/128
+    scale = 0.0125
     # chunk_size = 58720256
     chunk_size = 1048576
     # chunk_size = 65536
@@ -466,7 +466,7 @@ if __name__ == "__main__":
     # autoencoder = torch.load('./autocheckpoints/llama_model_chunk_full_block_7first.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_chunk_llama_v1.ckpt')
     # autoencoder = torch.load('./autocheckpoints/llama_model_1b_tf_block_full.pth', map_location='cpu')
-    autoencoder = torch.load('./autocheckpoints/miture_hf_model_llama1b_arsh_full_.pth', map_location='cpu')
+    autoencoder = torch.load('./autocheckpoints/hf_model_llama1b_1048_auto_v.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/llama_model_1b_tf_auto_.pth')
 
     # exit()
@@ -518,10 +518,10 @@ if __name__ == "__main__":
             for w in tqdm(weight):
                 # w = (w-mu)/std
                 w = w / scale
-                w = arsh_transform(w)
+                # w = arsh_transform(w)
                 w = w.to(device)
                 # _, x_rec, _ = autoencoder(w)
-                _, x_rec, _ = autoencoder(w)
+                _, x_rec = autoencoder(w)
                 # print(prior.mean.shape, prior.std.shape)
                 # print(w.shape, x_rec.shape)
                 # exit()
@@ -533,7 +533,7 @@ if __name__ == "__main__":
                 #
                 # x_rec=(x_rec*std)+mu
                 x_rec = x_rec.detach().cpu()
-                x_rec = inverse_log_transform(x_rec)
+                # x_rec = inverse_log_transform(x_rec)
                 wl.append(x_rec)
         # zweights[layer] = torch.cat(zp, dim=1).reshape(num_samples, -1)
         # print(len(wl))
