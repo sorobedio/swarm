@@ -70,7 +70,7 @@ class Myloss(nn.Module):
         self.kl_weight = kl_weight
         # self.logvar = nn.Parameter(torch.ones(size=()) * logvar_init)
 
-    def forward(self, inputs, reconstructions, posteriors, split="train",weights=1000.0):
+    def forward(self, inputs, reconstructions, posteriors, split="train",weights=1.0):
         inputs = inputs.reshape(reconstructions.shape)
         # mask = (inputs != self.pad_value).float()
         # rec_loss = torch.abs(inputs.contiguous() -/ reconstructions.contiguous())
