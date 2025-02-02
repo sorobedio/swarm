@@ -521,8 +521,8 @@ if __name__ == "__main__":
                 w = w / scale
                 # w = arsh_transform(w)
                 w = w.to(device)
-                # _, x_rec, _ = autoencoder(w)
-                _, x_rec = autoencoder(w)
+                _, x_rec, _ = autoencoder(w)
+                # _, x_rec = autoencoder(w)
                 # print(prior.mean.shape, prior.std.shape)
                 # print(w.shape, x_rec.shape)
                 # exit()
@@ -543,7 +543,7 @@ if __name__ == "__main__":
         print(ws.shape)
         # ws = ws * std + mu
         # ws = 0.5*(ws +1)* (x_max-x_min) + x_min
-        wd[layer]=ws
+        wd[layer]=ws.reshape(1, -1)
         # # wd[layer] = slerp(0.5, weights[layer], ws)
         # # lw[layer]=ws
     print('finished encoding=========================================')
