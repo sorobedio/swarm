@@ -141,7 +141,7 @@ class ZooDataset(Dataset):
             idx = idx.tolist()
         weight = self.data[idx]/self.scale
         # if self.transform:
-        weight = self.transform(weight)
+        # weight = self.transform(weight)
 
         # weight= weight/self.scale
         sample = {'weight': weight, 'dataset': []}
@@ -153,7 +153,7 @@ class ZooDataset(Dataset):
             keys = list(data)
             # keys.remove('layernorm.weight')
             # keys = ['sharegpt_cot', 'gemini_alpaca_sharegpt']
-            keys =keys[:7]
+            keys =keys[:14]
             # print(keys)
 
             for k in keys:

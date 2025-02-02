@@ -84,6 +84,7 @@ class AutoencoderKL(nn.Module):
 
     def encode(self, x):
         # x =log_transform(x)
+        # x = torch.randn
         h = self.encoder(x)
         moments = self.quant_conv(h)
         posterior = DiagonalGaussianDistribution(moments)

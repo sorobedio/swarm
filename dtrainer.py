@@ -234,10 +234,13 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
                 loss, logs = model.training_step(inputs, batch_idx)
 
             # Backward pass and optimization step
-            scaler.scale(loss).backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=20.0)
-            scaler.step(optimizer)
-            scaler.update()
+            # scaler.scale(loss).backward()
+            # # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=20.0)
+            # scaler.step(optimizer)
+            # scaler.update()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            optimizer.step()
 
 
             train_loss += loss.item()
