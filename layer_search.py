@@ -466,9 +466,9 @@ if __name__ == "__main__":
     # autoencoder = torch.load('./autocheckpoints/llama_model_chunk_full_block_7first.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_chunk_llama_v1.ckpt')
     # autoencoder = torch.load('./autocheckpoints/llama_model_1b_tf_block_full.pth', map_location='cpu')
-    autoencoder = torch.load('./autocheckpoints/hf_model_llama1b_1048_auto_v.pth', map_location='cpu')
-    torch.save(autoencoder.state_dict(), f'checkpoints/stage1/llama_model_1b_tf_auto_.pth')
-
+    autoencoder = torch.load('./autocheckpoints/llama_tf_block_chunk_c1d.pth', map_location='cpu')
+    # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/llama_model_1b_tf_auto_.pth')
+    #
     # exit()
 
     autoencoder.to(device)
@@ -517,6 +517,7 @@ if __name__ == "__main__":
             zp =[]
             for w in tqdm(weight):
                 # w = (w-mu)/std
+                w = w.reshape(-1, 128, 8192)
                 w = w / scale
                 # w = arsh_transform(w)
                 w = w.to(device)
