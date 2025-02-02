@@ -521,7 +521,7 @@ if __name__ == "__main__":
                 w = arsh_transform(w)
                 w = w.to(device)
                 # _, x_rec, _ = autoencoder(w)
-                _, x_rec = autoencoder(w)
+                _, x_rec, _ = autoencoder(w)
                 # print(prior.mean.shape, prior.std.shape)
                 # print(w.shape, x_rec.shape)
                 # exit()
