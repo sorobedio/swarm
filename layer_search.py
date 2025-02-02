@@ -532,7 +532,7 @@ if __name__ == "__main__":
                 # x_rec =  autoencoder.decode(ze)
                 #
                 # x_rec=(x_rec*std)+mu
-                x_rec = xrec.detach().cpu()
+                x_rec = x_rec.detach().cpu()
                 x_rec = inverse_log_transform(x_rec)
                 wl.append(x_rec)
         # zweights[layer] = torch.cat(zp, dim=1).reshape(num_samples, -1)
