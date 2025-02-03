@@ -120,7 +120,7 @@ class ZooDataset(Dataset):
                         wl.append(w)
                 else:
                     wl.append(w)
-            data = torch.cat(wl, dim=0).to(torch.bfloat16)
+            data = torch.cat(wl, dim=0)
         else:
             w = data[dataset]
             w = pad_to_chunk_multiple(w, chunk_size=self.chunk_size)

@@ -216,8 +216,10 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
     bloss = 100000.0
+    use_amp=True
     btest = 2.0
-    scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
+    # scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
+    scaler = torch.amp.GradScaler('cuda', enabled=use_amp)
 
     for epoch in range(n_epochs):
         print(f'\nEpoch: {epoch + 1}/{n_epochs}')
