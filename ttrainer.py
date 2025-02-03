@@ -28,13 +28,12 @@ from helpers.misc import progress_bar
 # from data.base import Txt2ImgIterableBaseDataset
 from utils.util import instantiate_from_config
 
-
+# train.py
 import wandb
 import random  # for demo script
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
-import torchvision.transforms as transforms
 # wandb.login()
 
 
@@ -94,7 +93,7 @@ def get_parser(**parser_kwargs):
         help="paths to base configs. Loaded from left-to-right. "
              "Parameters can be overwritten or added with command-line options of the form `--key value`.",
 
-        default="stage1/configs/llama_block_config_kl.yaml",
+        default="stage1/configs/tvae_llama_base_config_kl.yaml",
         # default="stage1/configs/vae_base_config_kl.yaml",
         #mini_llama_norm_config.yaml  small_llama_config_kl.yaml
         # default="stage1/configs/llama_attn_base_config_kl.yaml",
@@ -215,7 +214,7 @@ import torch
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 300.0
+    bloss = 0.1
     btest = 2.0
     scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
 
@@ -227,21 +226,19 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
 
         # Initialize tqdm progress bar for the training loop
         progress_bar = tqdm(enumerate(traindataloader), total=len(traindataloader), desc=f"Epoch {epoch + 1}")
+        # print('=======entering training--looo[')
 
         for batch_idx, inputs in progress_bar:
             optimizer.zero_grad()
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
+                # print('====tobloat16''')
                 loss, logs = model.training_step(inputs, batch_idx)
 
             # Backward pass and optimization step
-            # scaler.scale(loss).backward()
-            # # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=20.0)
-            # scaler.step(optimizer)
-            # scaler.update()
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-            optimizer.step()
-
+            # print('b======backpro====')
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
 
             train_loss += loss.item()
             total += inputs['weight'].size(0)
@@ -258,12 +255,12 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if bloss > tloss:
             bloss = tloss
             print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama1b_1048_base_.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama1b_1048_tvae_.pth'))
 
         # Print additional loss details
-        rec_loss = logs['train/rec_loss']
-        kld_loss = logs['train/kl_loss']
-        nnl_loss = logs['train/nll_loss']
+        rec_loss = logs['recon_loss']
+        kld_loss = logs['kl_loss']
+        nnl_loss = logs['loss']
         # log_var = logs['train/logvar']
         print(f'Best Training Loss: {bloss:.4f}, LR: {optimizer.param_groups[-1]["lr"]:.6f}')
         print(f'Rec Loss: {rec_loss}, KLD Loss: {kld_loss}, NLL Loss: {nnl_loss}')
@@ -272,8 +269,8 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if (epoch + 1) % 10 == 0:
             with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
                 model.eval()
-                inputr, dec, _ = model(inputs)
-                print(f'Input: {inputr[0][:10]}, Dec: {dec[0][:10]}')
+                inputr, dec, _, _, _ = model(inputs)
+                print(f'Input: {inputr.detach().cpu()[0][:10]}, Dec: {dec.detach().cpu()[0][:10]}')
                 # recon_error = torch.nn.functional.mse_loss(dec, inputr)
                 # print(f'Recon Error: {recon_error}')
 
@@ -347,7 +344,7 @@ if __name__ == "__main__":
     #     "learning_rate": 0.001,
     # })_chunk
     # seed_everything(seed=1234)
-    writer = SummaryWriter(log_dir="first_stage_llama_noreg/tensorboard_encod")
+    # writer = SummaryWriter(log_dir="first_stage_llama_noreg/tensorboard_encod")
     now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     # sys.path.append(os.getcwd())
     parser = get_parser()
@@ -358,7 +355,7 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=0.0125, normalize=None)
+                          scale=1, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
     traindataloader = DataLoader(trainset, shuffle=True, batch_size=16, num_workers=4,
@@ -398,7 +395,7 @@ if __name__ == "__main__":
     #                                  cycle_mult=1, gamma=1.0, warmup_steps=0,
     #                                  last_epoch=-1)
     # scheduler = WarmUpAndDecayLR(optimizer, warmup_steps=200, cosine_steps=200, gamma=0.1, T_mult=1)
-    criterion = model.loss
+    # criterion = model.loss
     # train(model, optimizer, args.n_epochs, traindataloader, testdataloader)
     train(model, optimizer, args.n_epochs, traindataloader, args=args)
 

@@ -1,44 +1,61 @@
 import numpy as np
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from stage1.modules.lemodule  import LinearEncoder, LinearDecoder
-from stage1.modules.conv1d_distributions import DiagonalGaussianDistribution
+from stage1.modules.modules import Encoder, Decoder
+from stage1.modules.mituresdistributions import MixtureGaussianDistribution
 from utils.util import instantiate_from_config
 from stage1.modules.losses.CustomLosses import ChunkWiseReconLoss
 
-class AutoencoderKL(nn.Module):
+class AutoencoderMoG(nn.Module):
     def __init__(self,
                  ddconfig,
                  lossconfig,
                  embed_dim,
+                 num_mixtures,
                  learning_rate,
                  ckpt_path=None,
                  ignore_keys=[],
                  input_key="weight",
                  cond_key="dataset",
                  device='cuda',
+                 latent_shape=None,
                  monitor=None,
                  ):
         super().__init__()
-        self.devices =device
+        self.devices = device
         self.cond_key = cond_key
-        self.learning_rate =  learning_rate
+        self.learning_rate = learning_rate
         self.input_key = input_key
-        self.encoder = LinearEncoder(**ddconfig)
-        self.decoder = LinearDecoder(**ddconfig)
+        self.encoder = Encoder(**ddconfig)
+        self.decoder = Decoder(**ddconfig)
         self.loss = instantiate_from_config(lossconfig)
-        # self.chunk_loss = ChunkWiseReconLoss(step_size=4096)
+        self.chunk_loss = ChunkWiseReconLoss(step_size=128)
+        self.num_mixtures = num_mixtures
+
         assert ddconfig["double_z"]
-        self.quant_conv = torch.nn.Conv1d(2*ddconfig["z_channels"], 2*embed_dim, 1)
-        self.post_quant_conv = torch.nn.Conv1d(embed_dim, 2*ddconfig["z_channels"], 1)
+        # Modified to output parameters for mixture of Gaussians
+        self.quant_conv = torch.nn.Conv2d(
+            2 * ddconfig["z_channels"],
+            num_mixtures * (2 * embed_dim + 1),  # Means, log-variances, and mixture weights
+            kernel_size=1
+        )
+        self.post_quant_conv = torch.nn.Conv2d(embed_dim, ddconfig["z_channels"], kernel_size=1)
         self.embed_dim = embed_dim
 
         if monitor is not None:
             self.monitor = monitor
         if ckpt_path is not None:
             self.init_from_ckpt(ckpt_path, ignore_keys=ignore_keys)
+
+    def xavier_initialize(self, model):
+        for name, param in model.named_parameters():
+            if "weight" in name and param.dim() > 1:
+                nn.init.xavier_uniform_(param)
+                print(f"Xavier initialized: {name}")
+            elif "bias" in name:
+                nn.init.zeros_(param)
+                print(f"Bias initialized to zero: {name}")
 
     def init_from_ckpt(self, path, ignore_keys=list()):
         sd = torch.load(path, map_location="cpu")
@@ -48,15 +65,26 @@ class AutoencoderKL(nn.Module):
         for k in keys:
             for ik in ignore_keys:
                 if k.startswith(ik):
-                    print("Deleting key {} from state_dict.".format(k))
+                    print(f"Deleting key {k} from state_dict.")
                     del sd[k]
         self.load_state_dict(sd, strict=False)
         print(f"Restored from {path}")
 
     def encode(self, x):
         h = self.encoder(x)
-        moments = self.quant_conv(h)
-        posterior = DiagonalGaussianDistribution(moments)
+        params = self.quant_conv(h)
+
+        # Split into mixture components: means, log-variances, and weights
+        params = params.view(params.shape[0], self.num_mixtures, -1, *params.shape[2:])
+        means, log_vars, log_weights = torch.split(params, [self.embed_dim, self.embed_dim, 1], dim=2)
+
+        # print(means.shape, log_vars.shape, log_weights.shape)
+        # print('*************************************************************')
+
+        # Normalize log weights to obtain valid probabilities
+        log_weights = log_weights - torch.logsumexp(log_weights, dim=1, keepdim=True)
+        # print(log_weights.shape)
+        posterior = MixtureGaussianDistribution(means, log_vars, log_weights)  # Custom class
         return posterior
 
     def decode(self, z):
@@ -85,16 +113,13 @@ class AutoencoderKL(nn.Module):
         reconstructions, posterior = self(inputs)
 
         if optimizer_idx == 0:
-            # train encoder+decoder+logvar
             aeloss, log_dict_ae = self.loss(inputs, reconstructions, posterior, optimizer_idx, self.global_step,
                                             last_layer=self.get_last_layer(), split="train")
             return aeloss
 
         if optimizer_idx == 1:
-            # train the discriminator
             discloss, log_dict_disc = self.loss(inputs, reconstructions, posterior, optimizer_idx, self.global_step,
                                                 last_layer=self.get_last_layer(), split="train")
-
             return discloss
 
     def validation_step(self, batch, batch_idx):
@@ -113,9 +138,9 @@ class AutoencoderKL(nn.Module):
 
     def configure_optimizers(self):
         lr = self.learning_rate
-        opt_ae = torch.optim.Adam(list(self.encoder.parameters())+
-                                  list(self.decoder.parameters())+
-                                  list(self.quant_conv.parameters())+
+        opt_ae = torch.optim.Adam(list(self.encoder.parameters()) +
+                                  list(self.decoder.parameters()) +
+                                  list(self.quant_conv.parameters()) +
                                   list(self.post_quant_conv.parameters()),
                                   lr=lr, betas=(0.5, 0.9))
         opt_disc = torch.optim.Adam(self.loss.discriminator.parameters(),
@@ -128,11 +153,15 @@ class AutoencoderKL(nn.Module):
 
 
 
-class VAENoDiscModel(AutoencoderKL):
+
+class VAENoDiscModel(AutoencoderMoG):
     def __init__(self,ddconfig,
                  lossconfig,
+
                  embed_dim,
                  learning_rate,
+                 num_mixtures,
+                 beta_scheduler_config=None,
                  ckpt_path=None,
                  ignore_keys=[],
                  input_key="weight",
@@ -142,17 +171,36 @@ class VAENoDiscModel(AutoencoderKL):
                  ):
         super().__init__(ddconfig=ddconfig, lossconfig=lossconfig, embed_dim=embed_dim,
                          ckpt_path=ckpt_path, ignore_keys=ignore_keys, input_key=input_key,
+                         num_mixtures=num_mixtures,
                          cond_key= cond_key, learning_rate=learning_rate)
         self.devices = device
+        self.is_kl_beta = False
+        self.gl_step=0
+        if beta_scheduler_config is not None:
+            self.is_kl_beta = True
+            self.beta_scheduler = instantiate_from_config(beta_scheduler_config)  # annealing of temp
+
+    def beta_scheduling(self, global_step):
+        self.loss.kl_weight = self.beta_scheduler.get_beta(global_step)
 
     def training_step(self, batch, batch_idx):
-
+        if self.is_kl_beta:
+            self.beta_scheduling(self.gl_step)
         inputs, reconstructions, posterior = self(batch)
         # reconstructions
-        # mse = F.mse_loss(inputs, reconstructions)
+        mse = F.mse_loss(inputs, reconstructions)
         # cmse = self.chunk_loss(inputs, reconstructions)
         aeloss, log_dict_ae = self.loss(inputs, reconstructions, posterior,  split="train")
-        loss = aeloss
+        loss = aeloss# +mse*1000
+        self.gl_step += 1
+        # print(f"inputs: {inputs[0][:20]}")
+        # print(f"reconstructions: {reconstructions[0][:20]}")
+        # diff = inputs[0][:20] - reconstructions[0][:20]
+        # print(f'diff: {diff}')
+        # input_mean = inputs.mean().item()
+        # recon_mean = reconstructions.mean().item()
+        # print(f"Input Mean: {input_mean}, Reconstruction Mean: {recon_mean}")
+
         return loss, log_dict_ae
 
     def validation_step(self, batch, batch_idx):
@@ -165,11 +213,12 @@ class VAENoDiscModel(AutoencoderKL):
         return aeloss
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(list(self.encoder.parameters())+
+        optimizer = torch.optim.AdamW(list(self.encoder.parameters())+
                                   list(self.decoder.parameters())+
                                   list(self.quant_conv.parameters())+
                                   list(self.post_quant_conv.parameters()),
-                                  lr=self.learning_rate, betas=(0.5, 0.9))
+                                  # list(self.loss.parameters()),
+                                  lr=self.learning_rate, betas=(0.5, 0.95), weight_decay=4e-5)
         return optimizer
 
 

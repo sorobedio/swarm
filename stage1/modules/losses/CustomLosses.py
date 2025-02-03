@@ -55,53 +55,87 @@ class NopaddingLoss(nn.Module):
         return loss, log
 
 
+ # Define Log-Cosh Loss
+def log_cosh_loss(y_pred, y_true):
+    return torch.mean(torch.log(torch.cosh(y_pred - y_true)))
+
+# Example usage in a training loop
+# reconstruction_loss = log_cosh_loss(predicted_output, target_output)
+
+
 class Myloss(nn.Module):
+    def __init__(self, logvar_init=0.0, kl_weight=1.0):
+
+        super().__init__()
+        self.kl_weight = kl_weight
+        # self.logvar = nn.Parameter(torch.ones(size=()) * logvar_init)
+
+    def forward(self, inputs, reconstructions, posteriors, split="train",weights=1.0):
+        inputs = inputs.reshape(reconstructions.shape)
+        # mask = (inputs != self.pad_value).float()
+        # rec_loss = torch.abs(inputs.contiguous() -/ reconstructions.contiguous())
+        # rec_loss = (inputs.contiguous() - reconstructions.contiguous())**2
+        # rec_loss=  F.smooth_l1_loss(reconstructions, inputs, reduction='mean')*1000.0
+        rec_loss =   F.mse_loss(reconstructions, inputs, reduction="sum")*weights
+        # loss = F.mse_loss(reconstructions, inputs, reduction="mean")
+        # self.logvar.data.clamp_(min=-30, max=30)
+
+        # nll_loss = rec_loss / (torch.exp(self.logvar)*2) + self.logvar*0.5
+        nll_loss = rec_loss
+        weighted_nll_loss = nll_loss
+        # if weights is not None:
+        #     weighted_nll_loss = weights*nll_loss
+        # weighted_nll_loss = torch.sum(weighted_nll_loss) / weighted_nll_loss.shape[0]
+        # nll_loss = torch.sum(nll_loss) / nll_loss.shape[0]
+        kl_loss = posteriors.kl()
+        # kl_loss = torch.sum(kl_loss) / kl_loss.shape[0]
+        loss = weighted_nll_loss + self.kl_weight * kl_loss.mean()
+        # loss = 100*F.mse_loss(inputs.contiguous(), reconstructions.contiguous()) +self.kl_weight * kl_loss.mean()
+
+        log = {"{}/total_loss".format(split): loss.clone().detach(),
+               # "{}/logvar".format(split): self.logvar.detach(),
+               "{}/kl_loss".format(split): kl_loss.detach().mean()*self.kl_weight,
+               "{}/nll_loss".format(split): nll_loss.detach(),
+               "{}/rec_loss".format(split): rec_loss.detach(),
+               }
+
+        return loss, log
+
+
+
+
+class cshloss(nn.Module):
     def __init__(self, logvar_init=0.0, kl_weight=1.0):
 
         super().__init__()
         self.kl_weight = kl_weight
         self.logvar = nn.Parameter(torch.ones(size=()) * logvar_init)
 
-    def forward(self, inputs, reconstructions, posteriors, split="train",weights=None):
-        inputs = inputs.reshape(reconstructions.shape)
-        # mask = (inputs != self.pad_value).float()
-        # rec_loss = torch.abs(inputs.contiguous() -/ reconstructions.contiguous())
-        rec_loss = (inputs.contiguous() - reconstructions.contiguous())**2
-        self.logvar.data.clamp_(min=-2, max=2)
+    def forward(self, inputs, reconstructions, posteriors, split="train",weights=1000.0):
+        reconstructions = reconstructions.reshape(inputs.shape)
+        # rec_loss = (inputs.contiguous() - reconstructions.contiguous())**2
+        rec_loss =  log_cosh_loss(reconstructions, inputs)
+        self.logvar.data.clamp_(min=-30, max=30)
 
         # nll_loss = rec_loss / (torch.exp(self.logvar)*2) + self.logvar*0.5
         nll_loss = rec_loss
         weighted_nll_loss = nll_loss
         if weights is not None:
             weighted_nll_loss = weights*nll_loss
-        weighted_nll_loss = torch.sum(weighted_nll_loss) / weighted_nll_loss.shape[0]
-        nll_loss = torch.sum(nll_loss) / nll_loss.shape[0]
-        kl_loss = posteriors.kl()
-        kl_loss = torch.sum(kl_loss) / kl_loss.shape[0]
-        loss = weighted_nll_loss + self.kl_weight * kl_loss
-        # loss = 100*F.mse_loss(inputs.contiguous(), reconstructions.contiguous()) +self.kl_weight * kl_loss.mean()
-
-        log = {"{}/total_loss".format(split): loss.clone().detach().mean(),"{}/logvar".format(split): self.logvar.detach(),
-               "{}/kl_loss".format(split): kl_loss.detach().mean(), "{}/nll_loss".format(split): nll_loss.detach().mean(),
-               "{}/rec_loss".format(split): rec_loss.detach().mean(),
-               }
-        #
-        # nll_loss = rec_loss
-        # weighted_nll_loss = nll_loss
-        # if weights is not None:
-        #     weighted_nll_loss = weights * nll_loss
         # weighted_nll_loss = torch.sum(weighted_nll_loss) / weighted_nll_loss.shape[0]
         # nll_loss = torch.sum(nll_loss) / nll_loss.shape[0]
-        # kl_loss = posteriors.kl()
+        kl_loss = posteriors.kl()
         # kl_loss = torch.sum(kl_loss) / kl_loss.shape[0]
-        # loss = weighted_nll_loss + self.kl_weight * kl_loss
-        #
-        # log = {"{}/total_loss".format(split): loss.clone().detach().mean(),
-        #        "{}/logvar".format(split): self.logvar.detach(),
-        #        "{}/kl_loss".format(split): kl_loss.detach().mean(),
-        #        "{}/nll_loss".format(split): nll_loss.detach().mean(),
-        #        "{}/rec_loss".format(split): rec_loss.detach().mean(),
-        #        }
+        loss = weighted_nll_loss + self.kl_weight * kl_loss.mean()
+        # loss = 100*F.mse_loss(inputs.contiguous(), reconstructions.contiguous()) +self.kl_weight * kl_loss.mean()
+
+        log = {"{}/total_loss".format(split): loss.clone().detach(),
+               "{}/logvar".format(split): self.logvar.detach(),
+               "{}/kl_loss".format(split): kl_loss.detach().mean()*self.kl_weight,
+               "{}/nll_loss".format(split): nll_loss.detach()*1000.0,
+               "{}/rec_loss".format(split): rec_loss.detach()*1000.0,
+               }
+
         return loss, log
 
 

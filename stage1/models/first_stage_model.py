@@ -1,12 +1,21 @@
 import numpy as np
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from stage1.modules.modules import Encoder, Decoder
+
 from stage1.modules.distributions import DiagonalGaussianDistribution
+
 from utils.util import instantiate_from_config
 from stage1.modules.losses.CustomLosses import ChunkWiseReconLoss
+
+# Logarithmic Transform (for heavy-tailed data)
+def log_transform(x):
+    return torch.sign(x) * torch.log1p(torch.abs(x))
+
+# Inverse Logarithmic Transform (recover original values)
+def inverse_log_transform(x_transformed):
+    return torch.sign(x_transformed) * (torch.expm1(torch.abs(x_transformed)))
 
 class AutoencoderKL(nn.Module):
     def __init__(self,
@@ -74,6 +83,8 @@ class AutoencoderKL(nn.Module):
         print(f"Restored from {path}")
 
     def encode(self, x):
+        # x =log_transform(x)
+        # x = torch.randn
         h = self.encoder(x)
         moments = self.quant_conv(h)
         posterior = DiagonalGaussianDistribution(moments)
@@ -82,6 +93,7 @@ class AutoencoderKL(nn.Module):
     def decode(self, z):
         z = self.post_quant_conv(z)
         dec = self.decoder(z)
+        # dec = inverse_log_transform(dec)
         return dec
 
     def forward(self, input, sample_posterior=True):
@@ -206,6 +218,14 @@ class VAENoDiscModel(AutoencoderKL):
         return aeloss
 
     def configure_optimizers(self):
+
+        # optimizer = torch.optim.SGD(list(self.encoder.parameters()) +
+        #                             list(self.decoder.parameters()) +
+        #                             list(self.quant_conv.parameters()) +
+        #                             list(self.post_quant_conv.parameters()),
+        #                             lr=self.learning_rate,
+        #                             momentum=0.9,  # Adjust as needed
+        #                             weight_decay=4e-5)
         optimizer = torch.optim.AdamW(list(self.encoder.parameters())+
                                   list(self.decoder.parameters())+
                                   list(self.quant_conv.parameters())+

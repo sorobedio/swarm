@@ -32,12 +32,13 @@ from utils.util import instantiate_from_config
 import wandb
 import random  # for demo script
 from torch.utils.tensorboard import SummaryWriter
+from tqdm import tqdm
 
 # wandb.login()
 
 from torch.optim import lr_scheduler
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "5"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 def get_parser(**parser_kwargs):
     def str2bool(v):
         if isinstance(v, bool):
@@ -201,7 +202,7 @@ def nondefault_trainer_args(opt):
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 100000.0
+    bloss = 50000.0
     btest = 2.0
     cr =[]
     # schedulers = lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 5, 5)
@@ -212,12 +213,14 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         train_loss = 0
         total = 0
         idx = 0
-        for batch_idx, inputs in enumerate(traindataloader):
+        # Initialize tqdm progress bar for the training loop
+        progress_bar = tqdm(enumerate(traindataloader), total=len(traindataloader), desc=f"Epoch {epoch + 1}")
+        for batch_idx, inputs in progress_bar:
             # input()
             optimizer.zero_grad()
-            # with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
-            #     loss, logs = model.training_step(inputs, batch_idx)
-            loss, logs = model.training_step(inputs, batch_idx)
+            with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
+                loss, logs = model.training_step(inputs, batch_idx)
+            # loss, logs = model.training_step(inputs, batch_idx)
 
             # scaler.scale(loss).backward()
             # scaler.step(optimizer)
@@ -226,18 +229,28 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
             optimizer.step()
             # schedulers.step()
             train_loss += loss.item()
+            # Option 1: Using norm clipping
+            # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=20.0)
 
-            curr_lr = optimizer.param_groups[-1]['lr']
-            total += inputs['weight'].size(0)
-            progress_bar(batch_idx, len(traindataloader), 'Loss: %.6f |'
-                         % (train_loss / (batch_idx + 1)))
+            # Option 2: Using value clipping
+            # torch.nn.utils.clip_grad_value_(model.parameters(), clip_value=20.0)
+
+
+
+            # Update tqdm progress bar
+            progress_bar.set_postfix({
+                'Loss': f"{train_loss / (batch_idx + 1):.4f}",
+                'LR': f"{optimizer.param_groups[-1]['lr']:.6f}"
+            })
             idx = batch_idx + 1
-            scheduler.step()
+            # scheduler.step()
+            #0.3620,  0.2764, -0.0719, -0.1970,  0.2611, -0.3565, -0.1923, -0.3042,
+
 
         tloss = (train_loss / idx)
-        scheduler.step()
+        # scheduler.step()
         # Log loss and accuracy to TensorBoard
-        writer.add_scalar("Loss/train", tloss, epoch)
+        # writer.add_scalar("Loss/train", tloss, epoch)
         # schedulers.step()
         # btst = evaluate(model, traindataloader)
         # print(f'current best test avg  loss: {btest}')
@@ -248,11 +261,21 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None):
         if bloss > tloss:
             bloss = tloss
             print(f'saving best training loss is:{bloss}')
-            torch.save(model, os.path.join(args.save_path,f'llama_full_chunk_c1d.pth'))
+            torch.save(model, os.path.join(args.save_path,f'llama_tf_block_chunk_c1d.pth'))
             # torch.save(model.state_dict(), os.path.join(args.save_path, f'llama_3_1_8B_models_ffn_l-30.ckpt'))
-        print(f'best training loss is:{bloss}  lr={curr_lr}')
+        rec_loss =logs['train/rec_loss']
+        kld_loss =logs['train/kl_loss']
+        print(f'best training loss is:{bloss}    rec_loss={rec_loss} kld_loss={kld_loss}')
+        if (epoch+1) % 10 == 0:
+            with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
+                model.eval()
+                inputr, dec, prior = model(inputs)
+                print(f'input:{inputr[0][0][:10].detach().cpu()}, dec:{dec[0][:10].detach().cpu()}')
+                print(f'mean:{inputr.mean(dim=0)[0][:10].cpu()}, std: {prior.std[0][0][:10]}')
+                # recon_error = F.mse_loss(dec, inputr)
+                # print(f'recon_error:{recon_error}')
 
-# Llama-3.2-1B-Inst_top_2tf_.pth to test gpt2_full_.pth
+        # Llama-3.2-1B-Inst_top_2tf_.pth to test gpt2_full_.pth
 
 
 def evaluate(model , testdataloader):
@@ -322,10 +345,10 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=10, normalize=None)
+                          scale=0.0125, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
-    traindataloader = DataLoader(trainset, shuffle=True, batch_size=20, num_workers=4,
+    traindataloader = DataLoader(trainset, shuffle=True, batch_size=32, num_workers=4,
                                  # collate_fn=m_collate,
                                  )
     # testdataloader = DataLoader(valset, shuffle=False, batch_size=4, num_workers=4)
@@ -361,4 +384,5 @@ if __name__ == "__main__":
     criterion = model.loss
     # train(model, optimizer, args.n_epochs, traindataloader, testdataloader)
     train(model, optimizer, args.n_epochs, traindataloader)
+
 

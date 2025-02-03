@@ -230,7 +230,7 @@ class Encoder(nn.Module):
         #adapt input shape
         x = x.reshape(-1, self.in_ch, self.in_dim)
         x = self.fc_in(x)
-        x = F.leaky_relu(x)
+        # x = F.leaky_relu(x)
         x = x.reshape(-1, self.channels,  self.resolution)
         # downsampling
         hs = [self.conv_in(x)]

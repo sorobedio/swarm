@@ -3,7 +3,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from stage1.modules.lemodule  import LinearEncoder, LinearDecoder
+from stage1.modules.conv1_encoding import Encoder, Decoder
 from stage1.modules.conv1d_distributions import DiagonalGaussianDistribution
 from utils.util import instantiate_from_config
 from stage1.modules.losses.CustomLosses import ChunkWiseReconLoss
@@ -26,13 +26,13 @@ class AutoencoderKL(nn.Module):
         self.cond_key = cond_key
         self.learning_rate =  learning_rate
         self.input_key = input_key
-        self.encoder = LinearEncoder(**ddconfig)
-        self.decoder = LinearDecoder(**ddconfig)
+        self.encoder = Encoder(**ddconfig)
+        self.decoder = Decoder(**ddconfig)
         self.loss = instantiate_from_config(lossconfig)
         # self.chunk_loss = ChunkWiseReconLoss(step_size=4096)
         assert ddconfig["double_z"]
         self.quant_conv = torch.nn.Conv1d(2*ddconfig["z_channels"], 2*embed_dim, 1)
-        self.post_quant_conv = torch.nn.Conv1d(embed_dim, 2*ddconfig["z_channels"], 1)
+        self.post_quant_conv = torch.nn.Conv1d(embed_dim, ddconfig["z_channels"], 1)
         self.embed_dim = embed_dim
 
         if monitor is not None:
@@ -53,10 +53,29 @@ class AutoencoderKL(nn.Module):
         self.load_state_dict(sd, strict=False)
         print(f"Restored from {path}")
 
+    def adaptive_mesh(self, sigma):
+        """
+        Moving Mesh Adaptation: Adjusts latent sampling dynamically per sample
+        without batch-wide dependencies.
+        """
+        batch_size = sigma.shape[0]
+        monitor_func = torch.zeros_like(sigma)  # Ensure same shape as sigma
+
+        # Compute per-sample gradient correctly
+        for i in range(batch_size):
+            grad_i = torch.autograd.grad(sigma[i].sum(), sigma[i], retain_graph=True, create_graph=True)[0]
+            monitor_func[i] = torch.abs(grad_i) + 1e-4  # Store per-sample gradients
+
+        # Normalize per sample
+        adaptive_factor = monitor_func / (monitor_func.mean(dim=(1, 2), keepdim=True) + 1e-6)
+
+        return sigma * adaptive_factor  # Warps latent distribution
+
     def encode(self, x):
         h = self.encoder(x)
         moments = self.quant_conv(h)
         posterior = DiagonalGaussianDistribution(moments)
+        posterior.std = self.adaptive_mesh(posterior.std)  # Apply adaptive mesh refinement
         return posterior
 
     def decode(self, z):
@@ -152,7 +171,7 @@ class VAENoDiscModel(AutoencoderKL):
         # mse = F.mse_loss(inputs, reconstructions)
         # cmse = self.chunk_loss(inputs, reconstructions)
         aeloss, log_dict_ae = self.loss(inputs, reconstructions, posterior,  split="train")
-        loss = aeloss
+        loss = aeloss #+ cmse
         return loss, log_dict_ae
 
     def validation_step(self, batch, batch_idx):

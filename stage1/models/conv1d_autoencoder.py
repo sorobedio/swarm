@@ -3,15 +3,19 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from stage1.modules.lemodule  import LinearEncoder, LinearDecoder
+from stage1.modules.conv1_encoding import Encoder, Decoder
 from stage1.modules.conv1d_distributions import DiagonalGaussianDistribution
 from utils.util import instantiate_from_config
 from stage1.modules.losses.CustomLosses import ChunkWiseReconLoss
 
-class AutoencoderKL(nn.Module):
+
+ # Define Log-Cosh Loss
+def log_cosh_loss(y_pred, y_true):
+    return torch.mean(torch.log(torch.cosh(y_pred - y_true)))
+
+class Autoencoder(nn.Module):
     def __init__(self,
                  ddconfig,
-                 lossconfig,
                  embed_dim,
                  learning_rate,
                  ckpt_path=None,
@@ -26,13 +30,11 @@ class AutoencoderKL(nn.Module):
         self.cond_key = cond_key
         self.learning_rate =  learning_rate
         self.input_key = input_key
-        self.encoder = LinearEncoder(**ddconfig)
-        self.decoder = LinearDecoder(**ddconfig)
-        self.loss = instantiate_from_config(lossconfig)
-        # self.chunk_loss = ChunkWiseReconLoss(step_size=4096)
+        self.encoder = Encoder(**ddconfig)
+        self.decoder = Decoder(**ddconfig)
         assert ddconfig["double_z"]
-        self.quant_conv = torch.nn.Conv1d(2*ddconfig["z_channels"], 2*embed_dim, 1)
-        self.post_quant_conv = torch.nn.Conv1d(embed_dim, 2*ddconfig["z_channels"], 1)
+        self.quant_conv = torch.nn.Conv1d(2*ddconfig["z_channels"], embed_dim, 1)
+        self.post_quant_conv = torch.nn.Conv1d(embed_dim, ddconfig["z_channels"], 1)
         self.embed_dim = embed_dim
 
         if monitor is not None:
@@ -54,10 +56,11 @@ class AutoencoderKL(nn.Module):
         print(f"Restored from {path}")
 
     def encode(self, x):
+        # print(x.dtype)
         h = self.encoder(x)
-        moments = self.quant_conv(h)
-        posterior = DiagonalGaussianDistribution(moments)
-        return posterior
+        z= self.quant_conv(h)
+
+        return z
 
     def decode(self, z):
         z = self.post_quant_conv(z)
@@ -67,49 +70,32 @@ class AutoencoderKL(nn.Module):
     def forward(self, input, sample_posterior=True):
         if isinstance(input, dict):
             input = input[self.input_key].to(self.devices)
-        posterior = self.encode(input)
-        if sample_posterior:
-            z = posterior.sample()
-        else:
-            z = posterior.mode()
+        z = self.encode(input)
+
         dec = self.decode(z)
         dec = dec.reshape(input.shape)
-        return input, dec, posterior
+        return input, dec
 
     def get_input(self, batch, k):
         x = batch[k].to(self.devices)
         return x
 
     def training_step(self, batch, batch_idx, optimizer_idx):
-        inputs = self.get_input(batch, self.input_key)
-        reconstructions, posterior = self(inputs)
+        inputs, reconstructions = self(batch)
+        # reconstructions
+        # loss = log_cosh_loss(reconstructions, inputs)*1000.0
+        loss = F.mse_loss(inputs, reconstructions) * 1000
 
-        if optimizer_idx == 0:
-            # train encoder+decoder+logvar
-            aeloss, log_dict_ae = self.loss(inputs, reconstructions, posterior, optimizer_idx, self.global_step,
-                                            last_layer=self.get_last_layer(), split="train")
-            return aeloss
-
-        if optimizer_idx == 1:
-            # train the discriminator
-            discloss, log_dict_disc = self.loss(inputs, reconstructions, posterior, optimizer_idx, self.global_step,
-                                                last_layer=self.get_last_layer(), split="train")
-
-            return discloss
+        return loss
 
     def validation_step(self, batch, batch_idx):
         inputs = self.get_input(batch, self.input_key)
-        reconstructions, posterior = self(inputs)
-        aeloss, log_dict_ae = self.loss(inputs, reconstructions, posterior, 0, self.global_step,
-                                        last_layer=self.get_last_layer(), split="val")
+        inputs, reconstructions = self(batch)
+        # reconstructions
+        # loss = log_cosh_loss(reconstructions, inputs)*1000.0
+        loss = F.mse_loss(inputs, reconstructions) * 1000
 
-        discloss, log_dict_disc = self.loss(inputs, reconstructions, posterior, 1, self.global_step,
-                                            last_layer=self.get_last_layer(), split="val")
-
-        self.log("val/rec_loss", log_dict_ae["val/rec_loss"])
-        self.log_dict(log_dict_ae)
-        self.log_dict(log_dict_disc)
-        return self.log_dict
+        return loss
 
     def configure_optimizers(self):
         lr = self.learning_rate
@@ -128,9 +114,8 @@ class AutoencoderKL(nn.Module):
 
 
 
-class VAENoDiscModel(AutoencoderKL):
+class AENoDiscModel(Autoencoder):
     def __init__(self,ddconfig,
-                 lossconfig,
                  embed_dim,
                  learning_rate,
                  ckpt_path=None,
@@ -140,29 +125,27 @@ class VAENoDiscModel(AutoencoderKL):
                  device='cuda',
                  monitor=None,
                  ):
-        super().__init__(ddconfig=ddconfig, lossconfig=lossconfig, embed_dim=embed_dim,
+        super().__init__(ddconfig=ddconfig, embed_dim=embed_dim,
                          ckpt_path=ckpt_path, ignore_keys=ignore_keys, input_key=input_key,
                          cond_key= cond_key, learning_rate=learning_rate)
         self.devices = device
 
     def training_step(self, batch, batch_idx):
 
-        inputs, reconstructions, posterior = self(batch)
+        inputs, reconstructions= self(batch)
         # reconstructions
-        # mse = F.mse_loss(inputs, reconstructions)
-        # cmse = self.chunk_loss(inputs, reconstructions)
-        aeloss, log_dict_ae = self.loss(inputs, reconstructions, posterior,  split="train")
-        loss = aeloss
-        return loss, log_dict_ae
+        # loss = log_cosh_loss(reconstructions, inputs)*1000.0
+        loss = F.mse_loss(inputs, reconstructions)*1000
+
+        return loss
 
     def validation_step(self, batch, batch_idx):
 
-        inputs, reconstructions, posterior = self(batch)
-        aeloss, log_dict_ae = self.loss(inputs, reconstructions, posterior,  split="val")
-        # discloss, log_dict_disc = self.loss(inputs, reconstructions, posterior, self.global_step,
-        #                                     last_layer=self.get_last_layer(), split="val")
+        inputs, reconstructions = self(batch)
+        # loss = log_cosh_loss(reconstructions, inputs) * 1000.0
+        loss = F.mse_loss(inputs, reconstructions)*1000.0
 
-        return aeloss
+        return loss
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(list(self.encoder.parameters())+

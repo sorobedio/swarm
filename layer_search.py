@@ -333,6 +333,22 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
+# Logarithmic Transform (for heavy-tailed data)
+def log_transform(x):
+    return torch.sign(x) * torch.log1p(torch.abs(x))
+
+# Inverse Logarithmic Transform (recover original values)
+def inverse_log_transform(x_transformed):
+    return torch.sign(x_transformed) * (torch.expm1(torch.abs(x_transformed)))
+
+def arsh_transform(x):
+    """Applies the ArcSinh (ArSh) transformation to expand small values smoothly."""
+    return torch.asinh(x)
+
+def inverse_arsh_transform(x_transformed):
+    """Inverse of the ArcSinh (ArSh) transformation."""
+    return torch.sinh(x_transformed)
+
 # from merge_eval import slerp
 
 
@@ -397,7 +413,7 @@ if __name__ == "__main__":
         seed_message.append(f"Setting torch manual seed to {torch_random_seed}")
         torch.manual_seed(int(torch_random_seed))
 
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
     print('=============loading model================')
 
     # configs = [OmegaConf.load(opt.base)]
@@ -433,10 +449,10 @@ if __name__ == "__main__":
 
     # 8030261248
     # chunk_size = 16384
-    scale = 0.1
+    scale = 0.0125
     # chunk_size = 58720256
-    # chunk_size = 1048576
-    chunk_size = 65536
+    chunk_size = 1048576
+    # chunk_size = 65536
 
 
     print("============================================================")
@@ -450,19 +466,19 @@ if __name__ == "__main__":
     # autoencoder = torch.load('./autocheckpoints/llama_model_chunk_full_block_7first.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_chunk_llama_v1.ckpt')
     # autoencoder = torch.load('./autocheckpoints/llama_model_1b_tf_block_full.pth', map_location='cpu')
-    autoencoder = torch.load('./autocheckpoints/llama_model_1b_tf_block_full.pth', map_location='cpu')
-    # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/llama_model_1b_tf_block_1024_1024_.pth')
-
+    autoencoder = torch.load('./autocheckpoints/llama_tf_block_chunk_c1d.pth', map_location='cpu')
+    # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/llama_model_1b_tf_auto_.pth')
+    #
     # exit()
-
 
     autoencoder.to(device)
     autoencoder.eval()
     # weights = torch.load(f'../Datasets/llmdata/llama_3_1_8B_inst_full_block_and_ln_.pt')
     weights = torch.load(f'../Datasets/llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
+    # datapath = os.path.join(root, f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')  # 262144
     #
     print(list(weights))
-    layers = list(weights)
+    layers = list(weights)[:7]
     # print(layers)
     wd ={}
     std = 0.013931703753769398
@@ -501,20 +517,25 @@ if __name__ == "__main__":
             zp =[]
             for w in tqdm(weight):
                 # w = (w-mu)/std
+                w = w.reshape(-1, 128, 8192)
                 w = w / scale
+                # w = arsh_transform(w)
                 w = w.to(device)
-                _, x_rec, prior = autoencoder(w)
+                _, x_rec, _ = autoencoder(w)
+                # _, x_rec = autoencoder(w)
                 # print(prior.mean.shape, prior.std.shape)
                 # print(w.shape, x_rec.shape)
                 # exit()
 
-                ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
+                # ze = prior.mean + prior.std * torch.randn(latent_shape).to(device)
                 # zs = ze.detach().cpu().float()
                 # zp.append(zs)
-                x_rec =  autoencoder.decode(ze)
+                # x_rec =  autoencoder.decode(ze)
                 #
                 # x_rec=(x_rec*std)+mu
-                wl.append(x_rec.detach().cpu())
+                x_rec = x_rec.detach().cpu()
+                # x_rec = inverse_log_transform(x_rec)
+                wl.append(x_rec)
         # zweights[layer] = torch.cat(zp, dim=1).reshape(num_samples, -1)
         # print(len(wl))
 
@@ -522,7 +543,7 @@ if __name__ == "__main__":
         print(ws.shape)
         # ws = ws * std + mu
         # ws = 0.5*(ws +1)* (x_max-x_min) + x_min
-        wd[layer]=ws
+        wd[layer]=ws.reshape(1, -1)
         # # wd[layer] = slerp(0.5, weights[layer], ws)
         # # lw[layer]=ws
     print('finished encoding=========================================')

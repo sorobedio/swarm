@@ -429,7 +429,7 @@ if __name__ == "__main__":
     #
     # chunk_size =2362368
     # chunk_size = 1100416
-    chunk_size=4096
+    chunk_size=16384
     # 8030261248
     # chunk_size = 16384
     scale = 0.1
@@ -444,10 +444,18 @@ if __name__ == "__main__":
     lw ={}
 ##############################ffn###################################
     # autoencoder = torch.load('./autocheckpoints/Llama-3.2-1B-Inst_top_2tf_.pth', map_location=device)
-    autoencoder = torch.load('./autocheckpoints/blcok1_llama_.pth', map_location='cpu')
-    # autoencoder = torch.load('./autocheckpoints/llama_model_chunk_full_block_7first.pth', map_location='cpu')
-    # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_chunk_llama_v1.ckpt')
-    # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/pythia_160m_ffn_44step.ckpt')
+    # autoencoder = torch.load('./autocheckpoints/blcok1_llama_.pth', map_location='cpu')
+    autoencoder = torch.load('./autocheckpoints/hf_model_llama1b_128_.pth', map_location='cpu')
+    # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/llama_model_1b_tf_block_1024_1024_.pth')
+
+    # exit() llama_model_1b_tf_block_full.pth
+
+
+    autoencoder.to(device)
+    autoencoder.eval()
+    # weights = torch.load(f'../Datasets/llmdata/llama_3_1_8B_inst_full_block_and_ln_.pt')
+    weights = torch.load(f'../Datasets/llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
+    # datapath = os.path.join(root, f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')  # 262144
 
     # exit()
 
