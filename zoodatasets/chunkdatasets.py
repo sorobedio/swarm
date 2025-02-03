@@ -65,8 +65,10 @@ class ZooDataset(Dataset):
         self.normalize = normalize
         self.chunk_size = max_len
         self.scale=scale
-        datapath = os.path.join("../Datasets", f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
-        self.transform =  transforms.Lambda(lambda x: torch.asinh(x))
+        # datapath = os.path.join("../Datasets", f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
+        datapath = os.path.join("../Datasets", f'llmdata/llama_8b_mlp_.pt')
+        #../Datasets/llmdata/llama_8b_mlp_.pt
+        # self.transform =  transforms.Lambda(lambda x: torch.asinh(x))
         data= self.load_data(datapath, dataset=dataset)
 
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
@@ -83,7 +85,7 @@ class ZooDataset(Dataset):
             idx = idx.tolist()
         weight = self.data[idx]/self.scale
         # if self.transform:
-        weight = self.transform(weight)
+        # weight = self.transform(weight)
 
 
         return  weight
