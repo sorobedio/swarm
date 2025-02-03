@@ -71,7 +71,7 @@ class ZooDataset(Dataset):
         # self.transform =  transforms.Lambda(lambda x: torch.asinh(x))
         data= self.load_data(datapath, dataset=dataset)
 
-        print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
+        print(f'======{data.dtype}=========dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
 
         self.data = data.cpu()
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
