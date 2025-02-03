@@ -66,18 +66,3 @@ if __name__ == "__main__":
 
 
 
-    # model_name = "code_alpaca"
-    # model = AutoModelForCausalLM.from_pretrained("bunsenfeng/"+model_name)
-    # std = model.state_dict()
-    # weights =[]
-    # for key in std.keys():
-    #     if 'lora' in key:
-    #         w = std[key].reshape(-1)
-    #         print(f'---params:{key}---{w.shape}--{w.dtype}-')
-    #         weights.append(w)
-    # print(len(weights))
-    # w = torch.cat(weights, dim=-1)
-    # print(w.shape)
-
-    # [7.6, 7.3999999999999995, 7.3, 7.199999999999999, 7.1, 7.1, 7.000000000000001, 6.9, 6.9, 6.800000000000001, 6.7,
-    #  6.7, 6.7, 6.6000000000000005, 6.5, 6.3, 6.1, 6.0, 5.800000000000001, 5.800000000000001

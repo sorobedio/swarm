@@ -55,7 +55,7 @@ def pad_to_chunk_multiple(x, chunk_size):
 class ZooDataset(Dataset):
     """weights dataset."""
     def __init__(self, root='zoodata', dataset="joint", split='train', topk=None, scale=1.0, transform=True, normalize=False,
-                 max_len=1048576):
+                 max_len=65536):
         super(ZooDataset, self).__init__()
         #1960513
         self.topk = topk
@@ -65,70 +65,14 @@ class ZooDataset(Dataset):
         self.normalize = normalize
         self.chunk_size = max_len
         self.scale=scale
-#51380224==4096 x 12544
-        #'../Datasets/facebook/mobilellm_125_mlp__.pt'
-        #'../Datasets/modelszoo/pythia_160m_mlp_final.pt'
-        # datapath = os.path.join(root, f'modelszoo/pythia_160m_mlp_final.pt') #2362368
-        # datapath = os.path.join(root, f'llmdata/SmolLM2-135M_full.pt')  # 8141328
-        # datapath = os.path.join(root, f'llmdata/SmolLM2-heads_.pt')  # 2362368
-        #'../Datasets/llmdata/SmolLM2-heads_.pt'
-        # 11004164
-        # datapath = os.path.join(root, f'modelszoo/pythia_160m_mlp_100000_143000.pt')2362368
-        # datapath = os.path.join(root, f'llmdata/llama_head_.pt')#1026048
-        #'../Datasets/modelszoo/pythia_410m_full_13000_by26_143000.pt'
-        # datapath = os.path.join(root, f'modelszoo/pythia_410m_full_13000_by26_143000.pt')  # 2156032
-        # datapath = os.path.join(root, f'modelszoo/pythia_160m_full_13000_by_143000_b16_.pt')  #
-        # datapath = os.path.join(root, f'llmdata/llama-3-1-8b_layer_full.pt')  #458752
-        # '../Datasets/llmdata/llama-3-1-8b_layer_full.pt'
-
-        # datapath = os.path.join(root, f'gemina7b_it_lora_weights.pt')
-        # datapath = os.path.join(root, f'llmdata/gemini_7b_int_top_25p_attn_.pt') #12582912
-        #f'../Datasets/llmdata/gemini_7b_int_top_25p_attn_.pt'
-        #'../Datasets/llmdata/llama_3_1_8B_inst_full_block_and_ln_.pt'
-
-        # datapath = os.path.join(root, f'llmdata/llama_3_-1-8b-layer_wise.pt')  # 262144
-        datapath = os.path.join(root, f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
-
-        # datapath = os.path.join(root, f'llmdata/llama_3_-1-3b_group_all_.pt')  # 262144
-        # datapath = os.path.join(root, f'llmdata/hf_smollm_360M_group_all_.pt')  # 262144
-        # '../Datasets/llmdata/llama_3_-1-3b_group_all_.pt'
-        # datapath = os.path.join(root, f'llmdata/llama_3_1_8B_inst_full_block_and_ln_.pt')#262144
-        # datapath = os.path.join(root, f'llmdata/llama_3_2_3B_inst_full_block_and_ln_.pt')  # 262144
-        #'../Datasets/llmdata/llama_3_2_3B_inst_full_block_and_ln_.pt'
-        # '../Datasets/llmdata/gemina7b_it_lora_weights.pt'
-        #pythia_160m_full_13000_by_143000_b16_.pt'
-        # datapath = os.path.join(root, f'modelszoo/pythia_410m_full_100000_143000.pt')  # 4401664
-        #'../Datasets/modelszoo/pythia_410m_full_100000_143000.pt'
-        # datapath = os.path.join(root, f'llmdata/pythia-70m-100000_143000.pt')11004164
-
-
-        self.transform =  transforms.Lambda(lambda x: torch.asinh(x))
+        # datapath = os.path.join("../Datasets", f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
+        datapath = os.path.join("../Datasets", f'llmdata/llama_8b_mlp_.pt')
+        #../Datasets/llmdata/llama_8b_mlp_.pt
+        # self.transform =  transforms.Lambda(lambda x: torch.asinh(x))
         data= self.load_data(datapath, dataset=dataset)
-        # x_min, x_max = data.min(), data.max()
 
-         # == == == == == == == = 9.73654277913738e-06
-        std = 0.013931703753769398
-        mu=9.73654277913738e-06
-        # x_max = 0.9140625
-        # x_min = 1.4140625
-        # mu = data.mean()
+        print(f'======{data.dtype}=========dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
 
-
-        x_min = -0.9140625
-        x_max =1.4140625
-        # data = (data - mu) / std
-        print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
-        # print(data[0][:20])
-        # data = 2 * (data - x_min) / (x_max - x_min) - 1
-        # mu = data.mean()
-        # std = data.std()
-        print('===============dataset size=========================')
-        # print(self.data.shape, x_min, x_max)
-
-        # print(f'============{std}==============={mu}=============')
-        # data = (data-mu)/std
-
-        # exit()
         self.data = data.cpu()
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
 
@@ -142,10 +86,8 @@ class ZooDataset(Dataset):
         weight = self.data[idx]/self.scale
         # if self.transform:
         # weight = self.transform(weight)
-
-        # weight= weight/self.scale
-        sample = {'weight': weight, 'dataset': []}
-        return sample
+        sample= {'weight':weight, 'dataset': []}
+        return  sample
     def load_data(self, file, dataset='joint'):
         data = torch.load(file)
         wl = []
@@ -153,12 +95,12 @@ class ZooDataset(Dataset):
             keys = list(data)
             # keys.remove('layernorm.weight')
             # keys = ['sharegpt_cot', 'gemini_alpaca_sharegpt']
-            keys =keys[:-1]
+            keys =keys[:14]
             # print(keys)
 
             for k in keys:
                 w = data[k]
-                print(w.shape)
+                print(w.shape, w.dtype)
                 w=pad_to_chunk_multiple(w, chunk_size=self.chunk_size)
                 if self.normalize == "z_score":
                     u = torch.mean(w, dim=1)
@@ -170,7 +112,7 @@ class ZooDataset(Dataset):
                     xdiff = x_max - x_min
                     w = 2 * (w - x_min[:, None]) / xdiff[:, None] - 1
                 w = torch.split(w, split_size_or_sections=self.chunk_size, dim=-1)
-                w = torch.cat(w, dim=0).float()
+                w = torch.cat(w, dim=0)
 
                 if self.topk is not None:
                     if self.topk > 0:
@@ -199,5 +141,3 @@ class ZooDataset(Dataset):
 
             data = w
         return data
-
-
