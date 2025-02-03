@@ -83,10 +83,10 @@ class AutoencoderKL(nn.Module):
         print(f"Restored from {path}")
 
     def encode(self, x):
-        print(x.dtype, x.device,x.shape)
+        # print(x.dtype, x.device,x.shape)
         # x =log_transform(x)
         # x = torch.randn
-        h = self.encoder.to(self.device)
+        h = self.encoder(x)
         moments = self.quant_conv(h)
         posterior = DiagonalGaussianDistribution(moments)
         return posterior
