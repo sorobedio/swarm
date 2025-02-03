@@ -86,7 +86,7 @@ class AutoencoderKL(nn.Module):
         # print(x.dtype, x.device)
         # x =log_transform(x)
         # x = torch.randn
-        h = self.encoder.to9self.device)
+        h = self.encoder.to(self.device)
         moments = self.quant_conv(h)
         posterior = DiagonalGaussianDistribution(moments)
         return posterior
