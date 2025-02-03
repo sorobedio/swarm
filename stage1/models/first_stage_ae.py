@@ -84,7 +84,7 @@ class Autoencoder(nn.Module):
         print(f"Restored from {path}")
 
     def encode(self, x):
-
+        print(x.dtype)
         h = self.encoder(x)
         z = self.quant_conv(h)
 
