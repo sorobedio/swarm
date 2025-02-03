@@ -94,8 +94,8 @@ def get_parser(**parser_kwargs):
         help="paths to base configs. Loaded from left-to-right. "
              "Parameters can be overwritten or added with command-line options of the form `--key value`.",
 
-        # default="stage1/configs/llama_block_config_kl.yaml",
-        default="stage1/configs/short_chunk_llama_config_kl.yaml",
+        default="stage1/configs/llama_block_config_kl.yaml",
+        # default="stage1/configs/short_chunk_llama_config_kl.yaml",
         #mini_llama_norm_config.yaml  small_llama_config_kl.yaml
         # default="stage1/configs/llama_attn_base_config_kl.yaml",
 
@@ -260,7 +260,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if bloss > tloss:
             bloss = tloss
             print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama8b_16384_base_.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama8b_1048_base_.pth'))
 
         # Print additional loss details
         rec_loss = logs['train/rec_loss']
@@ -360,10 +360,10 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     trainset = ZooDataset(root=args.data,  dataset="joint", split=args.split,
-                          scale=0.0125, normalize=None)
+                          scale=0.1, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
-    traindataloader = DataLoader(trainset, shuffle=True, batch_size=16, num_workers=4,
+    traindataloader = DataLoader(trainset, shuffle=True, batch_size=32, num_workers=4,
                                  # collate_fn=m_collate,
                                  )
     # testdataloader = DataLoader(valset, shuffle=False, batch_size=4, num_workers=4)
