@@ -86,6 +86,7 @@ class ZooDataset(Dataset):
         weight = self.data[idx]/self.scale
         # if self.transform:
         # weight = self.transform(weight)
+        sample= {'weight':weight, 'dataset': []}
 
 
         return  weight
