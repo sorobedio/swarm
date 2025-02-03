@@ -44,33 +44,7 @@ class ZooDataset(Dataset):
         self.normalize = normalize
         self.chunk_size = max_len
         self.scale=scale
-#51380224==4096 x 12544
-        #'../Datasets/facebook/mobilellm_125_mlp__.pt'
-        #'../Datasets/modelszoo/pythia_160m_mlp_final.pt'
-        # datapath = os.path.join(root, f'modelszoo/pythia_160m_mlp_final.pt') #2362368
-        # datapath = os.path.join(root, f'llmdata/SmolLM2-135M_full.pt')  # 8141328
-        # datapath = os.path.join(root, f'llmdata/SmolLM2-heads_.pt')  # 2362368
-        #'../Datasets/llmdata/SmolLM2-heads_.pt'
-        # 11004164
-        # datapath = os.path.join(root, f'modelszoo/pythia_160m_mlp_100000_143000.pt')2362368
-        # datapath = os.path.join(root, f'llmdata/llama_head_.pt')#1026048
-        #'../Datasets/modelszoo/pythia_410m_full_13000_by26_143000.pt'
-        # datapath = os.path.join(root, f'modelszoo/pythia_410m_full_13000_by26_143000.pt')  # 2156032
-        # datapath = os.path.join(root, f'modelszoo/pythia_160m_full_13000_by_143000_b16_.pt')  #
-        # datapath = os.path.join(root, f'llmdata/llama-3-1-8b_layer_full.pt')  #458752
-        # '../Datasets/llmdata/llama-3-1-8b_layer_full.pt'
 
-        # datapath = os.path.join(root, f'gemina7b_it_lora_weights.pt')
-
-
-        # datapath = os.path.join(root, f'llmdata/gemini_7b_int_top_25p_attn_.pt') #12582912
-        #f'../Datasets/llmdata/gemini_7b_int_top_25p_attn_.pt'
-
-        #'../Datasets/llmdata/llama_3_1_8B_inst_full_block_and_ln_.pt'
-        #
-        # datapath = os.path.join(root, f'llmdata/llama_3_-1-8b-layer_wise.pt')  # 262144
-        # datapath = os.path.join(root, f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')  # 262144
-        # datapath = os.path.join(root, f'llmdata/llama_3_-1-3b_group_all_.pt')  # 262144
         datapath = os.path.join(root, f'llmdata/hf_smollm_360M_group_all_.pt')  # 262144
         #
 

@@ -440,25 +440,25 @@ if __name__=='__main__':
         # w, we = extract_layer_weights_withexc(std, tgt='layer', pref=None)
 
         #
-        w, we = get_blocks_weights(std, tgt='norm', cond='layer')
+        w, we = get_blocks_weights(std, tgt='norm', cond='mlp')
         weights.update(w)  # 67584
-        we = get_dict_layer_weights(std, tgt='head')
-        weights.update(we)
-        we = get_dict_layer_weights(std, tgt='embed_tokens')
-        weights.update(we)
-        #
-        we = get_layer_weights(std, tgt='norm')
+        # we = get_dict_layer_weights(std, tgt='head')
+        # weights.update(we)
+        # we = get_dict_layer_weights(std, tgt='embed_tokens')
+        # weights.update(we)
+        # #
+        # we = get_layer_weights(std, tgt='norm')
 
         # we = gets_weights(std)
-        print(we.shape, we.min(), we.max(), we.dtype)
+        # print(we.shape, we.min(), we.max(), we.dtype)
         # exit()
         # weights[k] = we
-        weights.update(w) #67584
-        weights['layernorm.weight'] = we
+        # weights.update(w) #67584
+        # weights['layernorm.weight'] = we
 
         # w, we =  extract_layers_weights(std)
         weights.update(w)
-    torch.save(weights, '../Datasets/llmdata/hf_smollm_360M_group_all_.pt')  # 1498482688
+    torch.save(weights, '../Datasets/llmdata/llama_8b_mlp_.pt')  # 1498482688
     print(len(weights))
     exit()
     # 1498482688
