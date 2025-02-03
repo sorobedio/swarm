@@ -113,7 +113,7 @@ class ZooDataset(Dataset):
                     xdiff = x_max - x_min
                     w = 2 * (w - x_min[:, None]) / xdiff[:, None] - 1
                 w = torch.split(w, split_size_or_sections=self.chunk_size, dim=-1)
-                w = torch.cat(w, dim=0).float()
+                w = torch.cat(w, dim=0)
 
                 if self.topk is not None:
                     if self.topk > 0:

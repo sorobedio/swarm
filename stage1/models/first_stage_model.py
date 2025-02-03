@@ -83,7 +83,7 @@ class AutoencoderKL(nn.Module):
         print(f"Restored from {path}")
 
     def encode(self, x):
-        print(x.dtype)
+        print(x.dtype, x.device)
         # x =log_transform(x)
         # x = torch.randn
         h = self.encoder(x)
