@@ -100,7 +100,7 @@ class ZooDataset(Dataset):
 
             for k in keys:
                 w = data[k]
-                print(w.shape)
+                print(w.shape, w.dtype)
                 w=pad_to_chunk_multiple(w, chunk_size=self.chunk_size)
                 if self.normalize == "z_score":
                     u = torch.mean(w, dim=1)
