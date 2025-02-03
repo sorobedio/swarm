@@ -83,6 +83,7 @@ class AutoencoderKL(nn.Module):
         print(f"Restored from {path}")
 
     def encode(self, x):
+        print(x.dtype)
         # x =log_transform(x)
         # x = torch.randn
         h = self.encoder(x)
@@ -193,7 +194,7 @@ class VAENoDiscModel(AutoencoderKL):
             self.beta_scheduling(self.gl_step)
         inputs, reconstructions, posterior = self(batch)
         # reconstructions
-        mse = F.mse_loss(inputs, reconstructions)
+        # mse = F.mse_loss(inputs, reconstructions)
         # cmse = self.chunk_loss(inputs, reconstructions)
         aeloss, log_dict_ae = self.loss(inputs, reconstructions, posterior,  split="train")
         loss = aeloss# +mse*1000
