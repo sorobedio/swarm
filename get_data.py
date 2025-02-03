@@ -457,7 +457,7 @@ if __name__=='__main__':
         # weights['layernorm.weight'] = we
 
         # w, we =  extract_layers_weights(std)
-        weights.update(w)
+        # weights.update(w)
     torch.save(weights, '../Datasets/llmdata/llama_8b_mlp_.pt')  # 1498482688
     print(len(weights))
     exit()
