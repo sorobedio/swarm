@@ -87,9 +87,7 @@ class ZooDataset(Dataset):
         # if self.transform:
         # weight = self.transform(weight)
         sample= {'weight':weight, 'dataset': []}
-
-
-        return  weight
+        return  sample
     def load_data(self, file, dataset='joint'):
         data = torch.load(file)
         wl = []
