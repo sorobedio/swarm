@@ -39,7 +39,7 @@ import torchvision.transforms as transforms
 
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 
 def get_parser(**parser_kwargs):
@@ -94,8 +94,8 @@ def get_parser(**parser_kwargs):
         help="paths to base configs. Loaded from left-to-right. "
              "Parameters can be overwritten or added with command-line options of the form `--key value`.",
 
-        default="stage1/configs/llama_block_config_kl.yaml",
-        # default="stage1/configs/short_chunk_llama_config_kl.yaml",
+        # default="stage1/configs/llama_block_config_kl.yaml",
+        default="stage1/configs/short_chunk_llama_config_kl.yaml",
         #mini_llama_norm_config.yaml  small_llama_config_kl.yaml
         # default="stage1/configs/llama_attn_base_config_kl.yaml",
 
@@ -215,7 +215,7 @@ import torch
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 20000.0
+    bloss = 10000.0
     use_amp=True
     btest = 2.0
     # scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
@@ -260,7 +260,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if bloss > tloss:
             bloss = tloss
             print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama8b_1048_base_.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama8b_65536_base_.pth'))
 
         # Print additional loss details
         rec_loss = logs['train/rec_loss']
