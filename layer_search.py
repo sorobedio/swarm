@@ -437,8 +437,8 @@ if __name__ == "__main__":
     # model_id = "EleutherAI/pythia-70m"
 
     # model_id = "google/gemma-7b-it"
-    model_id = "meta-llama/Meta-Llama-3.1-8B-Instruct"
-    # model_id = "meta-llama/Llama-3.2-1B-Instruct"
+    # model_id = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+    model_id = "meta-llama/Llama-3.2-3B-Instruct"
 
     x_max = 2.9375
     x_min = -0.9140625
