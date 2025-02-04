@@ -5,24 +5,24 @@ model:
     embed_dim: 4
     input_key: 'weight'
     learning_rate: 1.1234e-4
-    ckpt_path: "checkpoints/stage1/llama_model_8b_mlp_auto_.pth"
+#    ckpt_path: "checkpoints/stage1/llama_model_8b_mlp_auto_.pth"
 #    ckpt_path: 'checkpoints/stage1/base_chunk_llama_v1.ckpt'
     #
 
     ddconfig:
       double_z: True
       tanh_out: False
-      z_channels: 16
+      z_channels: 4
       resolution: 128
-      in_channels: 64
-      my_channels: 64
-      out_ch: 64
+      in_channels: 128
+      my_channels: 128
+      out_ch: 128
       ch: 128
       ch_mult: [ 1,1, 2 ]  #num_down = len(ch_mult)-1
       num_res_blocks: 2
       attn_resolutions: [ 2, 4 ]
       dropout: 0.0
-      in_dim: 16384
+      in_dim: 24576
       fdim: 16384
 
 

@@ -55,7 +55,7 @@ def pad_to_chunk_multiple(x, chunk_size):
 class ZooDataset(Dataset):
     """weights dataset."""
     def __init__(self, root='zoodata', dataset="joint", split='train', topk=None, scale=1.0, transform=True, normalize=False,
-                 max_len=1048576):
+                 max_len=3145728):
         super(ZooDataset, self).__init__()
         #1960513
         self.topk = topk
@@ -66,8 +66,8 @@ class ZooDataset(Dataset):
         self.chunk_size = max_len
         self.scale=scale
         # datapath = os.path.join("../Datasets", f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
-        datapath = os.path.join("../Datasets", f'llmdata/llama_8b_mlp_.pt')
-        #../Datasets/llmdata/llama_8b_mlp_.pt
+        datapath = os.path.join("../Datasets", f'llmdata/llama_3b_mlp_.pt')
+        #../Datasets/llmdata/llama_8b_mlp_.pt ../Datasets/llmdata/llama_3b_mlp_.pt
         # self.transform =  transforms.Lambda(lambda x: torch.asinh(x))
         data= self.load_data(datapath, dataset=dataset)
 
@@ -95,7 +95,7 @@ class ZooDataset(Dataset):
             keys = list(data)
             # keys.remove('layernorm.weight')
             # keys = ['sharegpt_cot', 'gemini_alpaca_sharegpt']
-            keys =keys
+            keys =keys[:14]
             # print(keys)
 
             for k in keys:
