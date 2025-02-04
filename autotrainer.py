@@ -231,7 +231,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
 
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-            # optimizer.step()
+            optimizer.step()
 
 
 
@@ -255,7 +255,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
 
         print(f' Rec_LOSS: {tloss}  Best Training Loss: {bloss:.4f}, LR: {optimizer.param_groups[-1]["lr"]:.6f}')
         # print(f'Rec Loss: {rec_loss}, KLD Loss: {kld_loss}, NLL Loss: {nnl_loss} log_var: {log_var}')
-        scheduler.step()
+        # scheduler.step()
 
         # Perform model evaluation every 100 epochs
         if (epoch + 1) % 100 == 0:
