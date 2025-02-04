@@ -467,7 +467,7 @@ if __name__ == "__main__":
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_chunk_llama_v1.ckpt')
     # autoencoder = torch.load('./autocheckpoints/llama_model_1b_tf_block_full.pth', map_location='cpu')
     autoencoder = torch.load('./autocheckpoints/hf_model_llama8b_3b_314.pth', map_location='cpu')
-    # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/llama_model_8b_mlp_auto_.pth')
+    torch.save(autoencoder.state_dict(), f'checkpoints/stage1/llama_model_3b_mlp_auto_.pth')
 
     # exit()
 
