@@ -4,8 +4,8 @@ model:
   params:
     embed_dim: 4
     input_key: 'weight'
-    learning_rate: 4.254e-5
-    ckpt_path: 'checkpoints/stage1/llama_model_3b_mlp_auto_.pth'
+    learning_rate: 1.254e-4
+#    ckpt_path: 'checkpoints/stage1/llama_model_3b_mlp_auto_.pth'
 #    ckpt_path: 'checkpoints/stage1/base_chunk_llama_v1.ckpt'
     #
 
