@@ -241,7 +241,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
             # scaler.step(optimizer)
             # scaler.update()
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 10.0)
             optimizer.step()
 
 
@@ -260,7 +260,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if bloss > tloss:
             bloss = tloss
             print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama8b_65536_base_.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama8b_4_base_.pth'))
 
         # Print additional loss details
         rec_loss = logs['train/rec_loss']
