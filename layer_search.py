@@ -437,8 +437,8 @@ if __name__ == "__main__":
     # model_id = "EleutherAI/pythia-70m"
 
     # model_id = "google/gemma-7b-it"
-    # model_id = "meta-llama/Meta-Llama-3.1-8B-Instruct"
-    model_id = "meta-llama/Llama-3.2-1B-Instruct"
+    model_id = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+    # model_id = "meta-llama/Llama-3.2-1B-Instruct"
 
     x_max = 2.9375
     x_min = -0.9140625
@@ -449,7 +449,7 @@ if __name__ == "__main__":
 
     # 8030261248
     # chunk_size = 16384
-    scale = 0.0125
+    scale = 0.1
     # chunk_size = 58720256
     chunk_size = 1048576
     # chunk_size = 65536
@@ -466,7 +466,7 @@ if __name__ == "__main__":
     # autoencoder = torch.load('./autocheckpoints/llama_model_chunk_full_block_7first.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_chunk_llama_v1.ckpt')
     # autoencoder = torch.load('./autocheckpoints/llama_model_1b_tf_block_full.pth', map_location='cpu')
-    autoencoder = torch.load('./autocheckpoints/llama_tf_block_chunk_c1d.pth', map_location='cpu')
+    autoencoder = torch.load('./autocheckpoints/hf_model_llama8b_1048_auto_v.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/llama_model_1b_tf_auto_.pth')
     #
     # exit()
@@ -517,12 +517,12 @@ if __name__ == "__main__":
             zp =[]
             for w in tqdm(weight):
                 # w = (w-mu)/std
-                w = w.reshape(-1, 128, 8192)
+                # w = w.reshape(-1, 128, 8192)
                 w = w / scale
                 # w = arsh_transform(w)
                 w = w.to(device)
-                _, x_rec, _ = autoencoder(w)
-                # _, x_rec = autoencoder(w)
+                # _, x_rec, _ = autoencoder(w)
+                _, x_rec = autoencoder(w)
                 # print(prior.mean.shape, prior.std.shape)
                 # print(w.shape, x_rec.shape)
                 # exit()
