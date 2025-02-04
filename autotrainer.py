@@ -231,7 +231,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
 
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-            optimizer.step()
+            # optimizer.step()
 
 
 
