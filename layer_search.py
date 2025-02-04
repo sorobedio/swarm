@@ -467,7 +467,7 @@ if __name__ == "__main__":
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_chunk_llama_v1.ckpt')
     # autoencoder = torch.load('./autocheckpoints/llama_model_1b_tf_block_full.pth', map_location='cpu')
     autoencoder = torch.load('./autocheckpoints/hf_model_llama8b_3b_314.pth', map_location='cpu')
-    torch.save(autoencoder.state_dict(), f'checkpoints/stage1/llama_model_3b_mlp_auto_.pth')
+    # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/llama_model_3b_mlp_auto_.pth')
 
     # exit()
 
@@ -481,7 +481,7 @@ if __name__ == "__main__":
     # datapath = os.path.join(root, f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')  # 262144
     #
     print(list(weights))
-    layers = list(weights)[:7]
+    layers = list(weights)[:14]
     # print(layers)
     wd ={}
     std = 0.013931703753769398
