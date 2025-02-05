@@ -260,7 +260,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if bloss > tloss:
             bloss = tloss
             print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama8b_4_base_.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama8b_4_base_25_.pth'))
 
         # Print additional loss details
         rec_loss = logs['train/rec_loss']
