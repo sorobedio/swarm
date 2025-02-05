@@ -396,21 +396,16 @@ if __name__=='__main__':
     #     revision="step143000",
     # )
     # modellist=["google/gemma-7b-it"]
-    # modellist = ["meta-llama/Meta-Llama-3.1-8B-Instruct"]
-    modellist = ["meta-llama/Llama-3.2-3B-Instruct"]
+    modellist = ["meta-llama/Meta-Llama-3.1-8B-Instruct"]
+    # modellist = ["meta-llama/Llama-3.2-3B-Instruct"]
     # modellist =["HuggingFaceTB/SmolLM2-360M-Instruct"]
-
-
     #
-
-
     wl = []
     x_min = -0.9141
     x_max = 2.9375
     weights = {}
     mw ={}
     ws =[]
-
     # model = GPTNeoXForCausalLM.from_pretrained(
     #     "EleutherAI/pythia-160m-deduped",
     #     revision="step143000",
@@ -427,8 +422,8 @@ if __name__=='__main__':
                 trust_remote_code=True,
             # revision="step143000",
             )
-        # print(model)
-        # exit()
+        print(model)
+        exit()
         std = model.state_dict()
         # for p, w in std.items():
         #     print(f'---param--{p}---{w.shape}--{w.min()}---{w.max()}--')
@@ -438,7 +433,6 @@ if __name__=='__main__':
         # w, we = extract_layer_weights(std, tgt='layer', pref=None)
         # we = get_layer_weights(std, tgt='norm')
         # w, we = extract_layer_weights_withexc(std, tgt='layer', pref=None)
-
         #
         w, we = get_blocks_weights(std, tgt='norm', cond='self_attn')
         weights.update(w)  # 67584
