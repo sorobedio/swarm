@@ -215,7 +215,7 @@ import torch
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 10000.0
+    bloss = 50000.0
     use_amp=True
     btest = 2.0
     # scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
@@ -260,7 +260,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if bloss > tloss:
             bloss = tloss
             print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama8b_4_base_25_.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama_3B_self_attn_.pth'))
 
         # Print additional loss details
         rec_loss = logs['train/rec_loss']
@@ -363,7 +363,7 @@ if __name__ == "__main__":
                           scale=0.1, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
-    traindataloader = DataLoader(trainset, shuffle=True, batch_size=16, num_workers=8,
+    traindataloader = DataLoader(trainset, shuffle=True, batch_size=32, num_workers=8,
                                  # collate_fn=m_collate,
                                  )
     # testdataloader = DataLoader(valset, shuffle=False, batch_size=4, num_workers=4)
