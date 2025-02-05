@@ -66,7 +66,9 @@ class ZooDataset(Dataset):
         self.chunk_size = max_len
         self.scale=scale
         # datapath = os.path.join("../Datasets", f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
-        datapath = os.path.join("../Datasets", f'llmdata/llama_3b_mlp_.pt')
+        # datapath = os.path.join("../Datasets", f'llmdata/llama_3b_mlp_.pt')
+        datapath = os.path.join("../Datasets", f'llama_3b_self_attn_.pt')
+        #'../Datasets/llmdata/llama_3b_self_attn_.pt'
         #../Datasets/llmdata/llama_8b_mlp_.pt ../Datasets/llmdata/llama_3b_mlp_.pt
         # self.transform =  transforms.Lambda(lambda x: torch.asinh(x))
         data= self.load_data(datapath, dataset=dataset)
