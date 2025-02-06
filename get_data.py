@@ -422,8 +422,8 @@ if __name__=='__main__':
                 trust_remote_code=True,
             # revision="step143000",
             )
-        print(model)
-        exit()
+        # print(model)
+        # exit()
         std = model.state_dict()
         # for p, w in std.items():
         #     print(f'---param--{p}---{w.shape}--{w.min()}---{w.max()}--')
