@@ -466,7 +466,7 @@ if __name__ == "__main__":
     # autoencoder = torch.load('./autocheckpoints/llama_model_chunk_full_block_7first.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_chunk_llama_v1.ckpt')
     # autoencoder = torch.load('./autocheckpoints/llama_model_1b_tf_block_full.pth', map_location='cpu')
-    autoencoder = torch.load('./autocheckpoints/hf_model_llama8b_3b_314_selfattn.pth', map_location='cpu')
+    autoencoder = torch.load('./autocheckpoints/hf_model_llama_3B_self_attn_.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/llama_model_3b_mlp_auto_.pth')
 
     # exit()
@@ -524,8 +524,8 @@ if __name__ == "__main__":
                 w = w / scale
                 # w = arsh_transform(w)
                 w = w.to(device)
-                # _, x_rec, _ = autoencoder(w)
-                _, x_rec = autoencoder(w)
+                _, x_rec, _ = autoencoder(w)
+                # _, x_rec = autoencoder(w)
                 # print(prior.mean.shape, prior.std.shape)
                 # print(w.shape, x_rec.shape)
                 # exit()
