@@ -466,7 +466,7 @@ if __name__ == "__main__":
     # autoencoder = torch.load('./autocheckpoints/llama_model_chunk_full_block_7first.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_chunk_llama_v1.ckpt')
     # autoencoder = torch.load('./autocheckpoints/llama_model_1b_tf_block_full.pth', map_location='cpu')
-    autoencoder = torch.load('./autocheckpoints/hf_model_llama8b_3b_314.pth', map_location='cpu')
+    autoencoder = torch.load('./autocheckpoints/hf_model_llama8b_3b_314_selfattn.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/llama_model_3b_mlp_auto_.pth')
 
     # exit()
@@ -477,7 +477,7 @@ if __name__ == "__main__":
     # weights = torch.load(f'../Datasets/llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
 
     # weights = torch.load("../Datasets/llmdata/llama_8b_mlp_.pt")
-    weights = torch.load("../Datasets/llmdata/llama_3b_mlp_.pt")
+    weights = torch.load("../Datasets/llmdata/llama_3b_self_attn_.pt")
     # datapath = os.path.join(root, f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')  # 262144
     #
     print(list(weights))
