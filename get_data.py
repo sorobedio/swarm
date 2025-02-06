@@ -452,7 +452,7 @@ if __name__=='__main__':
 
         # w, we =  extract_layers_weights(std)
         # weights.update(w)
-    torch.save(weights, '../Datasets/llmdata/llama_3b_self_attn_.pt')  # 1498482688
+    torch.save(weights, '../Datasets/llmdata/llama_3_8b_self_attn_.pt')  # 1498482688
     print(len(weights))
     exit()
     # 1498482688

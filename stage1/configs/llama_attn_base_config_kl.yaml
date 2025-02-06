@@ -4,7 +4,7 @@ model:
   params:
     embed_dim: 4
     input_key: 'weight'
-    learning_rate: 4.51115e-5
+    learning_rate: 1.51115e-4
 #    ckpt_path: 'checkpoints/stage1/attn_first_stage_31_VAGOsolutions_.pt'
 #    ckpt_path: 'checkpoints/stage1/attn_first_stage_llama3_3_8b_instruct.pt'
     lossconfig:
@@ -23,7 +23,7 @@ model:
       ch: 128
       ch_mult: [ 1,1, 1, 2]  #num_down = len(ch_mult)-1
       num_res_blocks: 2
-      attn_resolutions: [  ]
+      attn_resolutions: [ 8 ]
       dropout: 0.0
       in_dim: 16384
       fdim: 16384
