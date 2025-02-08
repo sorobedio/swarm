@@ -50,7 +50,8 @@ class ZooDataset(Dataset):
         # datapath = os.path.join(root, f'modelszoo/pythia_160m_mlp_final.pt') #2362368
         # datapath = os.path.join(root, f'llmdata/SmolLM2-135M_full.pt')  # 8141328
         # datapath = os.path.join(root, f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')  # 262144
-        datapath = os.path.join("../Datasets", f'llmdata/llama_3_8b_full_.pt')
+        datapath = os.path.join("../Datasets", f'llmdata/llama_3_8b_self_attn_.pt')
+        # datapath = os.path.join("../Datasets", f'llmdata/llama_3_8b_full_.pt')
         self.transform = transform
         data= self.load_data(datapath, dataset=dataset)
         # x_min, x_max = data.min(), data.max()
