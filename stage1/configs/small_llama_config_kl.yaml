@@ -16,13 +16,13 @@ model:
       tanh_out: False
       z_channels: 4
       resolution: 128
-      in_channels: 1
-      my_channels: 1
-      out_ch: 1
+      in_channels: 4
+      my_channels: 4
+      out_ch: 4
       ch: 128
-      ch_mult: [ 1,1, 1, 2]  #num_down = len(ch_mult)-1
+      ch_mult: [ 1,1, 4]  #num_down = len(ch_mult)-1
       num_res_blocks: 3
-      attn_resolutions: [8]
+      attn_resolutions: [4]
       dropout: 0.0
       in_dim: 16384
       fdim: 16384
