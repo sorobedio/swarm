@@ -83,7 +83,7 @@ class ZooDataset(Dataset):
 
 
     def __len__(self):
-        return len(self.data)
+        return 40000 #len(self.data)
 
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
