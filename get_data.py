@@ -422,8 +422,8 @@ if __name__=='__main__':
                 trust_remote_code=True,
             # revision="step143000",
             )
-        print(model)
-        exit()
+        # print(model)
+        # exit()
         std = model.state_dict()
         # for p, w in std.items():
         #     print(f'---param--{p}---{w.shape}--{w.min()}---{w.max()}--')
@@ -434,8 +434,8 @@ if __name__=='__main__':
         # we = get_layer_weights(std, tgt='norm')
         # w, we = extract_layer_weights_withexc(std, tgt='layer', pref=None)
         #
-        w, we = get_blocks_weights(std, tgt='norm', cond='self_attn')
-        weights.update(w)  # 67584
+        # w, we = get_blocks_weights(std, tgt='norm', cond='self_attn')
+        # weights.update(w)  # 67584
         # we = get_dict_layer_weights(std, tgt='head')
         # weights.update(we)
         # we = get_dict_layer_weights(std, tgt='embed_tokens')
@@ -443,16 +443,16 @@ if __name__=='__main__':
         # #
         # we = get_layer_weights(std, tgt='norm')
 
-        # we = gets_weights(std)
-        # print(we.shape, we.min(), we.max(), we.dtype)
+        we = gets_weights(std)
+        print(we.shape, we.min(), we.max(), we.dtype)
         # exit()
-        # weights[k] = we
+        weights[k] = we
         # weights.update(w) #67584
         # weights['layernorm.weight'] = we
 
         # w, we =  extract_layers_weights(std)
         # weights.update(w)
-    torch.save(weights, '../Datasets/llmdata/llama_3_8b_self_attn_.pt')  # 1498482688
+    torch.save(weights, '../Datasets/llmdata/llama_3_8b_full_.pt')  # 1498482688
     print(len(weights))
     exit()
     # 1498482688
