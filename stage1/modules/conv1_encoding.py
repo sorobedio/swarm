@@ -371,7 +371,7 @@ class Decoder(nn.Module):
         h = self.conv_out(h)
         h = h.reshape(-1, self.in_ch, self.fdim)
         h = self.fc_out(h)
-        # h = h.reshape(-1, self.in_ch, self.in_dim)
+        h = h.reshape(-1, self.in_channels, self.resolution)
         if self.tanh_out:
             h = torch.tanh(h)
 
