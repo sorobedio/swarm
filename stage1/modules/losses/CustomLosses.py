@@ -71,7 +71,7 @@ class Myloss(nn.Module):
         # self.logvar = nn.Parameter(torch.ones(size=()) * logvar_init)
         self.huber = torch.nn.SmoothL1Loss(beta=0.05, reduction="mean")  # Huber loss
 
-    def forward(self, inputs, reconstructions, posteriors, split="train",weights=1000.0):
+    def forward(self, inputs, reconstructions, posteriors, split="train",weights=1.0):
         inputs = inputs.reshape(reconstructions.shape)
         # mask = (inputs != self.pad_value).float()
         # rec_loss = torch.abs(inputs.contiguous() -/ reconstructions.contiguous())
