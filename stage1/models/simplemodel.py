@@ -29,7 +29,7 @@ class AutoencoderKL(nn.Module):
         self.encoder = Encoder(**ddconfig)
         self.decoder = Decoder(**ddconfig)
         self.loss = instantiate_from_config(lossconfig)
-        self.chunk_loss = ChunkWiseReconLoss(step_size=16384)
+        # self.chunk_loss = ChunkWiseReconLoss(step_size=16384)
         assert ddconfig["double_z"]
         self.quant_conv = torch.nn.Conv2d(2*ddconfig["z_channels"], 2*embed_dim, 1)
         self.post_quant_conv = torch.nn.Conv2d(embed_dim, 2*ddconfig["z_channels"], 1)
@@ -150,9 +150,9 @@ class VAENoDiscModel(AutoencoderKL):
         inputs, reconstructions, posterior = self(batch)
         # reconstructions
         # mse = F.mse_loss(inputs, reconstructions)
-        cmse = self.chunk_loss(inputs, reconstructions)
+        cmse = self.chunk_loss(inputs, reconstructions)/
         aeloss, log_dict_ae = self.loss(inputs, reconstructions, posterior,  split="train")
-        loss = aeloss+ 1000.0* cmse
+        loss = aeloss #+ 1000.0* cmse
         return loss, log_dict_ae
 
     def validation_step(self, batch, batch_idx):
