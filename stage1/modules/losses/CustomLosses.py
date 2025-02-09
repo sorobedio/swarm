@@ -82,7 +82,7 @@ class Myloss(nn.Module):
         # self.logvar.data.clamp_(min=-30, max=30)
 
         # nll_loss = rec_loss / (torch.exp(self.logvar)*2) + self.logvar*0.5
-        rec_loss += self.huber(reconstructions, inputs, reduction="sum")*weights
+        rec_loss += self.huber(reconstructions, inputs)*weights
         nll_loss = rec_loss
         weighted_nll_loss = nll_loss
         # if weights is not None:
