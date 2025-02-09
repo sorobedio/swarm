@@ -16,16 +16,16 @@ model:
       tanh_out: False
       z_channels: 4
       resolution: 128
-      in_channels: 16
-      my_channels: 16
-      out_ch: 16
+      in_channels: 4
+      my_channels: 64
+      out_ch: 4
       ch: 128
       ch_mult: [ 1,1, 1,2]  #num_down = len(ch_mult)-1
       num_res_blocks: 2
       attn_resolutions: [8]
       dropout: 0.0
-      in_dim: 16384
-      fdim: 16384
+      in_dim: 4096
+      fdim: 1024
 
 #    beta_scheduler_config:
 #      target: stage1.models.lr_scheduler.TriangularAnnealingScheduler
