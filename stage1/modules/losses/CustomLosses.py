@@ -69,6 +69,7 @@ class Myloss(nn.Module):
         super().__init__()
         self.kl_weight = kl_weight
         # self.logvar = nn.Parameter(torch.ones(size=()) * logvar_init)
+        self.huber = torch.nn.SmoothL1Loss(beta=0.05, reduction="mean")  # Huber loss
 
     def forward(self, inputs, reconstructions, posteriors, split="train",weights=1.0):
         inputs = inputs.reshape(reconstructions.shape)
@@ -81,6 +82,7 @@ class Myloss(nn.Module):
         # self.logvar.data.clamp_(min=-30, max=30)
 
         # nll_loss = rec_loss / (torch.exp(self.logvar)*2) + self.logvar*0.5
+        rec_loss += self.huber(reconstructions, inputs, reduction="sum")*weights
         nll_loss = rec_loss
         weighted_nll_loss = nll_loss
         # if weights is not None:

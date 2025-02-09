@@ -16,9 +16,9 @@ model:
       tanh_out: False
       z_channels: 64
       resolution: 128
-      in_channels: 64
-      my_channels: 64
-      out_ch: 64
+      in_channels: 16
+      my_channels: 16
+      out_ch: 16
       ch: 128
       ch_mult: [ 1,1, 1,2]  #num_down = len(ch_mult)-1
       num_res_blocks: 2

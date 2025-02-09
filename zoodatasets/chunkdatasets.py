@@ -55,7 +55,7 @@ def pad_to_chunk_multiple(x, chunk_size):
 class ZooDataset(Dataset):
     """weights dataset."""
     def __init__(self, root='zoodata', dataset="joint", split='train', topk=None, scale=1.0, transform=True, normalize=False,
-                 max_len=4194304):
+                 max_len=262144):
         super(ZooDataset, self).__init__()
         #1960513  3145728   25165824
         self.topk = topk
@@ -67,8 +67,8 @@ class ZooDataset(Dataset):
         self.scale=scale
         # datapath = os.path.join("../Datasets", f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
         # datapath = os.path.join("../Datasets", f'llmdata/llama_3b_mlp_.pt')
-        # datapath = os.path.join("../Datasets", f'llmdata/llama_3b_self_attn_.pt')
-        datapath = os.path.join("../Datasets", f'llmdata/llama_3_8b_self_attn_.pt')
+        datapath = os.path.join("../Datasets", f'llmdata/llama_3_3b_full_.pt')
+        # datapath = os.path.join("../Datasets", f'llmdata/llama_3_8b_self_attn_.pt')
         # datapath = os.path.join("../Datasets", f'llmdata/llama_3_8b_full_.pt')
         #'../Datasets/llmdata/llama_3_8b_self_attn_.pt'
         #'../Datasets/llmdata/llama_3b_self_attn_.pt'
@@ -77,6 +77,7 @@ class ZooDataset(Dataset):
         data= self.load_data(datapath, dataset=dataset)
 
         print(f'======{data.dtype}=========dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
+        data = 2*(data-data.min())/(data.max()-data.min())-1
 
         self.data = data.cpu()
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')

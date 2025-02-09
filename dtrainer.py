@@ -95,8 +95,8 @@ def get_parser(**parser_kwargs):
              "Parameters can be overwritten or added with command-line options of the form `--key value`.",
 
         # default="stage1/configs/llama_block_config_kl.yaml",
-        default="stage1/configs/llama_attn_base_config_kl.yaml",
-        # default="stage1/configs/small_llama_config_kl.yaml",
+        # default="stage1/configs/llama_attn_base_config_kl.yaml",
+        default="stage1/configs/small_llama_config_kl.yaml",
         #mini_llama_norm_config.yaml  small_llama_config_kl.yaml
         #
 
@@ -261,7 +261,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if bloss > tloss:
             bloss = tloss
             print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama_3B_full_atten_.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama_3b_full_.pth'))
 
         # Print additional loss details
         rec_loss = logs['train/rec_loss']
@@ -364,7 +364,7 @@ if __name__ == "__main__":
                           scale=0.1, normalize=None)
     # valset = ZooDataset(root=args.data, dataset=args.dataset, split=args.split, normalize=False)
 #0.5
-    traindataloader = DataLoader(trainset, shuffle=True, batch_size=16, num_workers=8,
+    traindataloader = DataLoader(trainset, shuffle=True, batch_size=64, num_workers=8,
                                  # collate_fn=m_collate,
                                  )
     # testdataloader = DataLoader(valset, shuffle=False, batch_size=4, num_workers=4)
