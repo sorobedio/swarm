@@ -96,8 +96,8 @@ def get_parser(**parser_kwargs):
 
         # default="stage1/configs/llama_block_config_kl.yaml",
         # default="stage1/configs/llama_attn_base_config_kl.yaml",
-        # default="stage1/configs/small_llama_config_kl.yaml",
-        default="stage1/configs/simple_llama_config_base_kl.yaml",#was used
+        default="stage1/configs/small_llama_config_kl.yaml",
+        # default="stage1/configs/simple_llama_config_base_kl.yaml",#was used
         #
         # default="stage1/configs/full_model_base_config_kl.yaml",
         #   default="stage1/configs/norm_layer_config_kl.yaml",
