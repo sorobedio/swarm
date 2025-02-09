@@ -77,7 +77,7 @@ class ZooDataset(Dataset):
         data= self.load_data(datapath, dataset=dataset)
 
         print(f'======{data.dtype}=========dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
-        data = 2*(data-data.min())/(data.max()-data.min())-1
+        # data = 2*(data-data.min())/(data.max()-data.min())-1
 
         self.data = data.cpu()
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
