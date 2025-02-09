@@ -39,7 +39,7 @@ import torchvision.transforms as transforms
 
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 
 def get_parser(**parser_kwargs):
@@ -212,7 +212,7 @@ import torch
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 150000.0
+    bloss = 100000.0
     use_amp=True
     btest = 2.0
     # scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
@@ -257,7 +257,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if bloss > tloss:
             bloss = tloss
             print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama_3b_full_v2_.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama_3b_full_simple_.pth'))
 
         # Print additional loss details
         rec_loss = logs['train/rec_loss']
