@@ -9,14 +9,14 @@ model:
     lossconfig:
       target: stage1.modules.losses.CustomLosses.Myloss
       params:
-        kl_weight: 1e-4
+        kl_weight: 1e-6
     ddconfig:
       double_z: True
       z_channels: 64
       input_size: 128
       in_channels: 16
-      my_channels: 32
-      in_dim: 5923
-      fdim: 8192
+      my_channels: 16
+      in_dim: 16384
+      fdim: 16384
 
 

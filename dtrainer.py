@@ -96,12 +96,8 @@ def get_parser(**parser_kwargs):
 
         # default="stage1/configs/llama_block_config_kl.yaml",
         # default="stage1/configs/llama_attn_base_config_kl.yaml",
-        default="stage1/configs/small_llama_config_kl.yaml",
-        #mini_llama_norm_config.yaml  small_llama_config_kl.yaml
-        #
-
-
-        # default="stage1/configs/layer_wise_llama_8b_models.yaml",#was used
+        # default="stage1/configs/small_llama_config_kl.yaml",
+        default="stage1/configs/simple_llama_config_base_kl.yaml",#was used
         #
         # default="stage1/configs/full_model_base_config_kl.yaml",
         #   default="stage1/configs/norm_layer_config_kl.yaml",
@@ -216,7 +212,7 @@ import torch
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 100000.0
+    bloss = 50000.0
     use_amp=True
     btest = 2.0
     # scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
