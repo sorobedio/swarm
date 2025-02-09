@@ -476,7 +476,7 @@ if __name__ == "__main__":
     # weights = torch.load(f'../Datasets/llmdata/llama_3_1_8B_inst_full_block_and_ln_.pt')
     # weights = torch.load(f'../Datasets/llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
 
-    weights = torch.load("../Datasets/llmdata/llmdata/llama_3_3b_full_.pt")
+    weights = torch.load("../Datasets/llmdata/llama_3_3b_full_.pt")
     # weights = torch.load("../Datasets/llmdata/llama_3b_self_attn_.pt")
     # datapath = os.path.join(root, f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')  # 262144
     #
