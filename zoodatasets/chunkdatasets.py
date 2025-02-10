@@ -68,9 +68,9 @@ class ZooDataset(Dataset):
         # datapath = os.path.join("../Datasets", f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
         # datapath = os.path.join("../Datasets", f'llmdata/llama_3b_mlp_.pt')
         # datapath = os.path.join("../Datasets", f'llmdata/llama_3_3b_full_.pt')
-        datapath = os.path.join(root, f'llmdata/llama_3b_self_attn_.pt')  # 262144
+        # datapath = os.path.join(root, f'llmdata/llama_3b_self_attn_.pt')  # 262144
         # datapath = os.path.join("../Datasets", f'llmdata/llama_3_8b_self_attn_.pt')
-        # datapath = os.path.join("../Datasets", f'llmdata/llama_3_8b_full_.pt')
+        datapath = os.path.join("../Datasets", f'llmdata/llama_3_8b_full_.pt')
         #'../Datasets/llmdata/llama_3_8b_self_attn_.pt'
         #'../Datasets/llmdata/llama_3b_self_attn_.pt'
         #../Datasets/llmdata/llama_8b_mlp_.pt ../Datasets/llmdata/llama_3b_mlp_.pt
@@ -102,7 +102,7 @@ class ZooDataset(Dataset):
             keys = list(data)
             # keys.remove('layernorm.weight')
             # keys = ['sharegpt_cot', 'gemini_alpaca_sharegpt']
-            keys =keys[:1]
+            # keys =keys[:1]
             # print(keys)
 
             for k in keys:
