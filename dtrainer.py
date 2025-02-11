@@ -331,6 +331,12 @@ def lr_lambda(current_step: int, warmup_iters=50):
         return current_step / max(1, warmup_iters)
     return 1.0
 
+
+def count_trainable_parameters(model: nn.Module) -> int:
+    """Computes the number of trainable parameters in a PyTorch model."""
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
 from stage1.modules.losses.CustomLosses import LayerWiseReconLoss, ChunkWiseReconLoss
 from schedulers.lr_utils import CustomCosineWarmRestartScheduler, WarmUpAndDecayLR
 
@@ -398,6 +404,7 @@ if __name__ == "__main__":
     #                                  last_epoch=-1)
     # scheduler = WarmUpAndDecayLR(optimizer, warmup_steps=200, cosine_steps=200, gamma=0.1, T_mult=1)
     criterion = model.loss
+    print("Trainable parameters:", count_trainable_parameters(model))
     # train(model, optimizer, args.n_epochs, traindataloader, testdataloader)
     train(model, optimizer, args.n_epochs, traindataloader, args=args)
 
