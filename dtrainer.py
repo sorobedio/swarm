@@ -95,12 +95,9 @@ def get_parser(**parser_kwargs):
              "Parameters can be overwritten or added with command-line options of the form `--key value`.",
 
         # default="stage1/configs/llama_block_config_kl.yaml",
-        default="stage1/configs/llama_attn_base_config_kl.yaml",
-        #mini_llama_norm_config.yaml  small_llama_config_kl.yaml
         # default="stage1/configs/llama_attn_base_config_kl.yaml",
-
-
-        # default="stage1/configs/layer_wise_llama_8b_models.yaml",#was used
+        default="stage1/configs/small_llama_config_kl.yaml",
+        # default="stage1/configs/simple_llama_config_base_kl.yaml",#was used
         #
         # default="stage1/configs/full_model_base_config_kl.yaml",
         #   default="stage1/configs/norm_layer_config_kl.yaml",
@@ -215,7 +212,7 @@ import torch
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 50000.0
+    bloss = 10000.0
     use_amp=True
     btest = 2.0
     # scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
@@ -260,7 +257,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if bloss > tloss:
             bloss = tloss
             print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama_3B_self_attn_llama8b_int.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama_8b_full_test_.pth'))
 
         # Print additional loss details
         rec_loss = logs['train/rec_loss']
@@ -334,6 +331,12 @@ def lr_lambda(current_step: int, warmup_iters=50):
         return current_step / max(1, warmup_iters)
     return 1.0
 
+
+def count_trainable_parameters(model: nn.Module) -> int:
+    """Computes the number of trainable parameters in a PyTorch model."""
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
 from stage1.modules.losses.CustomLosses import LayerWiseReconLoss, ChunkWiseReconLoss
 from schedulers.lr_utils import CustomCosineWarmRestartScheduler, WarmUpAndDecayLR
 
@@ -401,6 +404,7 @@ if __name__ == "__main__":
     #                                  last_epoch=-1)
     # scheduler = WarmUpAndDecayLR(optimizer, warmup_steps=200, cosine_steps=200, gamma=0.1, T_mult=1)
     criterion = model.loss
+    print("Trainable parameters:", count_trainable_parameters(model))
     # train(model, optimizer, args.n_epochs, traindataloader, testdataloader)
     train(model, optimizer, args.n_epochs, traindataloader, args=args)
 

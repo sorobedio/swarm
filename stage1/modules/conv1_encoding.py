@@ -228,10 +228,10 @@ class Encoder(nn.Module):
     def forward(self, x):
         temb = None
         #adapt input shape
-        x = x.reshape(-1, self.in_ch, self.in_dim)
+        x = x.reshape((-1, self.in_ch, self.in_dim))
         x = self.fc_in(x)
         # x = F.leaky_relu(x)
-        x = x.reshape(-1, self.channels,  self.resolution)
+        x = x.reshape((-1, self.channels,  self.resolution))
         # downsampling
         hs = [self.conv_in(x)]
         for i_level in range(self.num_resolutions):
@@ -369,9 +369,9 @@ class Decoder(nn.Module):
         h = self.norm_out(h)
         h = nonlinearity(h)
         h = self.conv_out(h)
-        h = h.reshape(-1, self.in_ch, self.fdim)
+        h = h.reshape((-1, self.in_ch, self.fdim))
         h = self.fc_out(h)
-        # h = h.reshape(-1, self.in_ch, self.in_dim)
+        h = h.reshape((-1, self.out_ch, 128))
         if self.tanh_out:
             h = torch.tanh(h)
 

@@ -3,7 +3,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from stage1.modules.model  import Encoder, Decoder, MyDecoder, MyEncoder
+from stage1.modules.myclipmodules import Decoder, CLIPViTEncoder
 from stage1.modules.distributions import DiagonalGaussianDistribution
 from utils.util import instantiate_from_config
 from stage1.modules.losses.CustomLosses import ChunkWiseReconLoss
@@ -26,10 +26,10 @@ class AutoencoderKL(nn.Module):
         self.cond_key = cond_key
         self.learning_rate =  learning_rate
         self.input_key = input_key
-        self.encoder = Encoder(**ddconfig)
-        self.decoder = Decoder(**ddconfig)
+        self.encoder = CLIPViTEncoder(**ddconfig).to(self.devices)
+        self.decoder = Decoder(**ddconfig).to(self.devices)
         self.loss = instantiate_from_config(lossconfig)
-        # self.chunk_loss = ChunkWiseReconLoss(step_size=16384)
+        self.chunk_loss = ChunkWiseReconLoss(step_size=1024)
         assert ddconfig["double_z"]
         self.quant_conv = torch.nn.Conv2d(2*ddconfig["z_channels"], 2*embed_dim, 1)
         self.post_quant_conv = torch.nn.Conv2d(embed_dim, 2*ddconfig["z_channels"], 1)
@@ -149,10 +149,10 @@ class VAENoDiscModel(AutoencoderKL):
 
         inputs, reconstructions, posterior = self(batch)
         # reconstructions
-        # mse = F.mse_loss(inputs, reconstructions)
+        mse = F.mse_loss(inputs, reconstructions)
         # cmse = self.chunk_loss(inputs, reconstructions)
         aeloss, log_dict_ae = self.loss(inputs, reconstructions, posterior,  split="train")
-        loss = aeloss #+ 1000.0* cmse
+        loss = aeloss+ 1000.0*mse #+ cmse
         return loss, log_dict_ae
 
     def validation_step(self, batch, batch_idx):
@@ -165,13 +165,6 @@ class VAENoDiscModel(AutoencoderKL):
         return aeloss
 
     def configure_optimizers(self):
-        #torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
-        # optimizer = torch.optim.SGD(list(self.encoder.parameters()) +
-        #                              list(self.decoder.parameters()) +
-        #                              list(self.quant_conv.parameters()) +
-        #                              list(self.post_quant_conv.parameters()),
-        #                              lr=self.learning_rate,momentum=0.9)
-        #
         optimizer = torch.optim.Adam(list(self.encoder.parameters())+
                                   list(self.decoder.parameters())+
                                   list(self.quant_conv.parameters())+

@@ -411,6 +411,12 @@ class Encoder(nn.Module):
         # factor =
         self.fc_in = nn.Linear(self.in_dim, fdim)
         # self.fc_in = nn.Linear(self.in_dim, resolution * resolution * in_channels)
+        # self.fc_in = nn.Sequential(
+        #     nn.Linear(self.in_dim, self.fdim),
+        #     # nn.LeakyReLU(0.2),
+        #     SwiGLU(),
+        #     nn.Linear(self.fdim, self.fdim)
+        # )
 
         # downsampling
         self.conv_in = torch.nn.Conv2d(in_channels,
@@ -471,7 +477,7 @@ class Encoder(nn.Module):
         #adapt input shape
         x = x.reshape(-1, self.fch, self.in_dim)
         x = self.fc_in(x)
-        x = F.leaky_relu(x)
+        # x = F.leaky_relu(x)
         x = x.reshape(-1, self.in_channels, self.resolution, self.resolution)
         # downsampling
         hs = [self.conv_in(x)]
@@ -523,13 +529,13 @@ class Decoder(nn.Module):
         self.z_shape = (1,z_channels,curr_res,curr_res)
         print("Working with z of shape {} = {} dimensions.".format(
             self.z_shape, np.prod(self.z_shape)))
-        # self.fc_out = nn.Linear(self.fdim, self.in_dim)
-        self.fc_out = nn.Sequential(
-            nn.Linear(self.fdim, self.in_dim),
-            nn.LeakyReLU(0.2),
-            # SwiGLU(),
-            nn.Linear(self.in_dim, self.in_dim)
-        )
+        self.fc_out = nn.Linear(self.fdim, self.in_dim)
+        # self.fc_out = nn.Sequential(
+        #     nn.Linear(self.fdim, self.in_dim),
+        #     # nn.LeakyReLU(0.2),
+        #     SwiGLU(),
+        #     nn.Linear(self.in_dim, self.in_dim)
+        # )
 
         self.flat = flat
 

@@ -34,7 +34,7 @@ def pad_to_chunk_multiple(x, chunk_size):
 class ZooDataset(Dataset):
     """weights dataset."""
     def __init__(self, root='zoodata', dataset="joint", split='train', topk=None, scale=1.0, transform=None, normalize=False,
-                 max_len= 1048576):
+                 max_len= 16384):
         super(ZooDataset, self).__init__()
         #1960513
         self.topk = topk
@@ -49,7 +49,9 @@ class ZooDataset(Dataset):
         #'../Datasets/modelszoo/pythia_160m_mlp_final.pt'
         # datapath = os.path.join(root, f'modelszoo/pythia_160m_mlp_final.pt') #2362368
         # datapath = os.path.join(root, f'llmdata/SmolLM2-135M_full.pt')  # 8141328
-        datapath = os.path.join(root, f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')  # 262144
+        # datapath = os.path.join(root, f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')  # 262144
+        datapath = os.path.join("../Datasets", f'llmdata/llama_3_8b_self_attn_.pt')
+        # datapath = os.path.join("../Datasets", f'llmdata/llama_3_8b_full_.pt')
         self.transform = transform
         data= self.load_data(datapath, dataset=dataset)
         # x_min, x_max = data.min(), data.max()
@@ -107,7 +109,7 @@ class ZooDataset(Dataset):
                     w = 2*(w - x_min[:, None]) / xdiff[:, None]-1
                 w = torch.split(w, split_size_or_sections=self.chunk_size, dim=-1)
                 w = torch.cat(w, dim=0)
-                w = w.reshape(-1, 128, 8192)
+                w = w.reshape(-1, 128, 128)
                 if self.topk is not None:
                     if self.topk > 0:
                         w = w[:self.topk]

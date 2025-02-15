@@ -3,7 +3,7 @@ model:
   target: stage1.models.first_stage_c1model.VAENoDiscModel
   params:
 #    monitor: "val/rec_loss"
-    embed_dim: 4 #128 #64
+    embed_dim: 16 #128 #64
     input_key: 'weight'
     learning_rate: 1.125e-4
     lossconfig:
@@ -14,15 +14,15 @@ model:
     ddconfig:
       double_z: True
       tanh_out: False
-      z_channels: 4
-      resolution: 8192
+      z_channels: 16
+      resolution: 128
       in_channels: 128
-      in_ch: 128
+      in_ch: 1
       out_ch: 128
       ch: 128
       ch_mult: [ 1,1,2, 2]  # num_down = len(ch_mult)-1
-      num_res_blocks: 1
+      num_res_blocks: 3
       attn_resolutions: [4, 8]
       dropout: 0.0
-      in_dim: 8192
-      fdim: 8192
+      in_dim: 16384
+      fdim: 16384
