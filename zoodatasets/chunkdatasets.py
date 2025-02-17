@@ -102,7 +102,7 @@ class ZooDataset(Dataset):
             keys = list(data)
             # keys.remove('layernorm.weight')
             # keys = ['sharegpt_cot', 'gemini_alpaca_sharegpt']
-            keys =keys[:-1]
+            # keys =keys[:-1]
             # print(keys)
 
             for k in keys:
