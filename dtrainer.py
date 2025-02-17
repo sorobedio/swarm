@@ -94,9 +94,9 @@ def get_parser(**parser_kwargs):
         help="paths to base configs. Loaded from left-to-right. "
              "Parameters can be overwritten or added with command-line options of the form `--key value`.",
 
-        # default="stage1/configs/llama_block_config_kl.yaml",
+        default="stage1/configs/llama_block_config_kl.yaml",
         # default="stage1/configs/llama_attn_base_config_kl.yaml",
-        default="stage1/configs/small_llama_config_kl.yaml",
+        # default="stage1/configs/small_llama_config_kl.yaml",
         # default="stage1/configs/simple_llama_config_base_kl.yaml",#was used
         #
         # default="stage1/configs/full_model_base_config_kl.yaml",

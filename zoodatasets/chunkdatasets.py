@@ -55,7 +55,7 @@ def pad_to_chunk_multiple(x, chunk_size):
 class ZooDataset(Dataset):
     """weights dataset."""
     def __init__(self, root='zoodata', dataset="joint", split='train', topk=None, scale=1.0, transform=True, normalize=False,
-                 max_len=262144):
+                 max_len=4194304):
         super(ZooDataset, self).__init__()
         #1960513  3145728   25165824
         self.topk = topk
@@ -68,9 +68,9 @@ class ZooDataset(Dataset):
         # datapath = os.path.join("../Datasets", f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
         # datapath = os.path.join("../Datasets", f'llmdata/llama_3b_mlp_.pt')
         # datapath = os.path.join("../Datasets", f'llmdata/llama_3_3b_full_.pt')
-        # datapath = os.path.join(root, f'llmdata/llama_3b_self_attn_.pt')  # 262144
-        # datapath = os.path.join("../Datasets", f'llmdata/llama_3_8b_self_attn_.pt')
-        datapath = os.path.join("../Datasets", f'llmdata/llama_3_8b_full_.pt')
+        # datapath = os.path.join(root, f'llmdata/llama_3_8b_full_dict_withln.pt')  # 262144
+        datapath = os.path.join("../Datasets", f'llmdata/llama_3_8b_self_attn_.pt')
+        # datapath = os.path.join("../Datasets", f'llmdata/llama_3_8b_full_.pt')
         #'../Datasets/llmdata/llama_3_8b_self_attn_.pt'
         #'../Datasets/llmdata/llama_3b_self_attn_.pt'
         #../Datasets/llmdata/llama_8b_mlp_.pt ../Datasets/llmdata/llama_3b_mlp_.pt
@@ -102,7 +102,7 @@ class ZooDataset(Dataset):
             keys = list(data)
             # keys.remove('layernorm.weight')
             # keys = ['sharegpt_cot', 'gemini_alpaca_sharegpt']
-            # keys =keys[:1]
+            keys =keys[:-1]
             # print(keys)
 
             for k in keys:
