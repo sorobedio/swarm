@@ -17,6 +17,40 @@ def log_transform(x):
 def inverse_log_transform(x_transformed):
     return torch.sign(x_transformed) * (torch.expm1(torch.abs(x_transformed)))
 
+
+def chunk_wise_recon_loss(target, output, step_size=1024):
+    """
+    Calculate MSE loss with chunk-wise normalization.
+
+    Parameters:
+    - target: The target tensor.
+    - output: The output tensor.
+    - step_size: The size of each chunk.
+
+    Returns:
+    - loss: The calculated loss.
+    """
+    criterion = nn.MSELoss()
+    loss = torch.tensor(0.0, device=output.device).float()
+
+    # Flatten the tensors if they have more than 2 dimensions
+    if len(output.shape) > 2:
+        output = torch.flatten(output, start_dim=1)
+        target = torch.flatten(target, start_dim=1)
+
+    n = output.shape[0]
+    m = n/step_size
+    for i in range(0, n, step_size):
+        start_idx = i
+        end_idx = min(start_idx + step_size, n)
+        tar_tmp = target[:, start_idx:end_idx]
+        out_tmp = output[:, start_idx:end_idx]
+        loss_tmp = criterion(tar_tmp, out_tmp)
+        loss_tmp /= m
+        loss += loss_tmp
+
+    return loss
+
 class AutoencoderKL(nn.Module):
     def __init__(self,
                  ddconfig,
