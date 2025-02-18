@@ -39,7 +39,7 @@ import torchvision.transforms as transforms
 
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 
 def get_parser(**parser_kwargs):
@@ -233,13 +233,13 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
                 loss, logs = model.training_step(inputs, batch_idx)
 
             # Backward pass and optimization step
-            # scaler.scale(loss).backward()
-            # # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=20.0)
-            # scaler.step(optimizer)
-            # scaler.update()
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 10.0)
-            optimizer.step()
+            scaler.scale(loss).backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=10.0)
+            scaler.step(optimizer)
+            scaler.update()
+            # loss.backward()
+            # torch.nn.utils.clip_grad_norm_(model.parameters(), 10.0)
+            # optimizer.step()
 
 
             train_loss += loss.item()
@@ -257,7 +257,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if bloss > tloss:
             bloss = tloss
             print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama_8b_full_test_.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama_8b_atten_.pth'))
 
         # Print additional loss details
         rec_loss = logs['train/rec_loss']
@@ -265,16 +265,18 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         nnl_loss = logs['train/nll_loss']
         # log_var = logs['train/logvar']
         print(f'Best Training Loss: {bloss:.4f}, LR: {optimizer.param_groups[-1]["lr"]:.6f}')
-        print(f'Rec Loss: {rec_loss}, KLD Loss: {kld_loss}, NLL Loss: {nnl_loss}')
+        print(f'Rec Loss: {rec_loss.item()}, KLD Loss: {kld_loss.item()}, NLL Loss: {nnl_loss.item()}')
 
         # Perform model evaluation every 100 epochs
         if (epoch + 1) % 10 == 0:
-            with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
-                model.eval()
-                inputr, dec, _ = model(inputs)
-                print(f'Input: {inputr[0][:10]}, Dec: {dec[0][:10]}')
-                # recon_error = torch.nn.functional.mse_loss(dec, inputr)
-                # print(f'Recon Error: {recon_error}')
+            with torch.no_grad():
+
+                with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
+                    model.eval()
+                    inputr, dec, _ = model(inputs)
+                    print(f'Input: {inputr[0][:10].detach().cpu()}, Dec: {dec[0][:10].detach().cpu()}')
+                    # recon_error = torch.nn.functional.mse_loss(dec, inputr)
+                    # print(f'Recon Error: {recon_error}')
 
         # for name, param in model.named_parameters():
         #     if param.grad is not None:
