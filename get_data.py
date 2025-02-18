@@ -396,7 +396,7 @@ if __name__=='__main__':
     #     revision="step143000",
     # )
     # modellist=["google/gemma-7b-it"]
-    modellist = ["meta-llama/Meta-Llama-3.1-8B-Instruct"]
+    modellist = ["meta-llama/Llama-3.1-8B-Instruct"]
     # modellist = ["meta-llama/Llama-3.2-3B-Instruct"]
     # modellist =["HuggingFaceTB/SmolLM2-360M-Instruct"]
     #
@@ -434,35 +434,35 @@ if __name__=='__main__':
         # we = get_layer_weights(std, tgt='norm')
         # w, we = extract_layer_weights_withexc(std, tgt='layer', pref=None)
         #
-# <<<<<<< HEAD
-        w, we = get_blocks_weights(std, tgt='norm', cond='layer')
+# # <<<<<<< HEAD
+#         w, we = get_blocks_weights(std, tgt='norm', cond='layer')
+#         weights.update(w)  # 67584
+#         we = get_dict_layer_weights(std, tgt='head')
+#         weights.update(we)
+#         we = get_dict_layer_weights(std, tgt='embed_tokens')
+#         weights.update(we)
+# # =======
+        w, we = get_blocks_weights(std, tgt='norm', cond='self_attn')
         weights.update(w)  # 67584
-        we = get_dict_layer_weights(std, tgt='head')
-        weights.update(we)
-        we = get_dict_layer_weights(std, tgt='embed_tokens')
-        weights.update(we)
-# =======
-        # w, we = get_blocks_weights(std, tgt='norm', cond='self_attn')
-        # weights.update(w)  # 67584
         # we = get_dict_layer_weights(std, tgt='head')
         # weights.update(we)
         # we = get_dict_layer_weights(std, tgt='embed_tokens')
         # weights.update(we)
 # >>>>>>> a37a000eee4185231db00fd92c3a087c3b9bc799
-        # #
-        we = get_layer_weights(std, tgt='norm')
-
-        # we = gets_weights(std)
-        print(we.shape, we.min(), we.max(), we.dtype)
-        # exit()
-        weights[k] = we
+#         # #
+#         we = get_layer_weights(std, tgt='norm')
+#
+#         # we = gets_weights(std)
+#         print(we.shape, we.min(), we.max(), we.dtype)
+#         # exit()
+#         weights[k] = we
         # weights.update(w) #67584
         # weights['layernorm.weight'] = we
 
         # w, we =  extract_layers_weights(std)
         # weights.update(w)
 # <<<<<<< HEAD
-    torch.save(weights, '../Datasets/llmdata/llama_3_8b_full_dict_withln.pt')  # 1498482688
+    torch.save(weights, '../Datasets/llmdata/llama_3_8b_self_attn_.pt')  # 1498482688
 # =======
 #     torch.save(weights, '../Datasets/llmdata/llama_3_3b_full_.pt')  # 1498482688
 # >>>>>>> a37a000eee4185231db00fd92c3a087c3b9bc799
