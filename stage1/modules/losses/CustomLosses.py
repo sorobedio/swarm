@@ -111,7 +111,7 @@ class Myloss(nn.Module):
         # rec_loss = (inputs.contiguous() - reconstructions.contiguous())**2
         # rec_loss=  F.smooth_l1_loss(reconstructions, inputs, reduction='mean')*1000.0
         rec_loss =   F.mse_loss(reconstructions, inputs, reduction="sum")*weights+chunk_wise_recon_loss(inputs, reconstructions, step_size=1024)
-        # loss = F.mse_loss(reconstructions, inputs, reduction="mean")
+        # rec_loss = F.mse_loss(reconstructions, inputs, reduction="sum")
         # self.logvar.data.clamp_(min=-30, max=30)
 
         # nll_loss = rec_loss / (torch.exp(self.logvar)*2) + self.logvar*0.5
