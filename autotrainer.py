@@ -203,7 +203,7 @@ import torch
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 50000.0
+    bloss = 100.0
     btest = 2.0
     use_amp = True
     btest = 2.0
@@ -250,7 +250,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         if bloss > tloss:
             bloss = tloss
             print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama8b_3b_314_selfattn.pth'))
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama8b_8b_selfattn.pth'))
 
 
         print(f' Rec_LOSS: {tloss}  Best Training Loss: {bloss:.4f}, LR: {optimizer.param_groups[-1]["lr"]:.6f}')
@@ -259,12 +259,14 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
 
         # Perform model evaluation every 100 epochs
         if (epoch + 1) % 100 == 0:
-            with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
+            with torch.no_grad():
                 model.eval()
-                inputr, dec = model(inputs)
-                print(f'Input: {inputr[0][:10]}, Dec: {dec[0][:10]}')
-                # recon_error = torch.nn.functional.mse_loss(dec, inputr)
-                # print(f'Recon Error: {recon_error}')
+                with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=use_amp):
+                    # model.eval()
+                    inputr, dec = model(inputs)
+                    print(f'Input: {inputr[0][:10].detach().cpu()}, Dec: {dec[0][:10].detach().cpu()}')
+                    # recon_error = torch.nn.functional.mse_loss(dec, inputr)
+                    # print(f'Recon Error: {recon_error}')
 
         # for name, param in model.named_parameters():
         #     if param.grad is not None:

@@ -2,7 +2,7 @@ model:
   base_learning_rate: 4.5e-4
   target: stage1.models.first_stage_ae.AENoDiscModel
   params:
-    embed_dim: 4
+    embed_dim: 16
     input_key: 'weight'
     learning_rate: 1.254e-4
 #    ckpt_path: 'checkpoints/stage1/llama_model_3b_mlp_auto_.pth'
@@ -12,17 +12,17 @@ model:
     ddconfig:
       double_z: True
       tanh_out: False
-      z_channels: 4
+      z_channels: 16
       resolution: 128
-      in_channels: 128
-      my_channels: 128
-      out_ch: 128
+      in_channels: 256
+      my_channels: 256
+      out_ch: 256
       ch: 128
-      ch_mult: [ 1,1, 2 ]  #num_down = len(ch_mult)-1
-      num_res_blocks: 2
-      attn_resolutions: [ 2, 4 ]
+      ch_mult: [ 1,1, 1, 2]  #num_down = len(ch_mult)-1
+      num_res_blocks: 8
+      attn_resolutions: [ 8]
       dropout: 0.0
-      in_dim: 24576
+      in_dim: 16384
       fdim: 16384
 
 
