@@ -79,9 +79,9 @@ class ZooDataset(Dataset):
 
         print(f'======{data.dtype}=========dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
         # data = 2*(data-data.min())/(data.max()-data.min())-1
-        mu = data.mean()
-        std = data.std()
-        data = (data - mu) / std
+        # mu = data.mean()
+        # std = data.std()
+        # data = (data - mu) / std
         self.data = data.cpu()
         print(f'===============dataset size=={data.shape}======max={data.max()}======={data.min()}==========')
 
