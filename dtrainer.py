@@ -212,7 +212,7 @@ import torch
 def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_amp=False, args=None):
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path, exist_ok=True)
-    bloss = 10000.0
+    bloss = 100.0
     use_amp=True
     btest = 2.0
     # scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
