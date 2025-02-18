@@ -6,7 +6,8 @@ import torch.nn.functional as F
 from stage1.modules.cnnmodules import Encoder, Decoder
 from stage1.modules.distributions import DiagonalGaussianDistribution
 from utils.util import instantiate_from_config
-from stage1.modules.losses.CustomLosses import ChunkWiseReconLoss
+from stage1.modules.losses.perceptual import SimplePerceptualLoss
+# from stage1.modules.loss.CustomLosses import ChunkWiseReconLoss
 
 class AutoencoderKL(nn.Module):
     def __init__(self,
@@ -30,7 +31,8 @@ class AutoencoderKL(nn.Module):
         self.encoder = Encoder(**ddconfig)
         self.decoder = Decoder(**ddconfig)
         self.loss = instantiate_from_config(lossconfig)
-        self.chunk_loss = ChunkWiseReconLoss(step_size=128)
+        # self.chunk_loss = ChunkWiseReconLoss(step_size=128)
+        self.perc_loss = SimplePerceptualLoss()
 
 
         assert ddconfig["double_z"]
@@ -181,10 +183,11 @@ class VAENoDiscModel(AutoencoderKL):
             self.beta_scheduling(self.gl_step)
         inputs, reconstructions, posterior = self(batch)
         # reconstructions
-        mse = F.mse_loss(inputs, reconstructions)
+        # mse = F.mse_loss(inputs, reconstructions)
+        perloss = self.perc_loss(reconstructions,inputs)
         # cmse = self.chunk_loss(inputs, reconstructions)
         aeloss, log_dict_ae = self.loss(inputs, reconstructions, posterior,  split="train")
-        loss = aeloss
+        loss = aeloss+ perloss
         self.gl_step += 1
         # print(f"inputs: {inputs[0][:20]}")
         # print(f"reconstructions: {reconstructions[0][:20]}")
