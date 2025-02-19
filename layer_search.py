@@ -466,7 +466,7 @@ if __name__ == "__main__":
     # autoencoder = torch.load('./autocheckpoints/llama_model_chunk_full_block_7first.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/base_chunk_llama_v1.ckpt')
     # autoencoder = torch.load('./autocheckpoints/llama_model_1b_tf_block_full.pth', map_location='cpu')
-    autoencoder = torch.load('./autocheckpoints/hf_model_llama_3b_full_v2_.pth', map_location='cpu')
+    autoencoder = torch.load('./autocheckpoints/hf_model_llama_8b_atten_.pth', map_location='cpu')
     # torch.save(autoencoder.state_dict(), f'checkpoints/stage1/llama_model_3b_mlp_auto_.pth')
 
     # exit()
@@ -476,7 +476,7 @@ if __name__ == "__main__":
     # weights = torch.load(f'../Datasets/llmdata/llama_3_1_8B_inst_full_block_and_ln_.pt')
     # weights = torch.load(f'../Datasets/llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')
 
-    weights = torch.load("../Datasets/llmdata/llama_3_3b_full_.pt")
+    weights = torch.load("../Datasets/llmdata/llama_3_8b_self_attn_.pt")
     # weights = torch.load("../Datasets/llmdata/llama_3b_self_attn_.pt")
     # datapath = os.path.join(root, f'llmdata/llama_3_2_1B_inst_full_block_and_ln.pt')  # 262144
     #
@@ -497,15 +497,15 @@ if __name__ == "__main__":
         weight = weights[layer]
         # u = torch.mean(weight, dim=1)
         # v = torch.std(weight, dim=1)
-        x_min = weight.min()
-        x_max = weight.max()
+        # x_min = weight.min()
+        # x_max = weight.max()
 
         # weight = (weight-u[:, None])/v[:, None]
 
         # scale=0.0125
         weight = pad_to_chunk_multiple(weight, chunk_size=chunk_size)
         print(weight.shape)
-        weight = 2 * (weight - x_min) / (x_max - x_min) - 1
+        # weight = 2 * (weight - x_min) / (x_max - x_min) - 1
         # print(weight.shape)
         # n =weight.shape[-1]
 
@@ -545,7 +545,7 @@ if __name__ == "__main__":
         ws = torch.cat(wl, dim=-1) * scale
         print(ws.shape)
         # ws = ws * std + mu
-        ws = 0.5*(ws +1)* (x_max-x_min) + x_min
+        # ws = 0.5*(ws +1)* (x_max-x_min) + x_min
         wd[layer]=ws.reshape(1, -1)
         # # wd[layer] = slerp(0.5, weights[layer], ws)
         # # lw[layer]=ws
