@@ -581,22 +581,22 @@ if __name__ == "__main__":
         #['gemma-7b-it', 'Llama-3.2-3B-Instruct']
         for l in layers:
             # print(f'layer;--{l}---')
-            # wr[l] = wd[l][i].reshape(-1)
-            wr = wd[l][i].reshape(-1)
+            wr[l] = wd[l][i].reshape(-1)
+            # wr = wd[l][i].reshape(-1)
             # wr[l] = slerp(0.90, weights[l], wd[l][i])
         # wr = wd[layer][i].reshape(-1)
         # w = ws[i].reshape(-1)
 
         std = model.state_dict()
-        model=set_model_weights(model, wr)
-        # for w in ws:ws[i
-        # std =   set_layer_state_dict(std, wr, layer='norm')
+        # model=set_model_weights(model, wr)
+        # # for w in ws:ws[i
+        # # std =   set_layer_state_dict(std, wr, layer='norm')
         # std=set_layers_state_dict_ecp(std, wr, cond='norm', tgt='layer')
+        #
+        # model.load_state_dict(std)
 
-        model.load_state_dict(std)
 
-
-        # model.load_state_dict(set_layers_state_dict(std, lw))
+        model.load_state_dict(set_layers_state_dict(std, wr))
         # del wd
 
         # del weight
