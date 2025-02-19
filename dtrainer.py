@@ -253,11 +253,7 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
 
         tloss = train_loss / len(traindataloader)
 
-        # Save model with the best training loss
-        if bloss > tloss:
-            bloss = tloss
-            print(f'Saving model with best training loss: {bloss:.4f}')
-            torch.save(model, os.path.join(args.save_path, f'hf_model_llama_8b_atten_.pth'))
+
 
         # Print additional loss details
         rec_loss = logs['train/rec_loss']
@@ -266,6 +262,12 @@ def train(model, optimizer, n_epochs, traindataloader, testdataloader=None, use_
         # log_var = logs['train/logvar']
         print(f'Best Training Loss: {bloss:.4f}, LR: {optimizer.param_groups[-1]["lr"]:.6f}')
         print(f'Rec Loss: {rec_loss.item()}, KLD Loss: {kld_loss.item()}, NLL Loss: {nnl_loss.item()}')
+
+        # Save model with the best training loss
+        if bloss > rec_loss:
+            bloss = rec_loss
+            print(f'Saving model with best training loss: {bloss:.4f}')
+            torch.save(model, os.path.join(args.save_path, f'hf_model_llama_8b_atten_.pth'))
 
         # Perform model evaluation every 100 epochs
         if (epoch + 1) % 10 == 0:
